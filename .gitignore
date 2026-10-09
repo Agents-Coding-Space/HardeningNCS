@@ -1,0 +1,33 @@
+# HardeningLegacyWin .gitignore
+
+# Outputs - generated audit reports, backup policies and exports
+outputs/*.reg
+outputs/*.inf
+outputs/*.csv
+outputs/backup_*
+!outputs/.gitkeep
+
+# Environment and sensitive data
+.env
+*.env
+*.key
+*.pem
+token*
+credentials*
+*.pfx
+*.cer
+
+# Temporary and log files
+*.tmp
+*.log
+*.bak
+*.swp
+*~
+
+# OS & IDE metadata
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+.vscode/
+.idea/
