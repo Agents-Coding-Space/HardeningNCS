@@ -1,175 +1,164 @@
-<p align="center">
-  <img src="assets/NCS_Icon_Shield.png" width="130" alt="NCS Security Shield"><br>
-  <b>VIETNAM NATIONAL CYBER SECURITY TECHNOLOGY JSC</b><br>
-  <h1>HardeningNCS</h1>
-  <p><b>Bộ công cụ kiểm toán & thiết lập an toàn thông tin chuyên biệt cho Windows Legacy</b></p>
-  <p>
-    <img src="https://img.shields.io/badge/Platform-Windows%207%20%7C%202008%20R2%20%7C%202012%20R2-blue" alt="Platform">
-    <img src="https://img.shields.io/badge/Engine-PowerShell%202.0%2B%20%7C%20VBScript-green" alt="Engine">
-    <img src="https://img.shields.io/badge/Benchmark-CIS%20v3.3.1-orange" alt="CIS Benchmark">
-    <img src="https://img.shields.io/badge/License-MIT-purple" alt="License">
-    <img src="https://img.shields.io/badge/Security-4--Layer%20Atomic%20Backup-red" alt="Backup Security">
-  </p>
-</p>
+# HardeningLegacyWin
+
+> Bộ công cụ kiểm toán (Audit) và thiết lập an toàn thông tin (Hardening) chuẩn CIS Benchmark cho hệ điều hành Windows Legacy (Dual-Engine: PowerShell 2.0+ & VBScript).
+
+![Platform](https://img.shields.io/badge/Platform-Windows%207%20%7C%202008%20R2%20%7C%202012%20R2-blue.svg)
+![Engine](https://img.shields.io/badge/Engine-PowerShell%202.0%2B%20%7C%20VBScript-green.svg)
+![Benchmark](https://img.shields.io/badge/Benchmark-CIS%20v3.3.1-orange.svg)
+![License](https://img.shields.io/badge/License-MIT-purple.svg)
+![Safety](https://img.shields.io/badge/Safety-4--Layer%20Atomic%20Backup-red.svg)
 
 ---
 
-## 📖 Giới Thiệu Tổng Quan
+## Muc Luc
 
-**HardeningNCS** là bộ giải pháp an toàn thông tin mã nguồn mở do **NCS (Công ty Cổ phần Công nghệ An ninh mạng Quốc gia Việt Nam)** phát triển. Công cụ tập trung giải quyết bài toán kiểm toán (Audit), đánh giá tuân thủ (Compliance Assessment) và thiết lập cấu hình an toàn (Hardening / Remediation) chuẩn hóa theo **CIS Benchmark** trên các hệ điều hành Windows thế hệ cũ (Legacy Windows):
-- **Windows 7 SP1** (Máy trạm Client)
-- **Windows Server 2008 R2** (Máy chủ Server)
-- **Windows Server 2012 / 2012 R2** (Máy chủ Server)
-
-### 💡 Tại sao cần HardeningNCS?
-Các công cụ hardening hiện đại (như *HardeningKitty*) yêu cầu **PowerShell 5.1**, **.NET 4.5+**, hoặc các module chỉ có từ Windows 10/Server 2016 trở lên. Khi chạy trên các máy chủ Windows EOL đời cũ:
-1. Thiếu các cmdlet hiện đại (`Get-ItemPropertyValue`, `Get-CimInstance`, `Get-LocalUser`) gây **crash ngay khi khởi động**.
-2. Một số máy chủ cũ bị khóa cứng PowerShell Execution Policy (`Restricted`) hoặc không được cài thêm WMF 5.1.
-3. Chế độ can thiệp tự động (Remediation) thiếu cơ chế sao lưu độc quyền và không thể xóa các Registry Key mới tạo khi cần Rollback.
-
-**HardeningNCS** được thiết kế từ gốc để vượt qua toàn bộ các rào cản trên bằng kiến trúc **Dual-Engine** song song.
+- [Gioi Thieu Tong Quan](#gioi-thieu-tong-quan)
+- [Kien Truc Dual-Engine](#kien-truc-dual-engine)
+- [Cau Truc Thu Muc](#cau-truc-thu-muc)
+- [Cai Dat & Trien Khai](#cai-dat--trien-khai)
+- [Huong Dan Su Dung](#huong-dan-su-dung)
+  - [Buoc 1: Kiem Toan (Audit)](#buoc-1-kiem-toan-audit)
+  - [Buoc 2: Mo Phong (What-If Simulation)](#buoc-2-mo-phong-what-if-simulation)
+  - [Buoc 3: Khac Phuc Chon Loc (Selective Remediation)](#buoc-3-khac-phuc-chon-loc-selective-remediation)
+  - [Buoc 4: Phuc Hoi 1-Click (Rollback)](#buoc-4-phuc-hoi-1-click-rollback)
+- [Quy Chuan Du Lieu CSV](#quy-chuan-du-lieu-csv)
+- [Kiem Dinh & Test Suites](#kiem-dinh--test-suites)
+- [Chinh Sach An Toan](#chinh-sach-an-toan)
+- [Giay Phep](#giay-phep)
 
 ---
 
-## 🏛️ Kiến Trúc Kỹ Thuật (Dual-Engine)
+## Gioi Thieu Tong Quan
 
-```
-                       ┌────────────────────────────────────────┐
-                       │   Finding List (CSV 11 cột / 21 cột)   │
-                       └───────────────────┬────────────────────┘
-                                           │
-                    ┌──────────────────────┴──────────────────────┐
-                    ▼                                             ▼
-       ┌─────────────────────────┐                   ┌─────────────────────────┐
-       │   PowerShell 2.0        │                   │   VBScript Engine       │
-       │   (Primary Engine)      │                   │   (Zero-Dependency)     │
-       ├─────────────────────────┤                   ├─────────────────────────┤
-       │ • .NET 2.0/3.5 BCL      │                   │ • Chạy qua cscript.exe  │
-       │ • 0 cú pháp PS 3.0+     │                   │ • RFC 4180 CSV Parser   │
-       │ • SecEdit / AuditPol /  │                   │ • WScript.Shell + WMI   │
-       │   WMI Win32_UserAccount │                   │ • Không cần PowerShell  │
-       └────────────┬────────────┘                   └────────────┬────────────┘
-                    │                                             │
-                    └──────────────────────┬──────────────────────┘
-                                           ▼
-                       ┌────────────────────────────────────────┐
-                       │     Báo Cáo Kiểm Toán (outputs/*.csv)  │
-                       │     Passed / Failed / Skipped          │
-                       └───────────────────┬────────────────────┘
-                                           │
-                                           ▼
-                       ┌────────────────────────────────────────┐
-                       │   Remediate-LegacyWin.ps1              │
-                       │   • 4-Layer Atomic Backup              │
-                       │   • Per-Session Directory Isolation    │
-                       │   • Selective Fix (Failed only)        │
-                       └───────────────────┬────────────────────┘
-                                           │ (Khi cần hoàn tác)
-                                           ▼
-                       ┌────────────────────────────────────────┐
-                       │   Rollback-LegacyWin.ps1               │
-                       │   1-Click Rollback (Khôi phục 100%)    │
-                       └────────────────────────────────────────┘
+Bo cong cu ma nguon mo danh cho cong tac kiem toan bao mat va thiet lap cau hinh an toan chuan hoa theo **CIS Benchmark** tren cac he dieu hanh Windows the he cu (Legacy Windows):
+- **Windows 7 SP1** (Workstation)
+- **Windows Server 2008 R2** (Server)
+- **Windows Server 2012 / 2012 R2** (Server)
+
+### Boi Canh Ky Thuat
+Cac cong cu hardening hien dai (nhu *HardeningKitty*) duoc viet tren PowerShell 5.1 va yeu cau .NET Framework 4.5+ cung cac cmdlet moi (nhu `Get-ItemPropertyValue`, `Get-CimInstance`, `Get-LocalUser`). Khi thuc thi tren cac may chu cu chua duoc nang cap WMF 5.1:
+1. Script bi crash ngay khi khoi dong do loi parser syntax hoac thieu cmdlet.
+2. May bi khoa Execution Policy (`Restricted`) hoac co che bao ve chan chay file `.ps1`.
+3. Co che tu dong sua loi (Remediation) thieu kha nang xoa cac Registry Key/Value moi tao khi can hoan tac (Rollback).
+
+Giai phap nay khac phuc triet de cac van de tren bang kien truc **Dual-Engine** doc lap.
+
+---
+
+## Kien Truc Dual-Engine
+
+```mermaid
+flowchart TD
+    FindingList["Finding List<br/>(CSV 11 cot / 21 cot)"]
+
+    PS2["PowerShell 2.0 Engine<br/>(Primary Engine)<br/>- .NET 2.0/3.5 BCL<br/>- 0 cu phap PS 3.0+<br/>- SecEdit / AuditPol / WMI"]
+    VBS["VBScript Engine<br/>(Zero-Dependency)<br/>- Chay qua cscript.exe<br/>- RFC 4180 CSV Parser<br/>- WScript.Shell + WMI<br/>- Khong can PowerShell"]
+
+    Report["Bao Cao Kiem Toan (outputs/*.csv)<br/>Passed / Failed / Skipped"]
+
+    Remediate["Remediate-LegacyWin.ps1<br/>- 4-Layer Atomic Backup<br/>- Per-Session Directory Isolation<br/>- Selective Fix (Failed only)"]
+
+    Rollback["Rollback-LegacyWin.ps1<br/>1-Click Rollback (Khoi phuc 100%)"]
+
+    FindingList --> PS2
+    FindingList --> VBS
+    PS2 --> Report
+    VBS --> Report
+    Report --> Remediate
+    Remediate -.->|Khi can hoan tac| Rollback
 ```
 
 1. **PowerShell 2.0 Engine (`src/Audit-LegacyWin.ps1`)**:
-   - Tương thích 100% với PowerShell 2.0 mặc định của Windows 7 SP1 và Windows Server 2008 R2.
-   - Tuyệt đối không dùng syntax PS 3.0+ (không `[pscustomobject]`, `[ordered]`, `$PSScriptRoot`, `Get-CimInstance`).
-   - Xử lý mượt mà các file checklist CIS 21 cột gốc (324+ rules).
+   - Tuong thich 100% voi PowerShell 2.0 mac dinh tren Windows 7 SP1 va Windows Server 2008 R2.
+   - Tuyet doi khong su dung syntax PS 3.0+ (khong `[pscustomobject]`, `[ordered]`, `$PSScriptRoot`, `Get-CimInstance`).
+   - Xu ly truc tiep file checklist 21 cot goc cua CIS Benchmark (324+ rules).
 2. **VBScript Engine (`src/Audit-LegacyWin.vbs`)**:
-   - Zero-dependency: Chạy trực tiếp qua `cscript.exe //nologo` có sẵn trên mọi bản Windows từ Windows 2000 đến nay.
-   - Tích hợp bộ parser **RFC 4180 State Machine** xử lý an toàn dấu phẩy trong ngoặc kép.
-   - Tự động lập bảng ánh xạ cột động (**Dynamic Header-to-Index Mapping**), không phụ thuộc vào thứ tự cột.
+   - Zero-dependency: Chay truc tiep qua `cscript.exe //nologo` co san tren moi he dieu hanh Windows.
+   - Bo parser **RFC 4180 State Machine** xu ly chuan xac dau phay nam trong dau ngoac kep.
+   - Anh xa cot dong (**Dynamic Header-to-Index Mapping**), tu dong thich ung voi moi cau truc cot.
 
 ---
 
-## 📁 Cấu Trúc Thư Mục Dự Án
+## Cau Truc Thu Muc
 
 ```text
-HardeningNCS/
-├── assets/                                                # Bộ nhận diện thương hiệu NCS
-│   ├── NCS_Icon_Shield.png                                # Biểu tượng khiên bảo mật NCS
-│   ├── NCS_Icon_Shield.svg                                # Vector khiên bảo mật NCS
-│   ├── NCS_Icon_Shield.ico                                # Icon định dạng Windows ICO
-│   ├── NCS_Logo_Trang.svg                                 # Logo NCS phiên bản nền tối
-│   ├── NCS_Logo_Den.svg                                   # Logo NCS phiên bản nền sáng
-│   └── ascii-art.txt                                      # Banner ASCII Art NCS từ SVG
-├── lists/                                                 # Danh mục kiểm toán CIS Benchmark dạng CSV
-│   ├── CIS_MS_Windows_Server_2008_R2_MS_Level_1_v3.3.1.csv# Baseline 21 cột gốc (324 rules)
-│   ├── finding_list_cis_server2008r2_machine.csv          # Baseline 11 cột cốt lõi cho Server 2008 R2
-│   ├── finding_list_cis_win7_sp1_machine.csv              # Baseline 11 cột cốt lõi cho Windows 7 SP1
-│   └── finding_list_cis_server2012r2_machine.csv          # Baseline 11 cột cốt lõi cho Server 2012 R2
-├── src/                                                   # Mã nguồn các Engine thực thi
-│   ├── Audit-LegacyWin.ps1                                # Engine Audit PowerShell 2.0 thuần
-│   ├── Audit-LegacyWin.vbs                                # Engine Audit VBScript Zero-Dependency
-│   ├── Remediate-LegacyWin.ps1                            # Engine Fix có kiểm soát & 4-Layer Backup
-│   ├── Rollback-LegacyWin.ps1                             # Engine Hoàn tác 1-Click phục hồi 100%
-│   └── common/                                            # Thư viện hàm phụ trợ (PS2 compatible)
-│       ├── Compare-Value.ps1                              # Bộ so sánh toán tử (=, !=, >=, <=, <=!0, regex)
-│       ├── Parse-SecEdit.ps1                              # Xuất & phân tích cấu hình secedit INF
-│       └── Parse-AuditPol.ps1                             # Thu thập & phân tích Advanced Audit Policy
-├── tests/                                                 # Hệ thống kiểm thử tự động hóa (8 suites)
-│   ├── Test-PS2Compat.ps1                                 # Static AST Linter: cấm cú pháp PS 3.0+
-│   ├── Test-Audit-Smoke.ps1                               # Smoke test kiểm chứng schema báo cáo
-│   ├── Test-Rollback.ps1                                  # Integration Test: E2E Fix -> Rollback
-│   ├── test_common_helpers.ps1                            # 68 unit tests kiểm định bộ so sánh & parser
-│   ├── test_csv_schema.ps1                                # Kiểm định tính toàn vẹn của các file CSV
-│   ├── test_audit_engine.ps1                              # 36 tests kiểm định dispatch engine
-│   ├── test_remediate_rollback.ps1                        # 44 tests kiểm định an toàn backup & lockfile
-│   └── test_vbs_audit.ps1                                 # 17 tests kiểm thử VBScript Engine
-├── outputs/                                               # Thư mục lưu báo cáo audit và backup session
-└── tools/
-    └── accesschk.exe.url                                  # Shortcut Sysinternals AccessChk chính thức
+HardeningLegacyWin/
+|-- lists/                                                 # Danh muc kiem toan CIS Benchmark (CSV)
+|   |-- CIS_MS_Windows_Server_2008_R2_MS_Level_1_v3.3.1.csv# Baseline 21 cot goc (324 rules)
+|   |-- finding_list_cis_server2008r2_machine.csv          # Baseline 11 cot Server 2008 R2
+|   |-- finding_list_cis_win7_sp1_machine.csv              # Baseline 11 cot Windows 7 SP1
+|   `-- finding_list_cis_server2012r2_machine.csv          # Baseline 11 cot Server 2012 R2
+|-- src/                                                   # Ma nguon thuc thi
+|   |-- Audit-LegacyWin.ps1                                # Engine Audit PowerShell 2.0 thuan
+|   |-- Audit-LegacyWin.vbs                                # Engine Audit VBScript Zero-Dependency
+|   |-- Remediate-LegacyWin.ps1                            # Engine Fix co kiem soat & 4-Layer Backup
+|   |-- Rollback-LegacyWin.ps1                             # Engine Hoan tac 1-Click
+|   `-- common/                                            # Thu vien ham dung chung (PS2)
+|       |-- Compare-Value.ps1                              # Bo so sanh toan tu (=, !=, >=, <=, <=!0, regex)
+|       |-- Parse-SecEdit.ps1                              # Xuat & phan tich secedit INF
+|       `-- Parse-AuditPol.ps1                             # Thu thap & phan tich Advanced Audit Policy
+|-- tests/                                                 # 8 Test Suites kiem dinh tu dong hoa
+|   |-- Test-PS2Compat.ps1                                 # Static AST Linter: cam cu phap PS 3.0+
+|   |-- Test-Audit-Smoke.ps1                               # Smoke test kiem chung schema bao cao
+|   |-- Test-Rollback.ps1                                  # Integration Test: E2E Fix -> Rollback
+|   |-- test_common_helpers.ps1                            # 68 unit tests toan tu & parser
+|   |-- test_csv_schema.ps1                                # Kiem dinh toan ven file CSV
+|   |-- test_audit_engine.ps1                              # 36 tests dispatch engine & parity
+|   |-- test_remediate_rollback.ps1                        # 44 tests an toan backup & lockfile
+|   `-- test_vbs_audit.ps1                                 # 17 tests VBScript Engine
+|-- outputs/                                               # Thu muc luu bao cao va backup sessions
+`-- tools/
+    `-- accesschk.exe.url                                  # Shortcut Sysinternals AccessChk
 ```
 
 ---
 
-## 🚀 Hướng Dẫn Cài Đặt & Triển Khai
+## Cai Dat & Trien Khai
 
-### 1. Tải về máy quản trị
-```bash
-git clone https://github.com/Agents-Coding-Space/HardeningNCS.git
+### 1. Tai ma nguon ve may quan tri
+Giai nen ma nguon hoac clone kho luu tru ve may:
+```cmd
+git clone <repository_url>
 cd HardeningNCS
 ```
 
-### 2. Triển khai lên máy đích (Windows 7 / Server 2008 R2 / 2012 R2)
-* **Môi trường kết nối mạng (SSH / SCP):**
+### 2. Copy len may dich (Windows 7 / Server 2008 R2 / 2012 R2)
+- **Qua mang (SSH / SCP):**
   ```bash
   scp -r src lists outputs tests vagrant@<IP_TARGET>:C:/HardeningNCS/
   ```
-* **Môi trường cô lập (Air-Gapped / Offline):**
-  Copy toàn bộ thư mục `HardeningNCS` vào USB và dán vào thư mục bất kỳ trên máy đích (ví dụ: `C:\HardeningNCS`).
+- **Moi truong Offline (Air-Gapped qua USB):**
+  Copy toan bo thu muc vao USB va dan vao thu muc tren may dich (vi du: `C:\HardeningNCS`).
 
-> **Yêu cầu quyền hạn:** Mở **Command Prompt** hoặc **PowerShell** với quyền **Run as Administrator** để có đủ đặc quyền kiểm toán bảo mật (`SeSecurityPrivilege`) cho `secedit.exe` và `auditpol.exe`.
+> **Luu y:** Chay Command Prompt hoac PowerShell duoi quyen **Run as Administrator** de co dac quyen `SeSecurityPrivilege` cho `secedit.exe` va `auditpol.exe`.
 
 ---
 
-## 💻 Hướng Dẫn Sử Dụng Chi Tiết
+## Huong Dan Su Dung
 
-### BƯỚC 1: Khảo Sát & Kiểm Toán (Audit)
+### Buoc 1: Kiem Toan (Audit)
 
-#### Cách 1 — Chạy bằng PowerShell 2.0 (Khuyến nghị)
-Sử dụng file baseline 21 cột gốc chuẩn của CIS Benchmark:
+#### Cach A -- Chay bang PowerShell 2.0 (Khuyen nghi)
+Su dung file baseline 21 cot goc chuan CIS Benchmark:
 ```powershell
 powershell.exe -ExecutionPolicy Bypass -File .\src\Audit-LegacyWin.ps1 `
   -FindingList .\lists\CIS_MS_Windows_Server_2008_R2_MS_Level_1_v3.3.1.csv `
   -OutputDir .\outputs
 ```
-*(Hoặc dùng file rút gọn cho từng hệ điều hành: `.\lists\finding_list_cis_server2008r2_machine.csv`)*.
 
-#### Cách 2 — Chạy bằng VBScript (Zero-Dependency)
-Dành cho máy bị chặn PowerShell hoặc cấm script `.ps1`:
+#### Cach B -- Chay bang VBScript (Zero-Dependency)
+Danh cho may bi khoa PowerShell Execution Policy:
 ```cmd
 cscript.exe //nologo .\src\Audit-LegacyWin.vbs .\lists\CIS_MS_Windows_Server_2008_R2_MS_Level_1_v3.3.1.csv .\outputs
 ```
 
-> **Kết quả đầu ra:** File báo cáo được lưu tại `outputs\audit_report_<timestamp>.csv` chứa 13 cột chi tiết:
-> `ID, Category, Name, Method, MethodArgument, RegistryPath, RegistryItem, DefaultValue, RecommendedValue, Operator, Severity, CurrentValue, Status`.
+Bao cao duoc xuat ra tai `outputs\audit_report_<timestamp>.csv` gom 13 cot chi tiet.
 
 ---
 
-### BƯỚC 2: Mô Phỏng Thiết Lập (Simulation / What-If)
-**Nguyên tắc vàng:** Luôn chạy chế độ mô phỏng trước để biết trước công cụ sẽ thay đổi những gì, **cam kết 100% không chạm vào hệ thống**:
+### Buoc 2: Mo Phong (What-If Simulation)
+
+Chay che do mo phong truoc de xac dinh cac muc se duoc sua, **khong thay doi bat ky cau hinh nao**:
 ```powershell
 powershell.exe -ExecutionPolicy Bypass -File .\src\Remediate-LegacyWin.ps1 `
   -AuditReport .\outputs\audit_report_20261009_011408.csv `
@@ -179,13 +168,13 @@ powershell.exe -ExecutionPolicy Bypass -File .\src\Remediate-LegacyWin.ps1 `
 
 ---
 
-### BƯỚC 3: Khắc Phục Chọn Lọc (Selective Remediation)
-Khi đã sẵn sàng, chạy lệnh sửa thật. Công cụ sẽ:
-1. **Chỉ tác động lên các mục có `Status = Failed`**.
-2. **Kích hoạt cơ chế Sao lưu 4 lớp (4-Layer Atomic Backup)** trước khi ghi bất kỳ giá trị nào.
-3. Tạo thư mục phiên cô lập `outputs\backup_session_yyyyMMdd_HHmmss_<PID>_<RND>` được khóa bằng **Win32 Exclusive Lockfile**.
-4. Áp dụng giá trị an toàn chuẩn hóa.
-5. Nếu có bất kỳ lỗi sao lưu nào $\rightarrow$ **Dừng ngay lập tức (Abort Gate)** và tự động dọn sạch rác, không thay đổi hệ thống.
+### Buoc 3: Khac Phuc Chon Loc (Selective Remediation)
+
+Khi da san sang, chay lenh sua that:
+1. Chi tac dong vao cac muc co `Status = Failed`.
+2. Tu dong kich hoat **Sao luu 4 lop (4-Layer Atomic Backup)** truoc khi ghi bat ky gia tri nao.
+3. Tao thu muc session co lap `outputs\backup_session_yyyyMMdd_HHmmss_<PID>_<RND>` duoc khoa bang **Win32 Exclusive Lockfile**.
+4. Neu co bat ky loi sao luu nao -> **Dung ngay lap tuc (Abort Gate)** va tu dong don sach file rac.
 
 ```powershell
 powershell.exe -ExecutionPolicy Bypass -File .\src\Remediate-LegacyWin.ps1 `
@@ -195,101 +184,94 @@ powershell.exe -ExecutionPolicy Bypass -File .\src\Remediate-LegacyWin.ps1 `
 
 ---
 
-### BƯỚC 4: Phục Hồi 1-Click Khi Có Sự Cố (Rollback)
-Nếu phần mềm nghiệp vụ trên máy chủ cũ phát sinh lỗi sau khi hardening, sử dụng đường dẫn file `backup_manifest.txt` được in ở cuối Bước 3 để hoàn tác:
+### Buoc 4: Phuc Hoi 1-Click (Rollback)
+
+Neu he thong phat sinh xung dot sau khi hardening, su dung file `backup_manifest.txt` duoc tao o Buoc 3 de hoan tac:
 
 ```powershell
 powershell.exe -ExecutionPolicy Bypass -File .\src\Rollback-LegacyWin.ps1 `
   -ManifestFile .\outputs\backup_session_20261009_011952_1856_6325\backup_manifest.txt
 ```
 
-**Cơ chế hoàn tác thông minh của HardeningNCS:**
-- Khôi phục các giá trị Registry cũ qua file `.reg`.
-- **Tự động xóa sạch các Registry Key và Value mới tạo** qua file `registry_undo_delete.reg`.
-- Nạp lại Local Security Policy cũ bằng `secedit.exe /configure`.
-- Nạp lại Audit Policy cũ bằng `auditpol.exe /restore`.
-- Khôi phục trạng thái khởi động của các dịch vụ Windows Services.
-- **Cam kết đưa hệ thống về đúng 100% hiện trạng ban đầu**.
+**Co che phuc hoi:**
+- Khoi phuc gia tri Registry cu qua file `.reg`.
+- **Tu dong xoa sach cac Registry Key va Value moi tao** qua `registry_undo_delete.reg`.
+- Nap lai Local Security Policy cu bang `secedit.exe /configure`.
+- Nap lai Audit Policy cu bang `auditpol.exe /restore`.
+- Khoi phuc che do khoi dong cua Windows Services theo snapshot.
+- Dua he thong ve dung 100% trang thai truoc remediation.
 
 ---
 
-## 📊 Quy Chuẩn Hợp Đồng Dữ Liệu (CSV Contract)
+## Quy Chuan Du Lieu CSV
 
-Bộ công cụ hỗ trợ song song 2 định dạng schema:
-
-### 1. Schema 21 Cột Gốc (CIS Benchmark / HardeningKitty)
-Được giữ **nguyên vẹn 100%** không thay đổi cấu trúc:
+### 1. Schema 21 Cot Goc (CIS Benchmark / HardeningKitty)
+Bao toan nguyen ven 100% file goc:
 ```text
 ID,Category,Name,Method,MethodArgument,RegistryPath,RegistryItem,RegistryPathIntune,RegistryPathDCP,RegistryItemIntune,ClassName,Namespace,Property,DefaultValue,DefaultValueIntune,RecommendedValue,RecommendedValueIntune,Operator,OperatorIntune,Severity,Filter
 ```
 
-### 2. Schema 11 Cột Thu Gọn (Machine Specific)
-Dành cho danh mục rút gọn theo máy trạm/máy chủ:
+### 2. Schema 11 Cot Thu Gon (Machine Specific)
 ```text
 ID,Category,Name,Method,MethodArgument,RegistryPath,RegistryItem,DefaultValue,RecommendedValue,Operator,Severity
 ```
 
-### 3. Bảng Phương Thức Kiểm Toán (Method Adapters)
+### 3. Bang Phuong Thuc Kiem Toan (Method Adapters)
 
-| Method | Mô tả kiểm toán | Nguồn thu thập dữ liệu | Khả năng Remediate |
+| Method | Mo Ta Kiem Toan | Nguon Thu Thap Du Lieu | Kha Nang Remediate |
 | :--- | :--- | :--- | :---: |
-| `Registry` | Đọc khóa Registry hệ thống | Registry Provider / WMI StdRegProv | ✅ Có hỗ trợ |
-| `service` | Kiểm tra chế độ khởi động Service | WMI `Win32_Service` (`StartMode`) | ✅ Có hỗ trợ |
-| `secedit` | Chính sách bảo mật cục bộ | `secedit.exe /export` (`SECURITYPOLICY`) | ✅ Có hỗ trợ |
-| `accountpolicy`| Chính sách mật khẩu & lockout | `secedit` / fallback `net accounts` | ✅ Có hỗ trợ |
-| `auditpol` | Nhật ký nâng cao Advanced Audit | `auditpol.exe /get /category:* /r` | ✅ Có hỗ trợ |
-| `localaccount` | Trạng thái tài khoản SID 500/501 | WMI `Win32_UserAccount` (`Disabled`, `Name`) | ⚠️ Audit only |
-| `accesschk` | Phân quyền User Rights Assignment | `secedit [Privilege Rights]` (Dịch SID) | ⚠️ Audit only (Guardrail) |
-| `command` | Kiểm tra phần mềm bảo mật (EMET)| Registry Uninstall Key (An toàn) | ⚠️ Audit only |
+| `Registry` | Doc khoa Registry he thong | Registry Provider / WMI StdRegProv | ![Supported](https://img.shields.io/badge/-Supported-brightgreen.svg) |
+| `service` | Che do khoi dong Windows Service | WMI `Win32_Service` (`StartMode`) | ![Supported](https://img.shields.io/badge/-Supported-brightgreen.svg) |
+| `secedit` | Chinh sach bao mat cuc bo | `secedit.exe /export` (`SECURITYPOLICY`) | ![Supported](https://img.shields.io/badge/-Supported-brightgreen.svg) |
+| `accountpolicy`| Chinh sach mat khau & lockout | `secedit` / fallback `net accounts` | ![Supported](https://img.shields.io/badge/-Supported-brightgreen.svg) |
+| `auditpol` | Nhat ky Advanced Audit Policy | `auditpol.exe /get /category:* /r` | ![Supported](https://img.shields.io/badge/-Supported-brightgreen.svg) |
+| `localaccount` | Trang thai tai khoan SID 500/501 | WMI `Win32_UserAccount` (`Disabled`, `Name`) | ![Audit Only](https://img.shields.io/badge/-Audit%20Only-inactive.svg) |
+| `accesschk` | Phan quyen User Rights Assignment | `secedit [Privilege Rights]` (Dich SID) | ![Guardrail](https://img.shields.io/badge/-Audit%20Only%20(Guardrail)-yellow.svg) |
+| `command` | Kiem tra phan mem bao mat (EMET) | Registry Uninstall Key (An toan) | ![Audit Only](https://img.shields.io/badge/-Audit%20Only-inactive.svg) |
 
 ---
 
-## 🧪 Hệ Thống Kiểm Định Tự Động (QA & Testing)
+## Kiem Dinh & Test Suites
 
-Dự án tích hợp sẵn **8 bộ test suite** tự động hóa kiểm định tính an toàn và tương thích:
+Du an tich hop san **8 bo test suite** tu dong hoa:
 
 ```powershell
-# 1. Kiểm tra 100% cú pháp thuần PowerShell 2.0 (Cấm PS 3.0+):
+# 1. Kiem tra 100% cu phap thuan PowerShell 2.0 (Cam PS 3.0+):
 powershell -ExecutionPolicy Bypass -File .\tests\Test-PS2Compat.ps1
 
-# 2. Kiểm thử 68 unit tests cho toán tử và parser:
+# 2. Kiem thu 68 unit tests cho toan tu va parser:
 powershell -ExecutionPolicy Bypass -File .\tests\test_common_helpers.ps1
 
-# 3. Kiểm định schema CSV 11 cột và 21 cột gốc:
+# 3. Kiem dinh toan ven schema CSV 11 cot va 21 cot goc:
 powershell -ExecutionPolicy Bypass -File .\tests\test_csv_schema.ps1
 
-# 4. Kiểm thử 36 kịch bản dispatch của Audit Engine:
+# 4. Kiem thu 36 kich ban dispatch cua Audit Engine:
 powershell -ExecutionPolicy Bypass -File .\tests\test_audit_engine.ps1
 
-# 5. Kiểm thử 17 kịch bản cho VBScript Engine:
+# 5. Kiem thu 17 kich ban cho VBScript Engine:
 powershell -ExecutionPolicy Bypass -File .\tests\test_vbs_audit.ps1
 
-# 6. Kiểm thử 44 kịch bản an toàn Backup 4 lớp, Lockfile và Rollback:
+# 6. Kiem thu 44 kich ban an toan Backup 4 lop, Lockfile va Rollback:
 powershell -ExecutionPolicy Bypass -File .\tests\test_remediate_rollback.ps1
 
-# 7. Smoke test kiểm toán toàn diện:
+# 7. Smoke test kiem toan toan dien:
 powershell -ExecutionPolicy Bypass -File .\tests\Test-Audit-Smoke.ps1
 
-# 8. Integration test E2E thực tế trên Registry:
+# 8. Integration test E2E thuc te tren Registry:
 powershell -ExecutionPolicy Bypass -File .\tests\Test-Rollback.ps1
 ```
 
 ---
 
-## 🛡️ Ràng Buộc An Toàn (Safety Guardrails)
+## Chinh Sach An Toan
 
-- **Anti-Hang Protection**: Không sử dụng vòng lặp vô hạn; các lệnh gọi `secedit.exe` và `auditpol.exe` đều có cờ im lặng `/quiet` và bắt ngoại lệ chặt chẽ.
-- **Chống False-Pass cho `accesschk`**: Khi không đủ quyền thu thập `[Privilege Rights]`, công cụ đánh dấu rõ `Skipped`, tuyệt đối không so sánh rỗng bằng rỗng để báo `Passed` sai sự thật.
-- **Cô Lập Thư Mục Phiên**: Toàn bộ backup được lưu trong `backup_session_*` riêng biệt và khóa bằng `FileMode.CreateNew` ở cấp OS Kernel, ngăn ngừa việc hai phiên chạy đồng thời xóa nhầm file của nhau.
-- **Chống Path Traversal**: Tên thư mục sao lưu được kiểm tra nghiêm ngặt, chặn các ký tự `\`, `/`, `:`, `..` để không ghi đè ra ngoài thư mục `outputs/`.
+- **Anti-Hang Protection**: Khong su dung vong lap vo han; cac tien trinh `secedit.exe` va `auditpol.exe` deu co co im lang `/quiet` va bat ngoai le chat che.
+- **Chong False-Pass cho `accesschk`**: Khi thieu quyen thu thap `[Privilege Rights]`, cong cu danh dau ro `Skipped`, khong so sanh rong bang rong de bao `Passed` sai thuc te.
+- **Co Lap Thu Muc Phien (Per-Session Isolation)**: Toan bo backup duoc luu trong `backup_session_*` rieng biet va khoa bang `FileMode.CreateNew` o cap OS Kernel, ngan ngua va cham giua cac phien chay dong thoi.
+- **Chong Path Traversal**: Ten thu muc session duoc kiem tra nghiem ngat, chan cac ky tu `\`, `/`, `:`, `..` de khong ghi de ra ngoai thu muc `outputs/`.
 
 ---
 
-## 📄 Bản Quyền & Giấy Phép (License)
+## Giay Phep
 
-Dự án được phát hành theo giấy phép **[MIT License](LICENSE)**.
-
-**Phát triển bởi:**  
-🏢 **Công ty Cổ phần Công nghệ An ninh mạng Quốc gia Việt Nam (NCS)**  
-🌐 Website: [https://ncsgroup.vn](https://ncsgroup.vn)  
-📦 GitHub: [https://github.com/Agents-Coding-Space/HardeningNCS](https://github.com/Agents-Coding-Space/HardeningNCS)
+Du an duoc phat hanh theo giay phep MIT License.
