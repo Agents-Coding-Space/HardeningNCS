@@ -82,10 +82,19 @@ if (Test-Path -Path $auditPolHelper) {
 
 # Secedit export (1 time export using temp file)
 $secEditData = @{}
+$secEditPrivilegeDataAvailable = $false
 $skipSecEdit = ($SkipMethods -contains "secedit" -and $SkipMethods -contains "accountpolicy" -and $SkipMethods -contains "accesschk")
 if (-not $skipSecEdit) {
     try {
         $secEditData = Get-SecEditPolicy
+        if ($null -ne $secEditData -and $secEditData.Count -gt 0) {
+            foreach ($secKey in $secEditData.Keys) {
+                if ($secKey.StartsWith("Privilege Rights\", [System.StringComparison]::OrdinalIgnoreCase) -or $secKey.StartsWith("Se", [System.StringComparison]::OrdinalIgnoreCase)) {
+                    $secEditPrivilegeDataAvailable = $true
+                    break
+                }
+            }
+        }
     }
     catch {
         Write-Warning ("Failed to query SecEdit policy: " + $_.Exception.Message)
@@ -313,40 +322,46 @@ foreach ($item in $findings) {
             }
 
             "accesschk" {
-                $rawVal = $null
-                if ($secEditData.ContainsKey("Privilege Rights\" + $methodArg)) {
-                    $rawVal = $secEditData["Privilege Rights\" + $methodArg]
-                } elseif ($secEditData.ContainsKey($methodArg)) {
-                    $rawVal = $secEditData[$methodArg]
-                }
-
-                if ($null -eq $rawVal -or [string]::IsNullOrEmpty("$rawVal".Trim())) {
-                    $currentVal = ""
+                if (-not $secEditPrivilegeDataAvailable) {
+                    $status = "Skipped"
+                    $skippedCount++
+                    $displayVal = "SKIPPED: Privilege Rights policy data unavailable (elevated privileges required)"
                 } else {
-                    $parts = "$rawVal".Split(',')
-                    $translatedList = New-Object System.Collections.ArrayList
-                    foreach ($part in $parts) {
-                        $p = $part.Trim()
-                        if ($p.StartsWith("*")) { $p = $p.Substring(1) }
-                        if ($p.StartsWith("S-1-", [System.StringComparison]::OrdinalIgnoreCase)) {
-                            try {
-                                $sidObj = New-Object System.Security.Principal.SecurityIdentifier($p)
-                                $ntAcc = $sidObj.Translate([System.Security.Principal.NTAccount])
-                                [void]$translatedList.Add($ntAcc.Value)
-                            }
-                            catch {
-                                [void]$translatedList.Add($p)
-                            }
-                        } else {
-                            if (-not [string]::IsNullOrEmpty($p)) {
-                                [void]$translatedList.Add($p)
-                            }
-                        }
+                    $rawVal = $null
+                    if ($secEditData.ContainsKey("Privilege Rights\" + $methodArg)) {
+                        $rawVal = $secEditData["Privilege Rights\" + $methodArg]
+                    } elseif ($secEditData.ContainsKey($methodArg)) {
+                        $rawVal = $secEditData[$methodArg]
                     }
-                    if ($translatedList.Count -eq 0) {
+
+                    if ($null -eq $rawVal -or [string]::IsNullOrEmpty("$rawVal".Trim())) {
                         $currentVal = ""
                     } else {
-                        $currentVal = [string]::Join(";", $translatedList.ToArray())
+                        $parts = "$rawVal".Split(',')
+                        $translatedList = New-Object System.Collections.ArrayList
+                        foreach ($part in $parts) {
+                            $p = $part.Trim()
+                            if ($p.StartsWith("*")) { $p = $p.Substring(1) }
+                            if ($p.StartsWith("S-1-", [System.StringComparison]::OrdinalIgnoreCase)) {
+                                try {
+                                    $sidObj = New-Object System.Security.Principal.SecurityIdentifier($p)
+                                    $ntAcc = $sidObj.Translate([System.Security.Principal.NTAccount])
+                                    [void]$translatedList.Add($ntAcc.Value)
+                                }
+                                catch {
+                                    [void]$translatedList.Add($p)
+                                }
+                            } else {
+                                if (-not [string]::IsNullOrEmpty($p)) {
+                                    [void]$translatedList.Add($p)
+                                }
+                            }
+                        }
+                        if ($translatedList.Count -eq 0) {
+                            $currentVal = ""
+                        } else {
+                            $currentVal = [string]::Join(";", $translatedList.ToArray())
+                        }
                     }
                 }
             }
@@ -442,7 +457,7 @@ foreach ($item in $findings) {
             $status = "Skipped"
             $skippedCount++
             $displayVal = "SKIPPED: Unknown method '$method'"
-        } else {
+        } elseif ([string]::IsNullOrEmpty($status)) {
             # Compare using Compare-HKValue
             $isCompliant = Compare-HKValue -Current $currentVal -Recommended $recVal -Operator $operator
             if ($isCompliant) {

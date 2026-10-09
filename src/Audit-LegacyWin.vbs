@@ -212,11 +212,12 @@ Function ReadRegistryValue(regPath, regItem, ByRef isFound)
 End Function
 
 ' 4. System Helpers for Other Methods (Service, LocalAccount, SecEdit, AuditPol, NetAccounts)
-Dim localAccounts, secEditDict, auditPolDict, netAccountsDict
+Dim localAccounts, secEditDict, auditPolDict, netAccountsDict, secEditPrivilegeDataAvailable
 Set localAccounts = CreateObject("Scripting.Dictionary")
 Set secEditDict = CreateObject("Scripting.Dictionary")
 Set auditPolDict = CreateObject("Scripting.Dictionary")
 Set netAccountsDict = CreateObject("Scripting.Dictionary")
+secEditPrivilegeDataAvailable = False
 
 Sub CacheLocalAccounts()
     Dim wmi, colUsers, usr
@@ -283,8 +284,14 @@ Sub CacheSecEditPolicy()
                         End If
                         If curSec <> "" Then
                             secEditDict(LCase(curSec & "\" & k)) = v
+                            If LCase(curSec) = "privilege rights" Or LCase(Left(k, 2)) = "se" Then
+                                secEditPrivilegeDataAvailable = True
+                            End If
                         End If
                         secEditDict(LCase(k)) = v
+                        If LCase(Left(k, 2)) = "se" Then
+                            secEditPrivilegeDataAvailable = True
+                        End If
                     End If
                 End If
             End If
@@ -804,24 +811,30 @@ Do Until inFile.AtEndOfStream
                         End If
 
                     Case "accesschk"
-                        Dim secKeyVal, privKey
-                        privKey = LCase(Trim(methodArg))
-                        secKeyVal = ""
-                        isFound = False
-                        If secEditDict.Exists("privilege rights\" & privKey) Then
-                            secKeyVal = secEditDict("privilege rights\" & privKey)
-                            isFound = True
-                        ElseIf secEditDict.Exists(privKey) Then
-                            secKeyVal = secEditDict(privKey)
-                            isFound = True
-                        End If
-
-                        If Not isFound Or Trim(secKeyVal) = "" Then
-                            currentVal = ""
-                            isFound = True
+                        If Not secEditPrivilegeDataAvailable Then
+                            status = "Skipped"
+                            currentVal = "SKIPPED: Privilege Rights policy data unavailable (elevated privileges required)"
+                            skippedCount = skippedCount + 1
                         Else
-                            currentVal = TranslateSidsList(secKeyVal)
-                            isFound = True
+                            Dim secKeyVal, privKey
+                            privKey = LCase(Trim(methodArg))
+                            secKeyVal = ""
+                            isFound = False
+                            If secEditDict.Exists("privilege rights\" & privKey) Then
+                                secKeyVal = secEditDict("privilege rights\" & privKey)
+                                isFound = True
+                            ElseIf secEditDict.Exists(privKey) Then
+                                secKeyVal = secEditDict(privKey)
+                                isFound = True
+                            End If
+
+                            If Not isFound Or Trim(secKeyVal) = "" Then
+                                currentVal = ""
+                                isFound = True
+                            Else
+                                currentVal = TranslateSidsList(secKeyVal)
+                                isFound = True
+                            End If
                         End If
 
                     Case "auditpol"
@@ -864,7 +877,7 @@ Do Until inFile.AtEndOfStream
                     status = "Skipped"
                     currentVal = "SKIPPED: Unknown method '" & method & "'"
                     skippedCount = skippedCount + 1
-                Else
+                ElseIf status = "" Then
                     isCompliant = CompareValue(currentVal, recVal, op, isFound)
                     If isCompliant Then
                         status = "Passed"

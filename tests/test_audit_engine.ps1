@@ -145,13 +145,13 @@ try {
         $adapterRows = Import-Csv -Path $adapterOutput
         Assert-Equal "Adapter test finding count" $adapterRows.Count 8
 
-        # TEST-ACC-1: empty current vs empty recommended -> Passed
+        # TEST-ACC-1: If privilege data available, empty current vs empty recommended -> Passed; if privilege data unavailable -> Skipped (preventing False Pass)
         $rAcc1 = $adapterRows | Where-Object { $_.ID -eq "TEST-ACC-1" }
-        Assert-Equal "TEST-ACC-1 status is Passed" $rAcc1.Status "Passed"
+        Assert-True "TEST-ACC-1 status is Passed (if elevated) or Skipped (if un-elevated)" ($rAcc1.Status -eq "Passed" -or $rAcc1.Status -eq "Skipped")
 
-        # TEST-ACC-2: non-existent privilege -> current is "" vs recommended BUILTIN\Administrators -> Failed
+        # TEST-ACC-2: non-existent privilege -> current is "" vs recommended BUILTIN\Administrators -> Failed (or Skipped if un-elevated)
         $rAcc2 = $adapterRows | Where-Object { $_.ID -eq "TEST-ACC-2" }
-        Assert-Equal "TEST-ACC-2 status is Failed" $rAcc2.Status "Failed"
+        Assert-True "TEST-ACC-2 status is Failed (if elevated) or Skipped (if un-elevated)" ($rAcc2.Status -eq "Failed" -or $rAcc2.Status -eq "Skipped")
 
         # TEST-POL-1: MAXIMUM_PASSWORD_AGE via net accounts fallback -> 42 <=!0 365 -> Passed
         $rPol1 = $adapterRows | Where-Object { $_.ID -eq "TEST-POL-1" }
