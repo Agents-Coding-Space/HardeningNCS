@@ -10,7 +10,7 @@ function Invoke-HKWmiQuery {
         Executes a WMI or CIM query in a way that works seamlessly on all PowerShell versions.
     .DESCRIPTION
         On PowerShell 2.0 - 5.1: Uses Get-WmiObject natively.
-        On PowerShell 6.0 - 7.x+: Uses Get-CimInstance natively (since Get-WmiObject was removed in PS Core).
+        On PowerShell 6.0 - 7.x+: Uses CIM cmdlet dynamically (since Get-WmiObject was removed in PS Core).
     #>
     [CmdletBinding()]
     param(

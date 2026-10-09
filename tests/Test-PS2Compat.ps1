@@ -22,12 +22,34 @@ if ([string]::IsNullOrEmpty($ScriptDir)) {
 $rootDir = Split-Path $ScriptDir -Parent
 
 if ([string]::IsNullOrEmpty($TargetDir)) {
-    $TargetDir = Join-Path $rootDir "src"
-}
-
-if (-not (Test-Path -Path $TargetDir)) {
-    Write-Error ("Target directory not found: " + $TargetDir)
-    exit 1
+    $scanLabel = "src/ and repository root (*.ps1)"
+    $targetFiles = New-Object System.Collections.ArrayList
+    $srcFiles = Get-ChildItem -Path (Join-Path $rootDir "src") -Filter "*.ps1" -Recurse
+    if ($null -ne $srcFiles) {
+        foreach ($sf in $srcFiles) { [void]$targetFiles.Add($sf) }
+    }
+    $rootFiles = Get-ChildItem -Path $rootDir -Filter "*.ps1"
+    if ($null -ne $rootFiles) {
+        foreach ($rf in $rootFiles) { [void]$targetFiles.Add($rf) }
+    }
+    $files = $targetFiles.ToArray()
+} else {
+    $scanLabel = $TargetDir
+    if (-not (Test-Path -Path $TargetDir)) {
+        Write-Error ("Target directory not found: " + $TargetDir)
+        exit 1
+    }
+    $rawFiles = Get-ChildItem -Path $TargetDir -Filter "*.ps1" -Recurse
+    $filteredFiles = New-Object System.Collections.ArrayList
+    if ($null -ne $rawFiles) {
+        foreach ($rf in $rawFiles) {
+            # Exclude tests/ directory to avoid false positives on static analysis rule tables
+            if ($rf.FullName -notmatch "[\\/]tests[\\/]" -and $rf.Name -ne "Test-PS2Compat.ps1") {
+                [void]$filteredFiles.Add($rf)
+            }
+        }
+    }
+    $files = $filteredFiles.ToArray()
 }
 
 # Define forbidden syntax patterns for PowerShell 3.0+ and modern OS modules
@@ -64,9 +86,8 @@ $forbiddenRules = @(
 )
 
 Write-Host "=== TEST SUITE: PowerShell 2.0 Compatibility Static Analysis ===" -ForegroundColor Cyan
-Write-Host ("Scanning directory: " + $TargetDir)
+Write-Host ("Scanning directory/target: " + $scanLabel)
 
-$files = Get-ChildItem -Path $TargetDir -Filter "*.ps1" -Recurse
 Write-Host ("Found " + $files.Count + " PowerShell script(s) to analyze.")
 
 $violations = New-Object System.Collections.ArrayList
@@ -124,7 +145,7 @@ $failSymbol = [char]0x2717
 Write-Host ("Total lines scanned: " + $totalLinesScanned)
 
 if ($violations.Count -eq 0) {
-    Write-Host ("`n$passSymbol PASS: 0 PS3+ constructs found across all " + $files.Count + " files in " + $TargetDir) -ForegroundColor Green
+    Write-Host ("`n$passSymbol PASS: 0 PS3+ constructs found across all " + $files.Count + " files in " + $scanLabel) -ForegroundColor Green
     Write-Host "All scripts are 100% compliant with PowerShell 2.0 static requirements." -ForegroundColor Green
     exit 0
 } else {
