@@ -59,10 +59,10 @@ CIS-TEST-3,Administrative Templates,Test Passed,Registry,PassedItem,HKLM\SYSTEM\
 try {
     # 1. Test WhatIf mode: must NOT generate backup files or manifest
     & $remediatePath -AuditReport $sampleAuditReport -BackupDir $tempDir -WhatIf
-    $manifestFiles = Get-ChildItem -Path $tempDir -Filter "backup_manifest*.txt" -Recurse
-    $sessionDirs = Get-ChildItem -Path $tempDir -Filter "backup_session_*"
-    Assert-Equal "WhatIf does not generate session directories" ($sessionDirs.Count) 0
-    Assert-Equal "WhatIf does not generate backup manifest file" ($manifestFiles.Count) 0
+    $manifestFiles = @(Get-ChildItem -Path $tempDir -Filter "backup_manifest*.txt" -Recurse)
+    $sessionDirs = @(Get-ChildItem -Path $tempDir -Filter "backup_session_*")
+    Assert-Equal "WhatIf does not generate session directories" ($sessionDirs.Length) 0
+    Assert-Equal "WhatIf does not generate backup manifest file" ($manifestFiles.Length) 0
 
     # 2. Test Manifest generation & Rollback engine parser
     Write-Host "`n=== TEST SUITE: Rollback-LegacyWin.ps1 Manifest Execution ===" -ForegroundColor Cyan
@@ -162,10 +162,10 @@ FAIL-02,Test,Export Fail Key,Registry,,HKLM\SAM\SAM,TestFail,0,1,=,High,0,Failed
 
     & $remediatePath -AuditReport $failAuditReport -BackupDir $failDir -ErrorAction SilentlyContinue
 
-    $leftoverSessions = Get-ChildItem -Path $failDir -Filter "backup_session_*"
-    $leftoverArtifacts = Get-ChildItem -Path $failDir -Filter "backup_*"
-    Assert-Equal "P2: All session directories are cleaned up on backup failure" ($leftoverSessions.Count) 0
-    Assert-Equal "P2: All partial backup artifacts are cleaned up on backup failure" ($leftoverArtifacts.Count) 0
+    $leftoverSessions = @(Get-ChildItem -Path $failDir -Filter "backup_session_*")
+    $leftoverArtifacts = @(Get-ChildItem -Path $failDir -Filter "backup_*")
+    Assert-Equal "P2: All session directories are cleaned up on backup failure" ($leftoverSessions.Length) 0
+    Assert-Equal "P2: All partial backup artifacts are cleaned up on backup failure" ($leftoverArtifacts.Length) 0
 
     # 6. Test Exact File Ownership: Pre-existing / Foreign Files Must Never Be Deleted
     Write-Host "`n=== TEST SUITE: Exact File Ownership & Pre-existing File Safety ===" -ForegroundColor Cyan
@@ -212,9 +212,9 @@ CIS-TEST-1,Administrative Templates,Test Reg Setting,Registry,TestItem,HKCU\Soft
 
     & $remediatePath -AuditReport $successAudit -BackupDir $successDir -ErrorAction SilentlyContinue
 
-    $genSessions = Get-ChildItem -Path $successDir -Filter "backup_session_*"
-    Assert-Equal "One session directory created on successful remediation" ($genSessions.Count) 1
-    if ($genSessions.Count -gt 0) {
+    $genSessions = @(Get-ChildItem -Path $successDir -Filter "backup_session_*")
+    Assert-Equal "One session directory created on successful remediation" ($genSessions.Length) 1
+    if ($genSessions.Length -gt 0) {
         $sessionName = $genSessions[0].Name
         # Format: backup_session_<yyyyMMdd_HHmmss>_<PID>_<RND>
         $isMatch = $sessionName -match '^backup_session_\d{8}_\d{6}_\d+_\d{4}$'
@@ -227,9 +227,9 @@ CIS-TEST-1,Administrative Templates,Test Reg Setting,Registry,TestItem,HKCU\Soft
         $stateSnapshot = Join-Path $sessDir "state_snapshot.csv"
         Assert-True "State snapshot exists inside session directory" (Test-Path $stateSnapshot)
 
-        $sessRegs = Get-ChildItem -Path $sessDir -Filter "registry_*.reg"
-        Assert-True "Session directory contains registry_<hash>.reg backup file" ($sessRegs.Count -gt 0)
-        if ($sessRegs.Count -gt 0) {
+        $sessRegs = @(Get-ChildItem -Path $sessDir -Filter "registry_*.reg")
+        Assert-True "Session directory contains registry_<hash>.reg backup file" ($sessRegs.Length -gt 0)
+        if ($sessRegs.Length -gt 0) {
             $regName = $sessRegs[0].Name
             $isRegMatch = $regName -match '^registry_[0-9a-f]{8}(_\d+)?\.reg$'
             Assert-True "Registry backup file matches registry_<hash>.reg pattern ($regName)" $isRegMatch
@@ -255,8 +255,8 @@ CIS-TEST-1,Administrative Templates,Test Reg Setting,Registry,TestItem,HKCU\Soft
 
     & $remediatePath -AuditReport $guardAudit -BackupDir $collisionGuardDir -SessionFolderName $preExistingSessionName -ErrorAction SilentlyContinue
 
-    $itemsInPreExisting = Get-ChildItem -Path $preExistingSessionDir
-    Assert-Equal "Pre-existing session dir has only sentinel file (no backup files created)" ($itemsInPreExisting.Count) 1
+    $itemsInPreExisting = @(Get-ChildItem -Path $preExistingSessionDir)
+    Assert-Equal "Pre-existing session dir has only sentinel file (no backup files created)" ($itemsInPreExisting.Length) 1
     Assert-True "Sentinel file still exists untouched" (Test-Path $sentinelFile)
     if (Test-Path $sentinelFile) {
         $sentinelText = [System.IO.File]::ReadAllText($sentinelFile)
@@ -297,10 +297,10 @@ CIS-TEST-1,Administrative Templates,Test Reg Setting,Registry,TestItem,HKCU\Soft
     Assert-True "Drive separator 'C:evil' is detected and blocked" ($traversalTextC -like "*Path traversal detected*")
 
     # Verify no backup sessions or lockfiles were created in traversal test directory
-    $traversalSessions = Get-ChildItem -Path $traversalTestDir -Filter "backup_session_*"
-    $traversalLocks = Get-ChildItem -Path $traversalTestDir -Filter "*.lock"
-    Assert-Equal "No session directories created during traversal attacks" ($traversalSessions.Count) 0
-    Assert-Equal "No lockfiles created during traversal attacks" ($traversalLocks.Count) 0
+    $traversalSessions = @(Get-ChildItem -Path $traversalTestDir -Filter "backup_session_*")
+    $traversalLocks = @(Get-ChildItem -Path $traversalTestDir -Filter "*.lock")
+    Assert-Equal "No session directories created during traversal attacks" ($traversalSessions.Length) 0
+    Assert-Equal "No lockfiles created during traversal attacks" ($traversalLocks.Length) 0
 
     # 10. Test Atomic Exclusive Ownership via Win32 CreateNew Lockfile
     Write-Host "`n=== TEST SUITE: Atomic Exclusive Ownership Lock Collision Guard ===" -ForegroundColor Cyan
@@ -340,12 +340,12 @@ CIS-TEST-1,Administrative Templates,Test Reg Setting,Registry,TestItem,HKCU\Soft
     }
 
     # Verify that successful remediation leaves 0 leftover lockfiles
-    $successLocks = Get-ChildItem -Path $successDir -Filter "*.lock"
-    Assert-Equal "Successful remediation cleanly removed its lockfile" ($successLocks.Count) 0
+    $successLocks = @(Get-ChildItem -Path $successDir -Filter "*.lock")
+    Assert-Equal "Successful remediation cleanly removed its lockfile" ($successLocks.Length) 0
 
     # Verify that failed backup leaves 0 leftover lockfiles
-    $failLocks = Get-ChildItem -Path $failDir -Filter "*.lock"
-    Assert-Equal "Backup failure cleanly removed its lockfile" ($failLocks.Count) 0
+    $failLocks = @(Get-ChildItem -Path $failDir -Filter "*.lock")
+    Assert-Equal "Backup failure cleanly removed its lockfile" ($failLocks.Length) 0
 }
 finally {
     if (Test-Path $tempDir) {

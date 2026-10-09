@@ -162,11 +162,11 @@ try {
     }
 
     # Check that session directory was generated in outputs/
-    $newSessions = Get-ChildItem -Path $outputDir -Filter "backup_session_*" | Where-Object {
+    $newSessions = @(Get-ChildItem -Path $outputDir -Filter "backup_session_*" | Where-Object {
         -not $sessionsBefore.ContainsKey($_.FullName)
-    } | Sort-Object LastWriteTime -Descending
+    } | Sort-Object LastWriteTime -Descending)
 
-    if ($null -eq $newSessions -or $newSessions.Count -eq 0) {
+    if ($newSessions.Length -eq 0) {
         throw "Step 2 Failed: Backup session directory was not generated in $outputDir"
     }
 
