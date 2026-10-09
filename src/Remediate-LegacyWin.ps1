@@ -433,9 +433,10 @@ foreach ($rawKey in $uniqueRegKeys) {
             continue
         }
 
+        $regExportKey = Convert-ToRegHeaderKey $rawKey
         $psi = New-Object System.Diagnostics.ProcessStartInfo
         $psi.FileName = "reg.exe"
-        $psi.Arguments = "export `"$rawKey`" `"$regFile`" /y"
+        $psi.Arguments = "export `"$regExportKey`" `"$regFile`" /y"
         $psi.CreateNoWindow = $true
         $psi.UseShellExecute = $false
         $proc = [System.Diagnostics.Process]::Start($psi)
@@ -721,6 +722,11 @@ foreach ($item in $remediateItems) {
 }
 
 foreach ($item in $registryFailedItems) {
+    if ([string]::IsNullOrEmpty($item.RegistryPath) -or [string]::IsNullOrEmpty($item.RegistryItem) -or $item.RegistryPath.Trim() -eq "\" -or $item.RegistryPath.Trim() -eq "/") {
+        Write-Warning ("  [SKIP] Rule ID '" + $item.ID + "' has empty or invalid RegistryPath: '" + $item.RegistryPath + "'")
+        continue
+    }
+
     $psPath = Convert-ToPsDrivePath $item.RegistryPath
 
     try {
