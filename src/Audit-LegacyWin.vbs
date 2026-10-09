@@ -318,11 +318,15 @@ Sub CacheAuditPol()
             If Len(line) > 0 Then
                 fArray = Split(line, ",")
                 If UBound(fArray) >= 4 Then
-                    Dim subCat, sett
+                    Dim subCat, sett, guidVal
                     subCat = Trim(Replace(fArray(2), """", ""))
+                    guidVal = Trim(Replace(fArray(3), """", ""))
                     sett = Trim(Replace(fArray(4), """", ""))
                     If Len(subCat) > 0 Then
                         auditPolDict(LCase(subCat)) = sett
+                    End If
+                    If Len(guidVal) > 0 Then
+                        auditPolDict(LCase(guidVal)) = sett
                     End If
                 End If
             End If
