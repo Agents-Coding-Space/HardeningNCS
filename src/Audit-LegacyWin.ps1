@@ -65,6 +65,25 @@ if ($OutputDir.EndsWith(".csv", [System.StringComparison]::OrdinalIgnoreCase)) {
     $OutputFile = Join-Path $OutputDir ("audit_report_" + $timestamp + ".csv")
 }
 
+# Display NCS Branding Banner
+Write-Host @"
+
+   .XXXX      +XXX    .+xXXXXXXX;    ;+xXXXXXXXX.
+   .XXXXX.    +XXX   +XXXXXXXXXX+  .XXXXXXXXXXXX.
+   .XXXXXX.   +XXX   XXXX          ;XXX:
+   .XXXXXXX:  +XXX   XXX+          ;XXX:
+   .XXX+:XXX: +XXX   XXX+          .XXXXXXXXXX+
+   .XXX+ :XXX;+XXX   XXX+            ;+xXXXXXXXX
+   .XXX+  .XXX+xXX   XXX+                   +XXX.
+   .XXX+    XXX++X   XXXX:                 .xXXX
+   .XXX+     XXXx+   :XXXXXXXXXX;  +XXXXXXXXXXX+
+    +++:      +++;     :;+++++++:  ;++++++++;:  
+
+    VIETNAM NATIONAL CYBER SECURITY TECHNOLOGY JSC
+        HardeningNCS | PowerShell 2.0+ Edition
+"@ -ForegroundColor Cyan
+Write-Host "=================================================================" -ForegroundColor DarkCyan
+
 # Load helper scripts from common directory
 $commonDir = Join-Path $ScriptDir "common"
 $compareHelper = Join-Path $commonDir "Compare-Value.ps1"

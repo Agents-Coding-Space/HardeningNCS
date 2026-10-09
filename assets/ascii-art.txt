@@ -1,0 +1,22 @@
+               .;++++++++;.                                                                         
+             :++++++++++++++:                                                                       
+            :++++;......;++++:                                                                      
+            ++++:        :++++                                                                      
+            ++++.        .++++                                                                      
+            ++++.                                                                                   
+   .+XXXXX  ++++++++++++++++++  xXXXx;               .XXXX      +XXX    .+xXXXXXXX;    ;+xXXXXXXXX. 
+  XXXXXXXX  ++++++++++++++++++  xXXXXXXx             .XXXXX.    +XXX   +XXXXXXXXXX+  .XXXXXXXXXXXX. 
+ XXXXX;:::  .............:++++  :::;XXXXX            .XXXXXX.   +XXX   XXXX          ;XXX:          
+;XXXX               ++   .++++       XXXX:           .XXXXXXX:  +XXX   XXX+          ;XXX:          
+;XXXX       ++++.  .XX.  .++++       XXXX;           .XXX+:XXX: +XXX   XXX+          .XXXXXXXXXX+   
+;XXXX       ++++.   ++   .++++       XXXX;           .XXX+ :XXX;+XXX   XXX+            ;+xXXXXXXXX  
+;XXXX       ++++.        .++++      .XXXX:           .XXX+  .XXX+xXX   XXX+                   +XXX. 
+ xXXXXx+++  ++++;;;;;;;;;;++++  ;++xXXXXx            .XXX+    XXX++X   XXXX:                 .xXXX  
+  +XXXXXXX  ;+++++++++++++++++  xXXXXXX;             .XXX+     XXXx+   :XXXXXXXXXX;  +XXXXXXXXXXX+  
+    :+++++    .::::::::::::.    ;+++;.                +++:      +++;     :;+++++++:  ;++++++++;:    
+                                                                                                    
+            XXXX:        :XXXX                                                                      
+            XXXX+        +XXXX                                                                      
+            :XXXXx++++++xXXXX:                                                                      
+             .XXXXXXXXXXXXXx.                                                                       
+                ..........                                                                          

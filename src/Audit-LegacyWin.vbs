@@ -658,6 +658,13 @@ passedCount = 0
 failedCount = 0
 skippedCount = 0
 
+WScript.Echo ""
+WScript.Echo "=========================================================="
+WScript.Echo "   VIETNAM NATIONAL CYBER SECURITY TECHNOLOGY JSC (NCS)"
+WScript.Echo "       HardeningNCS | VBScript Zero-Dep Edition"
+WScript.Echo "=========================================================="
+WScript.Echo ""
+
 Set inFile = fso.OpenTextFile(csvPath, 1)
 Set outStream = fso.CreateTextFile(outputFile, True)
 
