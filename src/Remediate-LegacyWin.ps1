@@ -145,6 +145,15 @@ if ($failedAuditRows.Count -eq 0) {
 
 Write-Host ("Found " + $failedAuditRows.Count + " failed finding(s) to remediate.") -ForegroundColor Yellow
 
+# Unicode BOM Keys for cross-version compatibility (PS 2.0 through PS 7+)
+$bomChar = [char]0xFEFF
+$bomIdKey = $bomChar + "ID"
+
+$wmiHelper = Join-Path (Join-Path $ScriptDir "common") "Invoke-WmiCompat.ps1"
+if (Test-Path -Path $wmiHelper) {
+    . $wmiHelper
+}
+
 # 2. Map failed items against FindingList for complete baseline metadata
 $findingMap = @{}
 if (Test-Path -Path $FindingList) {
@@ -152,7 +161,7 @@ if (Test-Path -Path $FindingList) {
     foreach ($f in $rawFindings) {
         $fId = ""
         if ($null -ne $f.ID) { $fId = "$($f.ID)".Trim() }
-        if ([string]::IsNullOrEmpty($fId) -and $null -ne $f."`ufeffID") { $fId = "$($f."`ufeffID")".Trim() }
+        if ([string]::IsNullOrEmpty($fId) -and $null -ne $f.$bomIdKey) { $fId = "$($f.$bomIdKey)".Trim() }
         if (-not [string]::IsNullOrEmpty($fId)) {
             $findingMap[$fId] = $f
         }
@@ -166,7 +175,7 @@ $skippedRemediateItems = New-Object System.Collections.ArrayList
 foreach ($failed in $failedAuditRows) {
     $failedId = ""
     if ($null -ne $failed.ID) { $failedId = "$($failed.ID)".Trim() }
-    if ([string]::IsNullOrEmpty($failedId) -and $null -ne $failed."`ufeffID") { $failedId = "$($failed."`ufeffID")".Trim() }
+    if ([string]::IsNullOrEmpty($failedId) -and $null -ne $failed.$bomIdKey) { $failedId = "$($failed.$bomIdKey)".Trim() }
 
     $fullItem = $failed
     if ($findingMap.ContainsKey($failedId)) {
@@ -887,7 +896,7 @@ foreach ($sItem in $svcItems) {
     $svcName = $sItem.MethodArgument
     $targetMode = $sItem.RecommendedValue
     try {
-        $svc = Get-WmiObject Win32_Service -Filter "Name = '$svcName'" -ErrorAction SilentlyContinue
+        $svc = Invoke-HKWmiQuery -ClassName "Win32_Service" -Filter "Name = '$svcName'"
         if ($null -ne $svc) {
             Set-Service -Name $svcName -StartupType $targetMode -ErrorAction Stop
             if ($svc.State -eq "Running" -and $targetMode -eq "Disabled") {

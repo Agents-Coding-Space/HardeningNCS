@@ -110,6 +110,19 @@ if (Test-Path -Path $auditPolHelper) {
     return
 }
 
+$wmiHelper = Join-Path $commonDir "Invoke-WmiCompat.ps1"
+if (Test-Path -Path $wmiHelper) {
+    . $wmiHelper
+} else {
+    Write-Error ("Missing helper script: " + $wmiHelper)
+    return
+}
+
+# Unicode BOM Keys for cross-version compatibility (PS 2.0 through PS 7+)
+$bomChar = [char]0xFEFF
+$bomIdKey = $bomChar + "ID"
+$bomCidKey = $bomChar + "CID"
+
 # Secedit export (1 time export using temp file or pre-supplied SecEditFile)
 $secEditData = @{}
 $secEditPrivilegeDataAvailable = $false
@@ -197,7 +210,7 @@ if ($SkipMethods -notcontains "accountpolicy") {
 $localAccounts = @{}
 if ($SkipMethods -notcontains "localaccount") {
     try {
-        $accList = Get-WmiObject Win32_UserAccount -Filter "LocalAccount = True" -ErrorAction SilentlyContinue
+        $accList = Invoke-HKWmiQuery -ClassName "Win32_UserAccount" -Filter "LocalAccount = True"
         if ($null -ne $accList) {
             foreach ($acc in $accList) {
                 if ($acc.SID -match "-500$") {
@@ -246,7 +259,7 @@ foreach ($item in $findings) {
     $isAudit2Excel = ($null -ne $item.Type -and ($null -ne $item."Reg Key" -or $null -ne $item."Value Data" -or $null -ne $item.Expect))
 
     if ($isAudit2Excel) {
-        $itemId = if ($null -ne $item.CID) { "$($item.CID)".Trim() } elseif ($null -ne $item."`ufeffCID") { "$($item."`ufeffCID")".Trim() } else { "" }
+        $itemId = if ($null -ne $item.CID) { "$($item.CID)".Trim() } elseif ($null -ne $item.$bomCidKey) { "$($item.$bomCidKey)".Trim() } else { "" }
         $category = if ($null -ne $item.Profile -and -not [string]::IsNullOrEmpty("$($item.Profile)".Trim())) { "$($item.Profile)".Trim() } else { "$($item.Type)".Trim() }
         $name = if ($null -ne $item.Title) { "$($item.Title)".Trim() } else { "" }
         $severity = if ($null -ne $item.Severity -and -not [string]::IsNullOrEmpty("$($item.Severity)".Trim())) { "$($item.Severity)".Trim() } else { "Medium" }
@@ -308,8 +321,8 @@ foreach ($item in $findings) {
         if ($null -ne $item.ID) {
             $itemId = "$($item.ID)".Trim()
         }
-        if ([string]::IsNullOrEmpty($itemId) -and $null -ne $item."`ufeffID") {
-            $itemId = "$($item."`ufeffID")".Trim()
+        if ([string]::IsNullOrEmpty($itemId) -and $null -ne $item.$bomIdKey) {
+            $itemId = "$($item.$bomIdKey)".Trim()
         }
 
         $category = if ($null -ne $item.Category) { "$($item.Category)".Trim() } else { "" }
@@ -488,7 +501,7 @@ foreach ($item in $findings) {
 
             "service" {
                 if (-not [string]::IsNullOrEmpty($methodArg)) {
-                    $svc = Get-WmiObject Win32_Service -Filter "Name = '$methodArg'" -ErrorAction SilentlyContinue
+                    $svc = Invoke-HKWmiQuery -ClassName "Win32_Service" -Filter "Name = '$methodArg'"
                     if ($null -ne $svc) {
                         $currentVal = $svc.StartMode
                     }

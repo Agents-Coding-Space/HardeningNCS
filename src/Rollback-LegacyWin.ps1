@@ -17,6 +17,11 @@ if ([string]::IsNullOrEmpty($ScriptDir)) {
     $ScriptDir = (Get-Location).Path
 }
 
+$wmiHelper = Join-Path (Join-Path $ScriptDir "common") "Invoke-WmiCompat.ps1"
+if (Test-Path -Path $wmiHelper) {
+    . $wmiHelper
+}
+
 function Convert-ToPsDrivePath {
     param([string]$RawPath)
     if ([string]::IsNullOrEmpty($RawPath)) { return "" }
@@ -307,7 +312,7 @@ if (-not [string]::IsNullOrEmpty($snapshotFile) -and (Test-Path -Path $snapshotF
                 $svcName = $row.MethodArgument
                 $prevMode = $row.CurrentValue
                 try {
-                    $svc = Get-WmiObject Win32_Service -Filter "Name = '$svcName'" -ErrorAction SilentlyContinue
+                    $svc = Invoke-HKWmiQuery -ClassName "Win32_Service" -Filter "Name = '$svcName'"
                     if ($null -ne $svc -and -not [string]::IsNullOrEmpty($prevMode) -and $prevMode -ne "Disabled") {
                         Set-Service -Name $svcName -StartupType $prevMode -ErrorAction SilentlyContinue
                         Write-Host ("[" + (Get-Date -Format "yyyy-MM-dd HH:mm:ss") + "] [OK] Restored service '$svcName' startup to " + $prevMode) -ForegroundColor Green
