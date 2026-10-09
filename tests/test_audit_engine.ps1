@@ -230,6 +230,16 @@ MinimumPasswordAge = 1
     finally {
         if (Test-Path $outputNonExist) { Remove-Item $outputNonExist -Force -ErrorAction SilentlyContinue }
     }
+
+    # Deterministic Test: Non-existent SecEditFile aborts even when secedit, accountpolicy, and accesschk are all in SkipMethods
+    $outputNonExistSkipped = [System.IO.Path]::GetTempFileName() + ".csv"
+    try {
+        & $auditEnginePath -FindingList $adapterFindingList -OutputDir $outputNonExistSkipped -SecEditFile $nonExistentInf -SkipMethods @("secedit", "accountpolicy", "accesschk") 2>$null
+        Assert-True "Non-existent SecEditFile aborts even when all secedit-related methods are in SkipMethods" (-not (Test-Path $outputNonExistSkipped))
+    }
+    finally {
+        if (Test-Path $outputNonExistSkipped) { Remove-Item $outputNonExistSkipped -Force -ErrorAction SilentlyContinue }
+    }
 }
 finally {
     if (Test-Path $adapterFindingList) { Remove-Item $adapterFindingList -Force -ErrorAction SilentlyContinue }

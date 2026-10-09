@@ -36,6 +36,15 @@ if (-not (Test-Path -Path $FindingList)) {
     return
 }
 
+# Resolve SecEditFile path if specified
+if (-not [string]::IsNullOrEmpty($SecEditFile)) {
+    $SecEditFile = [System.IO.Path]::GetFullPath($SecEditFile)
+    if (-not (Test-Path -Path $SecEditFile)) {
+        Write-Error ("Specified SecEditFile not found: " + $SecEditFile)
+        return
+    }
+}
+
 # Resolve OutputDir and OutputFile path
 if ([string]::IsNullOrEmpty($OutputDir)) {
     $OutputDir = Join-Path (Split-Path $ScriptDir -Parent) "outputs"
@@ -90,12 +99,7 @@ $skipSecEdit = ($SkipMethods -contains "secedit" -and $SkipMethods -contains "ac
 if (-not $skipSecEdit) {
     try {
         if (-not [string]::IsNullOrEmpty($SecEditFile)) {
-            if (Test-Path -Path $SecEditFile) {
-                $secEditData = Get-SecEditPolicy -Path $SecEditFile
-            } else {
-                Write-Error ("Specified SecEditFile not found: " + $SecEditFile)
-                return
-            }
+            $secEditData = Get-SecEditPolicy -Path $SecEditFile
         } else {
             $secEditData = Get-SecEditPolicy
         }
