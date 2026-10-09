@@ -533,9 +533,7 @@ while ($true) {
 
         Write-Host ""
         Write-Host "Phim dieu khien:" -ForegroundColor Cyan
-        Write-Host "  [1-10] : Chon muc tren trang | [G/Enter] : Chon goi y | [Q] : Thoat" -ForegroundColor White
-        Write-Host "  [N]    : Trang sau            | [P]       : Trang truoc | [C] : Xoa bo loc" -ForegroundColor White
-        Write-Host "  [/kw]  : Tim kiem tu khoa     | (go truc tiep tu khoa de loc)" -ForegroundColor White
+        Write-Host "  [1-10] Chon | [G/Enter] Goi y | [N] Sau | [P] Truoc | [/kw] Loc | [Q] Thoat" -ForegroundColor White
 
         $promptStr = if ($null -ne $suggested) { "Nhap lua chon (Mac dinh: [G] Chon goi y): " } else { "Nhap lua chon: " }
         $userInput = Read-Host $promptStr
@@ -650,23 +648,20 @@ while ($true) {
         if ($sepLen -eq $tw -and $tw -gt 40) {
             $sepLen = $tw - 1
         }
-        $sepLine = "-" * $sepLen
+        $sepLine = "=" * $sepLen
 
-        Write-Host "CHE DO THUC THI: HARDENING CHECKLIST" -ForegroundColor Cyan
         Write-Host $sepLine -ForegroundColor DarkCyan
-        Write-Host ("  Ten Checklist : " + (Format-HKTruncate $selName ($sepLen - 18) "...")) -ForegroundColor Green
-        Write-Host ("  Thu muc       : " + (Format-HKTruncate $selectedChecklist.Directory ($sepLen - 18) "...")) -ForegroundColor White
-        Write-Host ("  Duong dan     : " + (Format-HKTruncate $selRel ($sepLen - 18) "...")) -ForegroundColor White
-        Write-Host ("  Dung luong    : " + $selSize + " bytes") -ForegroundColor White
+        Write-Host ("  CHECKLIST : " + (Format-HKTruncate $selName ($sepLen - 16) "...")) -ForegroundColor Green
+        Write-Host ("  VI TRI    : " + (Format-HKTruncate $selRel ($sepLen - 26) "...") + " (" + $selSize + " B)") -ForegroundColor DarkGray
         Write-Host $sepLine -ForegroundColor DarkCyan
         Write-Host ""
-        Write-Host "  [1] Audit (Kiem toan & Xuat bao cao CSV)" -ForegroundColor White
-        Write-Host "  [2] Simulation / What-If (Mo phong khac phuc - 100% an toan)" -ForegroundColor White
-        Write-Host "  [3] Remediation (Khac phuc chon loc cac muc Failed)" -ForegroundColor White
-        Write-Host "  [4] Rollback (Hoan tac khoi phuc trang thai cu)" -ForegroundColor White
-        Write-Host "  [5] View Latest Report (Xem tom tat bao cao vua quet)" -ForegroundColor White
-        Write-Host "  [0] Quay lai chon checklist khac" -ForegroundColor Yellow
-        Write-Host "  [Q] Thoat" -ForegroundColor Yellow
+        Write-Host "  [1] Audit       : Kiem toan & Xuat bao cao CSV" -ForegroundColor White
+        Write-Host "  [2] What-If     : Mo phong khac phuc (An toan 100%)" -ForegroundColor White
+        Write-Host "  [3] Remediate   : Khac phuc cac muc Failed (Co backup)" -ForegroundColor White
+        Write-Host "  [4] Rollback    : Phuc hoi he thong tu ban sao luu" -ForegroundColor White
+        Write-Host "  [5] View Report : Xem tom tat ket qua audit moi nhat" -ForegroundColor White
+        Write-Host "  --------------------------------------------------" -ForegroundColor DarkGray
+        Write-Host "  [0] Quay lai    | [Q] Thoat" -ForegroundColor Yellow
         Write-Host ""
 
         $actChoice = Read-Host "Nhap lua chon [1-5, 0, Q]"

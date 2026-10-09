@@ -280,9 +280,9 @@ function Render-HKPage {
     # Calculate column widths
     # Total row format: "| " + col1 + " | " + col2 + " | " + col3 + " |"
     # Separator chars count: 2 (start) + 3 (mid1) + 3 (mid2) + 2 (end) = 10 chars
-    $col1Width = if ($tableWidth -lt 50) { 4 } else { 5 }
-    $col3Width = if ($tableWidth -lt 50) { 11 } else { [Math]::Max(14, [Math]::Min(20, [int]($tableWidth * 0.20))) }
-    $col2Width = $tableWidth - 10 - $col1Width - $col3Width # Checklist name
+    $col1Width = if ($tableWidth -lt 50) { 3 } else { 4 }
+    $col3Width = if ($tableWidth -lt 50) { 7 } else { 8 }
+    $col2Width = $tableWidth - 10 - $col1Width - $col3Width # Checklist name (maximized)
 
     # Build ASCII borders
     $borderTop = "+" + ("-" * ($col1Width + 2)) + "+" + ("-" * ($col2Width + 2)) + "+" + ("-" * ($col3Width + 2)) + "+"
@@ -291,8 +291,8 @@ function Render-HKPage {
 
     # Build Header Row
     $hdrStt  = (Format-HKTruncate "STT" $col1Width "").PadLeft($col1Width)
-    $hdrName = (Format-HKTruncate "Ten Checklist" $col2Width "").PadRight($col2Width)
-    $hdrDir  = (Format-HKTruncate "Thu muc" $col3Width "").PadRight($col3Width)
+    $hdrName = (Format-HKTruncate "Ten Checklist (CIS Benchmark)" $col2Width "").PadRight($col2Width)
+    $hdrDir  = (Format-HKTruncate "Nhom" $col3Width "").PadRight($col3Width)
     $headerRow = "| " + $hdrStt + " | " + $hdrName + " | " + $hdrDir + " |"
 
     # Header title line
@@ -339,12 +339,26 @@ function Render-HKPage {
 
             $dirStr = ""
             if ($isSug) {
-                $dirStr = "[SUGGESTED]"
+                $dirStr = "[GOI Y]"
+            } elseif ($item.Directory -like "*Windows*") {
+                $dirStr = "Windows"
+            } elseif ($item.Directory -eq "lists") {
+                $dirStr = "Core"
             } else {
-                $dirStr = if ($null -ne $item.Directory) { $item.Directory } else { "" }
+                $dirStr = Split-Path $item.Directory -Leaf
             }
 
-            $nameCell = (Format-HKTruncate $item.FileName $col2Width "...").PadRight($col2Width)
+            # Smart display: if removing redundant '.csv' allows name to fit without truncation, do so
+            $rawName = $item.FileName
+            $dispName = $rawName
+            if ($rawName.Length -gt $col2Width -and $rawName.EndsWith(".csv", [System.StringComparison]::OrdinalIgnoreCase)) {
+                $noExt = $rawName.Substring(0, $rawName.Length - 4)
+                if ($noExt.Length -le $col2Width) {
+                    $dispName = $noExt
+                }
+            }
+
+            $nameCell = (Format-HKTruncate $dispName $col2Width "...").PadRight($col2Width)
             $dirCell  = (Format-HKTruncate $dirStr $col3Width "...").PadRight($col3Width)
             $rowLine  = "| " + $sttStr + " | " + $nameCell + " | " + $dirCell + " |"
 
