@@ -108,6 +108,22 @@ Function EscapeCsv(v)
     EscapeCsv = s
 End Function
 
+Function StripBom(s)
+    Dim res
+    res = s
+    If Len(res) >= 3 Then
+        If Left(res, 3) = Chr(&HEF) & Chr(&HBB) & Chr(&HBF) Then
+            res = Mid(res, 4)
+        End If
+    End If
+    If Len(res) >= 1 Then
+        If Left(res, 1) = ChrW(&HFEFF) Then
+            res = Mid(res, 2)
+        End If
+    End If
+    StripBom = res
+End Function
+
 ' 3. Registry Reader via WScript.Shell.RegRead & WMI StdRegProv
 Dim objReg
 On Error Resume Next
@@ -115,12 +131,21 @@ Set objReg = GetObject("winmgmts:{impersonationLevel=impersonate}!\\.\root\defau
 On Error GoTo 0
 
 Function ReadRegistryValue(regPath, regItem, ByRef isFound)
-    Dim fullPath, v, errNum
+    Dim fullPath, v, errNum, cleanPath
     isFound = False
     ReadRegistryValue = ""
 
+    If Trim(regPath) = "" Or Trim(regItem) = "" Then Exit Function
+
+    cleanPath = Trim(regPath)
+    If UCase(Left(cleanPath, 6)) = "HKLM:\" Then
+        cleanPath = "HKLM\" & Mid(cleanPath, 7)
+    ElseIf UCase(Left(cleanPath, 6)) = "HKCU:\" Then
+        cleanPath = "HKCU\" & Mid(cleanPath, 7)
+    End If
+
     ' Method 1: WScript.Shell.RegRead
-    fullPath = regPath & "\" & regItem
+    fullPath = cleanPath & "\" & regItem
     On Error Resume Next
     v = sh.RegRead(fullPath)
     errNum = Err.Number
@@ -140,12 +165,12 @@ Function ReadRegistryValue(regPath, regItem, ByRef isFound)
     If objReg Is Nothing Then Exit Function
 
     Dim rootKey, subKey
-    If UCase(Left(regPath, 5)) = "HKLM\" Then
+    If UCase(Left(cleanPath, 5)) = "HKLM\" Then
         rootKey = &H80000002
-        subKey = Mid(regPath, 6)
-    ElseIf UCase(Left(regPath, 5)) = "HKCU\" Then
+        subKey = Mid(cleanPath, 6)
+    ElseIf UCase(Left(cleanPath, 5)) = "HKCU\" Then
         rootKey = &H80000001
-        subKey = Mid(regPath, 6)
+        subKey = Mid(cleanPath, 6)
     Else
         Exit Function
     End If
@@ -186,11 +211,12 @@ Function ReadRegistryValue(regPath, regItem, ByRef isFound)
     On Error GoTo 0
 End Function
 
-' 4. System Helpers for Other Methods (Service, LocalAccount, SecEdit, AuditPol)
-Dim localAccounts, secEditDict, auditPolDict
+' 4. System Helpers for Other Methods (Service, LocalAccount, SecEdit, AuditPol, NetAccounts)
+Dim localAccounts, secEditDict, auditPolDict, netAccountsDict
 Set localAccounts = CreateObject("Scripting.Dictionary")
 Set secEditDict = CreateObject("Scripting.Dictionary")
 Set auditPolDict = CreateObject("Scripting.Dictionary")
+Set netAccountsDict = CreateObject("Scripting.Dictionary")
 
 Sub CacheLocalAccounts()
     Dim wmi, colUsers, usr
@@ -199,9 +225,13 @@ Sub CacheLocalAccounts()
     Set colUsers = wmi.ExecQuery("Select Name, Disabled, SID from Win32_UserAccount Where LocalAccount = True")
     For Each usr In colUsers
         If Right(usr.SID, 4) = "-500" Then
+            localAccounts("500_Status") = usr.Disabled
+            localAccounts("500_Name") = usr.Name
             localAccounts("Administrator_Status") = usr.Disabled
             localAccounts("Administrator_Name") = usr.Name
         ElseIf Right(usr.SID, 4) = "-501" Then
+            localAccounts("501_Status") = usr.Disabled
+            localAccounts("501_Name") = usr.Name
             localAccounts("Guest_Status") = usr.Disabled
             localAccounts("Guest_Name") = usr.Name
         End If
@@ -215,11 +245,20 @@ Sub CacheSecEditPolicy()
     Dim tempInf, tempLog, cmd, exitCode
     tempInf = sh.ExpandEnvironmentStrings("%TEMP%") & "\secedit_vbs_" & fso.GetTempName() & ".inf"
     tempLog = tempInf & ".log"
-    cmd = "secedit.exe /export /cfg """ & tempInf & """ /areas SECURITYPOLICY /log """ & tempLog & """ /quiet"
+    cmd = "secedit.exe /export /cfg """ & tempInf & """ /areas SECURITYPOLICY USER_RIGHTS /log """ & tempLog & """ /quiet"
     On Error Resume Next
     exitCode = sh.Run(cmd, 0, True)
     On Error GoTo 0
     If fso.FileExists(tempLog) Then fso.DeleteFile tempLog, True
+
+    ' Fallback to SECURITYPOLICY if combined areas export was not produced
+    If Not fso.FileExists(tempInf) Then
+        cmd = "secedit.exe /export /cfg """ & tempInf & """ /areas SECURITYPOLICY /log """ & tempLog & """ /quiet"
+        On Error Resume Next
+        exitCode = sh.Run(cmd, 0, True)
+        On Error GoTo 0
+        If fso.FileExists(tempLog) Then fso.DeleteFile tempLog, True
+    End If
 
     If fso.FileExists(tempInf) Then
         Dim stm, line, eqIdx, k, v, curSec
@@ -286,6 +325,107 @@ Sub CacheAuditPol()
     End If
 End Sub
 
+Sub CacheNetAccounts()
+    Dim tempNet, cmd, exitCode
+    tempNet = sh.ExpandEnvironmentStrings("%TEMP%") & "\net_acc_vbs_" & fso.GetTempName() & ".txt"
+    cmd = "cmd.exe /c net accounts > """ & tempNet & """"
+    On Error Resume Next
+    exitCode = sh.Run(cmd, 0, True)
+    On Error GoTo 0
+
+    If fso.FileExists(tempNet) Then
+        Dim tsFile, line, colonIdx, k, v
+        Set tsFile = fso.OpenTextFile(tempNet, 1)
+        Do Until tsFile.AtEndOfStream
+            line = Trim(tsFile.ReadLine)
+            colonIdx = InStr(line, ":")
+            If colonIdx > 1 Then
+                k = LCase(Trim(Left(line, colonIdx - 1)))
+                v = Trim(Mid(line, colonIdx + 1))
+                If InStr(k, "force user logoff") > 0 Then
+                    If LCase(v) = "never" Or v = "0" Then
+                        netAccountsDict("force_logoff") = "Disabled"
+                        netAccountsDict("forcelogoffwhenhourexpire") = "0"
+                    Else
+                        netAccountsDict("force_logoff") = "Enabled"
+                        netAccountsDict("forcelogoffwhenhourexpire") = "1"
+                    End If
+                ElseIf InStr(k, "minimum password age") > 0 Then
+                    netAccountsDict("minimum_password_age") = v
+                    netAccountsDict("minimumpasswordage") = v
+                ElseIf InStr(k, "maximum password age") > 0 Then
+                    netAccountsDict("maximum_password_age") = v
+                    netAccountsDict("maximumpasswordage") = v
+                ElseIf InStr(k, "minimum password length") > 0 Then
+                    netAccountsDict("minimum_password_length") = v
+                    netAccountsDict("minimumpasswordlength") = v
+                ElseIf InStr(k, "length of password history") > 0 Then
+                    If LCase(v) = "none" Then v = "0"
+                    netAccountsDict("enforce_password_history") = v
+                    netAccountsDict("passwordhistorysize") = v
+                ElseIf InStr(k, "lockout threshold") > 0 Then
+                    If LCase(v) = "never" Then v = "0"
+                    netAccountsDict("lockout_threshold") = v
+                    netAccountsDict("lockoutbadcount") = v
+                ElseIf InStr(k, "lockout duration") > 0 Then
+                    netAccountsDict("lockout_duration") = v
+                    netAccountsDict("lockoutduration") = v
+                ElseIf InStr(k, "lockout observation window") > 0 Then
+                    netAccountsDict("lockout_reset") = v
+                    netAccountsDict("resetlockoutcount") = v
+                End If
+            End If
+        Loop
+        tsFile.Close
+        fso.DeleteFile tempNet, True
+    End If
+End Sub
+
+Function TranslateWellKnownSid(sidStr)
+    Dim s
+    s = UCase(Trim(sidStr))
+    Select Case s
+        Case "S-1-5-32-544": TranslateWellKnownSid = "BUILTIN\Administrators"
+        Case "S-1-5-32-545": TranslateWellKnownSid = "BUILTIN\Users"
+        Case "S-1-5-32-546": TranslateWellKnownSid = "BUILTIN\Guests"
+        Case "S-1-5-32-555": TranslateWellKnownSid = "BUILTIN\Remote Desktop Users"
+        Case "S-1-5-19":    TranslateWellKnownSid = "NT AUTHORITY\LOCAL SERVICE"
+        Case "S-1-5-20":    TranslateWellKnownSid = "NT AUTHORITY\NETWORK SERVICE"
+        Case "S-1-5-18":    TranslateWellKnownSid = "NT AUTHORITY\SYSTEM"
+        Case "S-1-5-11":    TranslateWellKnownSid = "NT AUTHORITY\Authenticated Users"
+        Case "S-1-1-0":     TranslateWellKnownSid = "Everyone"
+        Case "S-1-5-6":     TranslateWellKnownSid = "NT AUTHORITY\SERVICE"
+        Case "S-1-5-80-3139157870-2983391045-3678747466-658725712-1809340420": TranslateWellKnownSid = "NT SERVICE\WdiServiceHost"
+        Case Else:          TranslateWellKnownSid = sidStr
+    End Select
+End Function
+
+Function TranslateSidsList(sRaw)
+    Dim parts, p, i, res(), cnt, trName
+    parts = Split(sRaw, ",")
+    cnt = 0
+    ReDim res(UBound(parts))
+    For i = 0 To UBound(parts)
+        p = Trim(parts(i))
+        If Left(p, 1) = "*" Then p = Mid(p, 2)
+        If p <> "" Then
+            trName = TranslateWellKnownSid(p)
+            If trName <> "" Then
+                res(cnt) = trName
+            Else
+                res(cnt) = p
+            End If
+            cnt = cnt + 1
+        End If
+    Next
+    If cnt = 0 Then
+        TranslateSidsList = ""
+    Else
+        ReDim Preserve res(cnt - 1)
+        TranslateSidsList = Join(res, ";")
+    End If
+End Function
+
 Function QueryServiceStartMode(svcName, ByRef isFound)
     isFound = False
     QueryServiceStartMode = ""
@@ -318,7 +458,7 @@ End Function
 
 ' 5. Value Comparator
 Function CompareValue(cVal, rVal, op, isFound)
-    Dim cStr, rStr, cNum, rNum, cIsNum, rIsNum
+    Dim cStr, rStr, cNum, rNum, cIsNum, rIsNum, cleanOp
     cStr = SafeToString(cVal)
     rStr = SafeToString(rVal)
 
@@ -329,13 +469,92 @@ Function CompareValue(cVal, rVal, op, isFound)
         rNum = CDbl(rStr)
     End If
 
-    Select Case LCase(Trim(op))
+    cleanOp = Trim(op)
+    If cleanOp = "" Then cleanOp = "="
+
+    Select Case LCase(cleanOp)
         Case "="
             If cIsNum And rIsNum Then
-                CompareValue = (cNum = rNum)
-            Else
-                CompareValue = (StrComp(cStr, rStr, vbTextCompare) = 0)
+                If cNum = rNum Then
+                    CompareValue = True
+                    Exit Function
+                End If
             End If
+            If StrComp(cStr, rStr, vbTextCompare) = 0 Then
+                CompareValue = True
+                Exit Function
+            End If
+            If cStr = "" Then
+                CompareValue = False
+                Exit Function
+            End If
+
+            ' Regex fallback matching when string equality fails
+            If rStr <> "" Then
+                Dim hasRegex
+                hasRegex = False
+                If InStr(rStr, "[") > 0 Or InStr(rStr, "]") > 0 Or _
+                   InStr(rStr, "(") > 0 Or InStr(rStr, ")") > 0 Or _
+                   InStr(rStr, "*") > 0 Or InStr(rStr, "+") > 0 Or _
+                   InStr(rStr, "?") > 0 Or InStr(rStr, "^") > 0 Or _
+                   InStr(rStr, "$") > 0 Or InStr(rStr, "|") > 0 Or _
+                   InStr(rStr, "{") > 0 Or InStr(rStr, "}") > 0 Or _
+                   InStr(rStr, "\s") > 0 Or InStr(rStr, "\d") > 0 Or _
+                   InStr(rStr, "\w") > 0 Or InStr(rStr, "\b") > 0 Then
+                    hasRegex = True
+                End If
+
+                If hasRegex Then
+                    Dim regEx, isMatch
+                    isMatch = False
+                    On Error Resume Next
+                    Set regEx = CreateObject("VBScript.RegExp")
+                    regEx.IgnoreCase = True
+                    regEx.Global = False
+
+                    ' Try anchored full match first
+                    regEx.Pattern = "^(?:" & rStr & ")$"
+                    isMatch = regEx.Test(cStr)
+
+                    ' If not matched and not numeric, try unanchored match
+                    If (Not isMatch) And (Not cIsNum) Then
+                        regEx.Pattern = rStr
+                        isMatch = regEx.Test(cStr)
+                    End If
+                    On Error GoTo 0
+
+                    If isMatch Then
+                        CompareValue = True
+                        Exit Function
+                    End If
+
+                    ' If not matched and contains ||, convert CIS syntax to regex |
+                    If InStr(rStr, "||") > 0 Then
+                        Dim normR, cNorm, rNorm
+                        normR = Replace(Replace(rStr, """", ""), "||", "|")
+                        regEx.Pattern = "^(?:" & normR & ")$"
+                        isMatch = regEx.Test(cStr)
+                        If (Not isMatch) Then
+                            cNorm = Replace(cStr, "BUILTIN\", "")
+                            rNorm = Replace(normR, "BUILTIN\", "")
+                            regEx.Pattern = "^(?:" & rNorm & ")$"
+                            isMatch = regEx.Test(cNorm)
+                        End If
+                    End If
+                    On Error GoTo 0
+
+                    If isMatch Then
+                        CompareValue = True
+                        Exit Function
+                    End If
+                End If
+
+                If StrComp(Replace(cStr, "BUILTIN\", ""), Replace(rStr, "BUILTIN\", ""), vbTextCompare) = 0 Then
+                    CompareValue = True
+                    Exit Function
+                End If
+            End If
+            CompareValue = False
 
         Case "!="
             If cIsNum And rIsNum Then
@@ -366,6 +585,15 @@ Function CompareValue(cVal, rVal, op, isFound)
                 End If
             End If
 
+        Case "<=!0"
+            If cStr = "" Or cStr = "0" Then
+                CompareValue = False
+            ElseIf cIsNum And rIsNum Then
+                CompareValue = (cNum <= rNum And cNum <> 0)
+            Else
+                CompareValue = (StrComp(cStr, rStr, vbTextCompare) <= 0 And cStr <> "0")
+            End If
+
         Case "contains"
             If rStr = "" Then
                 CompareValue = True
@@ -393,10 +621,19 @@ Function CompareValue(cVal, rVal, op, isFound)
     End Select
 End Function
 
+Function GetFieldValue(arr, idx)
+    If idx >= 0 And idx <= UBound(arr) Then
+        GetFieldValue = Trim(arr(idx))
+    Else
+        GetFieldValue = ""
+    End If
+End Function
+
 ' 6. Pre-fetch Data
 CacheLocalAccounts
 CacheSecEditPolicy
 CacheAuditPol
+CacheNetAccounts
 
 ' 7. Execute Audit
 Dim inFile, outStream
@@ -414,31 +651,60 @@ Set inFile = fso.OpenTextFile(csvPath, 1)
 Set outStream = fso.CreateTextFile(outputFile, True)
 
 ' Read & write header
-line = inFile.ReadLine
+line = StripBom(inFile.ReadLine)
+Dim headerFields, colMap, hIdx, cName
+headerFields = ParseCsvLine(line)
+Set colMap = CreateObject("Scripting.Dictionary")
+For hIdx = 0 To UBound(headerFields)
+    cName = LCase(Trim(StripBom(headerFields(hIdx))))
+    If cName <> "" And Not colMap.Exists(cName) Then
+        colMap.Add cName, hIdx
+    End If
+Next
+
+Dim idxID, idxCategory, idxName, idxMethod, idxMethodArg, idxRegPath, idxRegItem, idxDefVal, idxRecVal, idxOp, idxSev
+idxID = -1: idxCategory = -1: idxName = -1: idxMethod = -1: idxMethodArg = -1
+idxRegPath = -1: idxRegItem = -1: idxDefVal = -1: idxRecVal = -1: idxOp = -1: idxSev = -1
+
+If colMap.Exists("id") Then idxID = colMap("id")
+If colMap.Exists("category") Then idxCategory = colMap("category")
+If colMap.Exists("name") Then idxName = colMap("name")
+If colMap.Exists("method") Then idxMethod = colMap("method")
+If colMap.Exists("methodargument") Then idxMethodArg = colMap("methodargument")
+If colMap.Exists("registrypath") Then idxRegPath = colMap("registrypath")
+If colMap.Exists("registryitem") Then idxRegItem = colMap("registryitem")
+If colMap.Exists("defaultvalue") Then idxDefVal = colMap("defaultvalue")
+If colMap.Exists("recommendedvalue") Then idxRecVal = colMap("recommendedvalue")
+If colMap.Exists("operator") Then idxOp = colMap("operator")
+If colMap.Exists("severity") Then idxSev = colMap("severity")
+
 outStream.WriteLine "ID,Category,Name,Method,MethodArgument,RegistryPath,RegistryItem,DefaultValue,RecommendedValue,Operator,Severity,CurrentValue,Status"
 
 Do Until inFile.AtEndOfStream
     line = Trim(inFile.ReadLine)
     If Len(line) > 0 Then
         fields = ParseCsvLine(line)
-        If UBound(fields) >= 10 Then
+        If UBound(fields) >= 0 Then
             totalCount = totalCount + 1
 
-            id = fields(0)
-            cat = fields(1)
-            name = fields(2)
-            method = Trim(fields(3))
-            methodArg = fields(4)
-            regPath = fields(5)
-            regItem = fields(6)
-            defVal = fields(7)
-            recVal = fields(8)
-            op = fields(9)
-            sev = fields(10)
+            id = GetFieldValue(fields, idxID)
+            cat = GetFieldValue(fields, idxCategory)
+            name = GetFieldValue(fields, idxName)
+            method = GetFieldValue(fields, idxMethod)
+            methodArg = GetFieldValue(fields, idxMethodArg)
+            regPath = GetFieldValue(fields, idxRegPath)
+            regItem = GetFieldValue(fields, idxRegItem)
+            defVal = GetFieldValue(fields, idxDefVal)
+            recVal = GetFieldValue(fields, idxRecVal)
+            op = GetFieldValue(fields, idxOp)
+            If op = "" Then op = "="
+            sev = GetFieldValue(fields, idxSev)
 
             currentVal = ""
             isFound = False
             status = ""
+            Dim isUnknownMethod
+            isUnknownMethod = False
 
             If LCase(method) = "mppreferenceasr" Then
                 status = "Skipped"
@@ -455,7 +721,16 @@ Do Until inFile.AtEndOfStream
                     Case "localaccount"
                         Dim targetAcc
                         targetAcc = Trim(methodArg)
-                        If InStr(1, name, "status", vbTextCompare) > 0 Or LCase(recVal) = "enabled" Or LCase(recVal) = "disabled" Then
+                        If LCase(recVal) = "true" Or LCase(recVal) = "false" Then
+                            If localAccounts.Exists(targetAcc & "_Status") Then
+                                isFound = True
+                                If localAccounts(targetAcc & "_Status") = True Then
+                                    currentVal = "True"
+                                Else
+                                    currentVal = "False"
+                                End If
+                            End If
+                        ElseIf InStr(1, name, "status", vbTextCompare) > 0 Or LCase(recVal) = "enabled" Or LCase(recVal) = "disabled" Then
                             If localAccounts.Exists(targetAcc & "_Status") Then
                                 isFound = True
                                 If localAccounts(targetAcc & "_Status") = True Then
@@ -472,14 +747,81 @@ Do Until inFile.AtEndOfStream
                         End If
 
                     Case "secedit", "accountpolicy"
-                        Dim searchKey
-                        searchKey = LCase(Trim(methodArg))
-                        If secEditDict.Exists(searchKey) Then
+                        Dim rawArg, mapKey
+                        rawArg = LCase(Trim(methodArg))
+                        mapKey = rawArg
+                        Select Case rawArg
+                            Case "enforce_password_history": mapKey = "passwordhistorysize"
+                            Case "maximum_password_age":     mapKey = "maximumpasswordage"
+                            Case "minimum_password_age":     mapKey = "minimumpasswordage"
+                            Case "minimum_password_length":  mapKey = "minimumpasswordlength"
+                            Case "complexity_requirements":  mapKey = "passwordcomplexity"
+                            Case "reversible_encryption":    mapKey = "cleartextpassword"
+                            Case "lockout_duration":         mapKey = "lockoutduration"
+                            Case "lockout_threshold":        mapKey = "lockoutbadcount"
+                            Case "lockout_reset":            mapKey = "resetlockoutcount"
+                            Case "force_logoff":             mapKey = "forcelogoffwhenhourexpire"
+                        End Select
+
+                        If secEditDict.Exists(mapKey) Then
                             isFound = True
-                            currentVal = secEditDict(searchKey)
-                        ElseIf secEditDict.Exists("system access\" & searchKey) Then
+                            currentVal = secEditDict(mapKey)
+                        ElseIf secEditDict.Exists("system access\" & mapKey) Then
                             isFound = True
-                            currentVal = secEditDict("system access\" & searchKey)
+                            currentVal = secEditDict("system access\" & mapKey)
+                        ElseIf secEditDict.Exists(rawArg) Then
+                            isFound = True
+                            currentVal = secEditDict(rawArg)
+                        ElseIf secEditDict.Exists("system access\" & rawArg) Then
+                            isFound = True
+                            currentVal = secEditDict("system access\" & rawArg)
+                        End If
+
+                        If Not isFound Then
+                            If netAccountsDict.Exists(rawArg) Then
+                                isFound = True
+                                currentVal = netAccountsDict(rawArg)
+                            ElseIf netAccountsDict.Exists(mapKey) Then
+                                isFound = True
+                                currentVal = netAccountsDict(mapKey)
+                            End If
+                        End If
+
+                        If isFound Then
+                            If LCase(recVal) = "enabled" Or LCase(recVal) = "disabled" Then
+                                If currentVal = "1" Then
+                                    currentVal = "Enabled"
+                                ElseIf currentVal = "0" Then
+                                    currentVal = "Disabled"
+                                End If
+                            ElseIf recVal = "1" Or recVal = "0" Then
+                                If LCase(currentVal) = "enabled" Then
+                                    currentVal = "1"
+                                ElseIf LCase(currentVal) = "disabled" Then
+                                    currentVal = "0"
+                                End If
+                            End If
+                        End If
+
+                    Case "accesschk"
+                        Dim secKeyVal, privKey
+                        privKey = LCase(Trim(methodArg))
+                        secKeyVal = ""
+                        isFound = False
+                        If secEditDict.Exists("privilege rights\" & privKey) Then
+                            secKeyVal = secEditDict("privilege rights\" & privKey)
+                            isFound = True
+                        ElseIf secEditDict.Exists(privKey) Then
+                            secKeyVal = secEditDict(privKey)
+                            isFound = True
+                        End If
+
+                        If Not isFound Or Trim(secKeyVal) = "" Then
+                            currentVal = ""
+                            isFound = True
+                        Else
+                            currentVal = TranslateSidsList(secKeyVal)
+                            isFound = True
                         End If
 
                     Case "auditpol"
@@ -490,17 +832,47 @@ Do Until inFile.AtEndOfStream
                             currentVal = auditPolDict(searchSub)
                         End If
 
+                    Case "command"
+                        If id = "18.9.25.1" Or InStr(1, name, "EMET", vbTextCompare) > 0 Then
+                            Dim emetFound, emetVer, testVal
+                            emetFound = False
+                            emetVer = ""
+                            testVal = ReadRegistryValue("HKLM\SOFTWARE\Microsoft\EMET", "InstalledVersion", emetFound)
+                            If Not emetFound Then
+                                testVal = ReadRegistryValue("HKLM\SOFTWARE\Wow6432Node\Microsoft\EMET", "InstalledVersion", emetFound)
+                            End If
+                            If emetFound Then
+                                If testVal <> "" Then
+                                    currentVal = testVal
+                                Else
+                                    currentVal = "Installed"
+                                End If
+                                isFound = True
+                            Else
+                                currentVal = "Not Installed"
+                                isFound = True
+                            End If
+                        Else
+                            isUnknownMethod = True
+                        End If
+
                     Case Else
-                        currentVal = ""
+                        isUnknownMethod = True
                 End Select
 
-                isCompliant = CompareValue(currentVal, recVal, op, isFound)
-                If isCompliant Then
-                    status = "Passed"
-                    passedCount = passedCount + 1
+                If isUnknownMethod Then
+                    status = "Skipped"
+                    currentVal = "SKIPPED: Unknown method '" & method & "'"
+                    skippedCount = skippedCount + 1
                 Else
-                    status = "Failed"
-                    failedCount = failedCount + 1
+                    isCompliant = CompareValue(currentVal, recVal, op, isFound)
+                    If isCompliant Then
+                        status = "Passed"
+                        passedCount = passedCount + 1
+                    Else
+                        status = "Failed"
+                        failedCount = failedCount + 1
+                    End If
                 End If
             End If
 

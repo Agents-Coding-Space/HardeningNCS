@@ -15,7 +15,7 @@ function Export-SecEditPolicy {
     .PARAMETER Path
         Optional destination path for the INF file. If omitted, a temporary file is created.
     .PARAMETER Areas
-        The security areas to export. Defaults to 'SECURITYPOLICY'.
+        The security areas to export. Defaults to 'SECURITYPOLICY USER_RIGHTS'.
     .OUTPUTS
         [string] Path of the exported configuration file.
     #>
@@ -25,7 +25,7 @@ function Export-SecEditPolicy {
         [string]$Path,
 
         [Parameter(Mandatory = $false)]
-        [string]$Areas = "SECURITYPOLICY"
+        [string]$Areas = "SECURITYPOLICY USER_RIGHTS"
     )
 
     if ([string]::IsNullOrEmpty($Path)) {
@@ -55,12 +55,35 @@ function Export-SecEditPolicy {
     }
     catch {
         Write-Warning ("Failed to execute secedit.exe: " + $_.Exception.Message)
-        return $null
     }
     finally {
         # Clean up temporary secedit log
         if (Test-Path -Path $logFile) {
             Remove-Item -Path $logFile -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    # Fallback to SECURITYPOLICY if combined areas failed to produce an INF
+    if ((-not (Test-Path -Path $Path)) -and ($Areas -ne "SECURITYPOLICY")) {
+        try {
+            $psi = New-Object System.Diagnostics.ProcessStartInfo
+            $psi.FileName = "secedit.exe"
+            $psi.Arguments = "/export /cfg `"$Path`" /areas SECURITYPOLICY /log `"$logFile`" /quiet"
+            $psi.CreateNoWindow = $true
+            $psi.UseShellExecute = $false
+
+            $proc = [System.Diagnostics.Process]::Start($psi)
+            if ($null -ne $proc) {
+                $proc.WaitForExit()
+            }
+        }
+        catch {
+            Write-Warning ("Failed to execute fallback secedit.exe: " + $_.Exception.Message)
+        }
+        finally {
+            if (Test-Path -Path $logFile) {
+                Remove-Item -Path $logFile -Force -ErrorAction SilentlyContinue
+            }
         }
     }
 
@@ -169,7 +192,7 @@ function Get-SecEditPolicy {
     .PARAMETER Path
         Optional pre-existing INF file path. If omitted, performs a live export.
     .PARAMETER Areas
-        The security areas to export. Defaults to 'SECURITYPOLICY'.
+        The security areas to export. Defaults to 'SECURITYPOLICY USER_RIGHTS'.
     .OUTPUTS
         [System.Collections.Hashtable]
     #>
@@ -179,7 +202,7 @@ function Get-SecEditPolicy {
         [string]$Path,
 
         [Parameter(Mandatory = $false)]
-        [string]$Areas = "SECURITYPOLICY"
+        [string]$Areas = "SECURITYPOLICY USER_RIGHTS"
     )
 
     $isTemp = $false

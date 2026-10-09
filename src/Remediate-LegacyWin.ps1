@@ -150,31 +150,66 @@ $findingMap = @{}
 if (Test-Path -Path $FindingList) {
     $rawFindings = Import-Csv -Path $FindingList
     foreach ($f in $rawFindings) {
-        $findingMap[$f.ID] = $f
+        $fId = ""
+        if ($null -ne $f.ID) { $fId = "$($f.ID)".Trim() }
+        if ([string]::IsNullOrEmpty($fId) -and $null -ne $f."`ufeffID") { $fId = "$($f."`ufeffID")".Trim() }
+        if (-not [string]::IsNullOrEmpty($fId)) {
+            $findingMap[$fId] = $f
+        }
     }
 }
 
+$supportedMethods = @("Registry", "service", "accountpolicy", "auditpol", "secedit")
 $remediateItems = New-Object System.Collections.ArrayList
+$skippedRemediateItems = New-Object System.Collections.ArrayList
+
 foreach ($failed in $failedAuditRows) {
+    $failedId = ""
+    if ($null -ne $failed.ID) { $failedId = "$($failed.ID)".Trim() }
+    if ([string]::IsNullOrEmpty($failedId) -and $null -ne $failed."`ufeffID") { $failedId = "$($failed."`ufeffID")".Trim() }
+
     $fullItem = $failed
-    if ($findingMap.ContainsKey($failed.ID)) {
-        $base = $findingMap[$failed.ID]
+    if ($findingMap.ContainsKey($failedId)) {
+        $base = $findingMap[$failedId]
         $fullItem = New-Object PSObject
-        $fullItem | Add-Member -MemberType NoteProperty -Name "ID" -Value $base.ID
-        $fullItem | Add-Member -MemberType NoteProperty -Name "Category" -Value $base.Category
-        $fullItem | Add-Member -MemberType NoteProperty -Name "Name" -Value $base.Name
-        $fullItem | Add-Member -MemberType NoteProperty -Name "Method" -Value $base.Method
-        $fullItem | Add-Member -MemberType NoteProperty -Name "MethodArgument" -Value $base.MethodArgument
-        $fullItem | Add-Member -MemberType NoteProperty -Name "RegistryPath" -Value $base.RegistryPath
-        $fullItem | Add-Member -MemberType NoteProperty -Name "RegistryItem" -Value $base.RegistryItem
-        $fullItem | Add-Member -MemberType NoteProperty -Name "DefaultValue" -Value $base.DefaultValue
-        $fullItem | Add-Member -MemberType NoteProperty -Name "RecommendedValue" -Value $base.RecommendedValue
-        $fullItem | Add-Member -MemberType NoteProperty -Name "Operator" -Value $base.Operator
-        $fullItem | Add-Member -MemberType NoteProperty -Name "Severity" -Value $base.Severity
-        $fullItem | Add-Member -MemberType NoteProperty -Name "CurrentValue" -Value $failed.CurrentValue
-        $fullItem | Add-Member -MemberType NoteProperty -Name "Status" -Value $failed.Status
+        $fullItem | Add-Member -MemberType NoteProperty -Name "ID" -Value $failedId
+        $fullItem | Add-Member -MemberType NoteProperty -Name "Category" -Value $(if ($null -ne $base.Category) { "$($base.Category)".Trim() } else { "" })
+        $fullItem | Add-Member -MemberType NoteProperty -Name "Name" -Value $(if ($null -ne $base.Name) { "$($base.Name)".Trim() } else { "" })
+        $fullItem | Add-Member -MemberType NoteProperty -Name "Method" -Value $(if ($null -ne $base.Method) { "$($base.Method)".Trim() } else { "" })
+        $fullItem | Add-Member -MemberType NoteProperty -Name "MethodArgument" -Value $(if ($null -ne $base.MethodArgument) { "$($base.MethodArgument)".Trim() } else { "" })
+        $fullItem | Add-Member -MemberType NoteProperty -Name "RegistryPath" -Value $(if ($null -ne $base.RegistryPath) { "$($base.RegistryPath)".Trim() } else { "" })
+        $fullItem | Add-Member -MemberType NoteProperty -Name "RegistryItem" -Value $(if ($null -ne $base.RegistryItem) { "$($base.RegistryItem)".Trim() } else { "" })
+        $fullItem | Add-Member -MemberType NoteProperty -Name "DefaultValue" -Value $(if ($null -ne $base.DefaultValue) { "$($base.DefaultValue)".Trim() } else { "" })
+        $fullItem | Add-Member -MemberType NoteProperty -Name "RecommendedValue" -Value $(if ($null -ne $base.RecommendedValue) { "$($base.RecommendedValue)".Trim() } else { "" })
+        $fullItem | Add-Member -MemberType NoteProperty -Name "Operator" -Value $(if ($null -ne $base.Operator) { "$($base.Operator)".Trim() } else { "=" })
+        $fullItem | Add-Member -MemberType NoteProperty -Name "Severity" -Value $(if ($null -ne $base.Severity) { "$($base.Severity)".Trim() } else { "" })
+        $fullItem | Add-Member -MemberType NoteProperty -Name "CurrentValue" -Value $(if ($null -ne $failed.CurrentValue) { "$($failed.CurrentValue)".Trim() } else { "" })
+        $fullItem | Add-Member -MemberType NoteProperty -Name "Status" -Value $(if ($null -ne $failed.Status) { "$($failed.Status)".Trim() } else { "Failed" })
     }
-    [void]$remediateItems.Add($fullItem)
+
+    $itemMethod = "$($fullItem.Method)".Trim()
+    $isMethodSupported = $false
+    foreach ($sm in $supportedMethods) {
+        if ($itemMethod -ieq $sm) {
+            $isMethodSupported = $true
+            break
+        }
+    }
+
+    if ($isMethodSupported) {
+        [void]$remediateItems.Add($fullItem)
+    } else {
+        Write-Warning ("Skipping remediation for unsupported method '" + $itemMethod + "' (ID " + $failedId + "): No safe automated rollback mechanism.")
+        [void]$skippedRemediateItems.Add($fullItem)
+    }
+}
+
+if ($remediateItems.Count -eq 0) {
+    Write-Host "No failed findings with supported remediation methods found." -ForegroundColor Yellow
+    if ($skippedRemediateItems.Count -gt 0) {
+        Write-Host ("Skipped " + $skippedRemediateItems.Count + " item(s) due to unsupported methods without safe rollback.") -ForegroundColor Yellow
+    }
+    return
 }
 
 # 3. WHAT-IF PREVIEW MODE
@@ -205,6 +240,13 @@ if ($WhatIf) {
             $desc += " | Target: $($item.RecommendedValue)"
         }
         Write-Host $desc
+    }
+    if ($skippedRemediateItems.Count -gt 0) {
+        Write-Host ""
+        Write-Host "Items skipped due to unsupported methods without safe rollback:" -ForegroundColor Yellow
+        foreach ($sItem in $skippedRemediateItems) {
+            Write-Host ("  [$($sItem.ID)] $($sItem.Name) | Method: $($sItem.Method) (Skipped)")
+        }
     }
     Write-Host "==========================================================" -ForegroundColor Cyan
     return
@@ -712,6 +754,19 @@ foreach ($item in $remediateItems) {
 }
 
 if ($secItems.Count -gt 0) {
+    $accountPolicyRemediateMap = @{
+        "ENFORCE_PASSWORD_HISTORY" = "PasswordHistorySize"
+        "MAXIMUM_PASSWORD_AGE"     = "MaximumPasswordAge"
+        "MINIMUM_PASSWORD_AGE"     = "MinimumPasswordAge"
+        "MINIMUM_PASSWORD_LENGTH"  = "MinimumPasswordLength"
+        "COMPLEXITY_REQUIREMENTS"  = "PasswordComplexity"
+        "REVERSIBLE_ENCRYPTION"    = "ClearTextPassword"
+        "LOCKOUT_DURATION"         = "LockoutDuration"
+        "LOCKOUT_THRESHOLD"        = "LockoutBadCount"
+        "LOCKOUT_RESET"            = "ResetLockoutCount"
+        "FORCE_LOGOFF"             = "ForceLogoffWhenHourExpire"
+    }
+
     $infLines = New-Object System.Collections.ArrayList
     [void]$infLines.Add("[Unicode]")
     [void]$infLines.Add("Unicode=yes")
@@ -725,7 +780,16 @@ if ($secItems.Count -gt 0) {
         if ($kName.StartsWith("System Access\", [System.StringComparison]::OrdinalIgnoreCase)) {
             $kName = $kName.Substring(14)
         }
-        [void]$infLines.Add($kName + " = " + $sItem.RecommendedValue)
+        if ($accountPolicyRemediateMap.ContainsKey($kName)) {
+            $kName = $accountPolicyRemediateMap[$kName]
+        }
+        $valToApply = $sItem.RecommendedValue
+        if ($valToApply -ieq "Enabled") {
+            $valToApply = "1"
+        } elseif ($valToApply -ieq "Disabled") {
+            $valToApply = "0"
+        }
+        [void]$infLines.Add($kName + " = " + $valToApply)
     }
 
     $tempInf = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), "remediate_" + $ts + ".inf")
@@ -847,6 +911,9 @@ Write-Host "================ REMEDIATION SUMMARY ================" -ForegroundCo
 Write-Host ("Total Attempted : " + ($successCount + $failCount))
 Write-Host ("Successful      : " + $successCount) -ForegroundColor Green
 Write-Host ("Failed          : " + $failCount) -ForegroundColor $(if ($failCount -gt 0) { "Red" } else { "Green" })
+if ($skippedRemediateItems.Count -gt 0) {
+    Write-Host ("Skipped         : " + $skippedRemediateItems.Count + " (unsupported methods without safe rollback)") -ForegroundColor Yellow
+}
 Write-Host ("Manifest File   : " + $manifestPath) -ForegroundColor Cyan
 Write-Host "=====================================================" -ForegroundColor Cyan
 

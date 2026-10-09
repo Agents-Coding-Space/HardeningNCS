@@ -11,14 +11,14 @@ function Compare-HKValue {
         Compares a current value against a recommended baseline value.
     .DESCRIPTION
         Evaluates whether $Current satisfies $Recommended based on $Operator.
-        Supported operators: '=', '!=', '>=', '<=', 'contains', '=|0'.
+        Supported operators: '=', '!=', '>=', '<=', '<=!0', 'contains', '=|0'.
         Compatible with PowerShell 2.0 on legacy Windows platforms.
     .PARAMETER Current
         The actual value currently configured on the target system.
     .PARAMETER Recommended
         The recommended CIS Benchmark target value.
     .PARAMETER Operator
-        Comparison operator: '=', '!=', '>=', '<=', 'contains', '=|0'.
+        Comparison operator: '=', '!=', '>=', '<=', '<=!0', 'contains', '=|0'. Default is '='.
     .OUTPUTS
         [bool] Returns $true if compliant, $false otherwise.
     #>
@@ -30,12 +30,15 @@ function Compare-HKValue {
         [Parameter(Mandatory = $false)]
         [object]$Recommended,
 
-        [Parameter(Mandatory = $true)]
-        [string]$Operator
+        [Parameter(Mandatory = $false)]
+        [string]$Operator = "="
     )
 
-    # Normalize operator string
+    # Normalize operator string (default to '=' if null or empty)
     $op = if ($Operator) { $Operator.Trim().ToLower() } else { "=" }
+    if ([string]::IsNullOrEmpty($op)) {
+        $op = "="
+    }
 
     # Normalize nulls to empty string
     $cStr = if ($null -eq $Current) { "" } else { "$Current".Trim() }
@@ -61,7 +64,44 @@ function Compare-HKValue {
             if ($cIsNum -and $rIsNum) {
                 return ($cVal -eq $rVal)
             }
-            return ($cStr -ieq $rStr)
+            if ($cStr -ieq $rStr) {
+                return $true
+            }
+            if ([string]::IsNullOrEmpty($cStr)) {
+                return $false
+            }
+            # Regex fallback matching when string equality fails
+            if (-not [string]::IsNullOrEmpty($rStr)) {
+                $hasRegex = ($rStr.IndexOfAny(@('[', ']', '(', ')', '*', '+', '?', '^', '$', '|', '{', '}')) -ge 0) -or ($rStr -match '\\[sdwbSDWB]')
+                if ($hasRegex) {
+                    try {
+                        if ($cStr -match ("^(?:" + $rStr + ")$")) {
+                            return $true
+                        }
+                        if (-not $cIsNum -and ($cStr -match $rStr)) {
+                            return $true
+                        }
+                        if ($rStr.IndexOf("||") -ge 0) {
+                            $normRegex = $rStr.Replace('"', '').Replace("||", "|")
+                            if ($cStr -match ("^(?:" + $normRegex + ")$")) {
+                                return $true
+                            }
+                            $cNorm = $cStr.Replace("BUILTIN\", "")
+                            $rNorm = $normRegex.Replace("BUILTIN\", "")
+                            if ($cNorm -match ("^(?:" + $rNorm + ")$")) {
+                                return $true
+                            }
+                        }
+                    } catch {
+                        # Pattern may not be valid regex, treat as non-match
+                    }
+                }
+                # Also handle optional BUILTIN\ domain prefix difference
+                if ($cStr.Replace("BUILTIN\", "") -ieq $rStr.Replace("BUILTIN\", "")) {
+                    return $true
+                }
+            }
+            return $false
         }
 
         "!=" {
@@ -85,6 +125,15 @@ function Compare-HKValue {
                 return ([string]::Compare($cStr, $rStr, [System.StringComparison]::OrdinalIgnoreCase) -le 0)
             }
             return ($cVal -le $rVal)
+        }
+
+        "<=!0" {
+            # Compliant if <= recommended value AND not equal to 0 (or '0')
+            if (-not $cIsNum -or -not $rIsNum) {
+                if ([string]::IsNullOrEmpty($cStr) -or $cStr -eq "0") { return $false }
+                return ([string]::Compare($cStr, $rStr, [System.StringComparison]::OrdinalIgnoreCase) -le 0 -and $cStr -ne "0")
+            }
+            return ($cVal -le $rVal -and $cVal -ne 0)
         }
 
         "contains" {

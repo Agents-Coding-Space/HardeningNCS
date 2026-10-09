@@ -25,7 +25,7 @@ $expectedHeaders = @(
 )
 
 $allowedMethods = @("Registry", "secedit", "accountpolicy", "auditpol", "localaccount", "service")
-$allowedOperators = @("=", "!=", ">=", "<=", "contains", "=|0")
+$allowedOperators = @("=", "!=", ">=", "<=", "<=!0", "contains", "=|0")
 $allowedSeverities = @("High", "Medium", "Low")
 $requiredCategories = @("Account Policies", "Security Options", "Audit Policy", "System Services", "Administrative Templates")
 
@@ -172,6 +172,55 @@ foreach ($fileName in $csvFiles) {
         Write-Host "  [PASS] All $($ruleCount) rules passed integrity checks without error." -ForegroundColor Green
     } else {
         $totalErrors += $rowErrors
+    }
+}
+
+# 4. Original 21-Column CIS Benchmark Schema Contract Validation
+$cis21File = "CIS_MS_Windows_Server_2008_R2_MS_Level_1_v3.3.1.csv"
+$cis21Path = Join-Path $listsDir $cis21File
+Write-Host "`nValidating 21-Column Original Contract: $cis21File" -ForegroundColor Yellow
+
+if (-not (Test-Path $cis21Path)) {
+    Write-Host "  [FAIL] File does not exist: $cis21Path" -ForegroundColor Red
+    $totalErrors++
+} else {
+    $expected21Headers = @(
+        "ID", "Category", "Name", "Method", "MethodArgument", "RegistryPath", "RegistryItem",
+        "RegistryPathIntune", "RegistryPathDCP", "RegistryItemIntune", "ClassName", "Namespace",
+        "Property", "DefaultValue", "DefaultValueIntune", "RecommendedValue", "RecommendedValueIntune",
+        "Operator", "OperatorIntune", "Severity", "Filter"
+    )
+    $cisLines = [System.IO.File]::ReadAllLines($cis21Path)
+    if ($cisLines.Length -lt 2) {
+        Write-Host "  [FAIL] File is empty or lacks data rows." -ForegroundColor Red
+        $totalErrors++
+    } else {
+        $hLine = $cisLines[0].Trim()
+        $hCols = $hLine.Split(",")
+        if ($hCols.Length -ne 21) {
+            Write-Host "  [FAIL] 21-Column schema mismatch: found $($hCols.Length) columns, expected 21." -ForegroundColor Red
+            $totalErrors++
+        } else {
+            $mismatch21 = $false
+            for ($j = 0; $j -lt 21; $j++) {
+                if ($hCols[$j].Trim() -ne $expected21Headers[$j]) {
+                    Write-Host "  [FAIL] Col $j is '$($hCols[$j])', expected '$($expected21Headers[$j])'." -ForegroundColor Red
+                    $mismatch21 = $true
+                    $totalErrors++
+                }
+            }
+            if (-not $mismatch21) {
+                Write-Host "  [PASS] Header columns match exact 21-column CIS/HardeningKitty schema." -ForegroundColor Green
+            }
+        }
+
+        $cisRuleCount = $cisLines.Length - 1
+        if ($cisRuleCount -ne 324) {
+            Write-Host "  [FAIL] Rule count is $cisRuleCount, expected exactly 324 original rules." -ForegroundColor Red
+            $totalErrors++
+        } else {
+            Write-Host "  [PASS] Rule count is 324 (100% original baseline preserved)." -ForegroundColor Green
+        }
     }
 }
 

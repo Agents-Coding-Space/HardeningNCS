@@ -346,6 +346,50 @@ CIS-TEST-1,Administrative Templates,Test Reg Setting,Registry,TestItem,HKCU\Soft
     # Verify that failed backup leaves 0 leftover lockfiles
     $failLocks = @(Get-ChildItem -Path $failDir -Filter "*.lock")
     Assert-Equal "Backup failure cleanly removed its lockfile" ($failLocks.Length) 0
+
+    # 11. Test Remediation Method Guardrails & 21-Column Report Integration
+    Write-Host "`n=== TEST SUITE: Remediation Method Guardrails ===" -ForegroundColor Cyan
+    $guardrailTestDir = Join-Path $tempDir "guardrail_test"
+    [void](New-Item -ItemType Directory -Path $guardrailTestDir -Force)
+
+    $mixedAuditReport = Join-Path $guardrailTestDir "mixed_audit_report.csv"
+    $mixedAuditContent = @"
+ID,Category,Name,Method,MethodArgument,RegistryPath,RegistryItem,DefaultValue,RecommendedValue,Operator,Severity,CurrentValue,Status
+CIS-TEST-REG,Administrative Templates,Test Reg Setting,Registry,TestItem,HKCU\Software\TestHardenCIS,TestItem,0,1,=,High,0,Failed
+CIS-TEST-SVC,System Services,Test Service,service,SSDPSRV,,,Manual,Disabled,=,Medium,Manual,Failed
+CIS-TEST-POL,Account Policies,Max Password Age,accountpolicy,MAXIMUM_PASSWORD_AGE,,,42,365,<=!0,Medium,42,Failed
+CIS-TEST-ACC,Privilege Rights,Backup Priv,accesschk,SeBackupPrivilege,,,BUILTIN\Administrators,BUILTIN\Administrators,=,Medium,,Failed
+CIS-TEST-CMD,Software,EMET Installed,command,,,,,EMET 5\.52,=,Medium,Not Installed,Failed
+CIS-TEST-USR,Security Options,Guest Status,localaccount,501,,,False,False,=,Medium,True,Failed
+"@
+    [System.IO.File]::WriteAllLines($mixedAuditReport, @($mixedAuditContent))
+
+    $guardrailWhatIfOutput = powershell.exe -ExecutionPolicy Bypass -File "$remediatePath" -AuditReport "$mixedAuditReport" -BackupDir "$guardrailTestDir" -WhatIf
+    $guardrailText = [string]::Join("`n", @($guardrailWhatIfOutput))
+
+    Assert-True "WhatIf includes supported Registry item" ($guardrailText.IndexOf("CIS-TEST-REG") -ge 0)
+    Assert-True "WhatIf includes supported service item" ($guardrailText.IndexOf("CIS-TEST-SVC") -ge 0)
+    Assert-True "WhatIf includes supported accountpolicy item" ($guardrailText.IndexOf("CIS-TEST-POL") -ge 0)
+    Assert-True "WhatIf warns about unsupported accesschk method" ($guardrailText.IndexOf("accesschk") -ge 0 -and $guardrailText.IndexOf("No safe automated rollback") -ge 0)
+    Assert-True "WhatIf warns about unsupported command method" ($guardrailText.IndexOf("command") -ge 0 -and $guardrailText.IndexOf("No safe automated rollback") -ge 0)
+    Assert-True "WhatIf lists skipped accesschk under unsupported items" ($guardrailText.IndexOf("CIS-TEST-ACC") -ge 0 -and $guardrailText.IndexOf("(Skipped)") -ge 0)
+    Assert-True "WhatIf lists skipped command under unsupported items" ($guardrailText.IndexOf("CIS-TEST-CMD") -ge 0 -and $guardrailText.IndexOf("(Skipped)") -ge 0)
+
+    # Test all-unsupported scenario: remediation should exit cleanly without attempting changes
+    $unsupportedAuditReport = Join-Path $guardrailTestDir "unsupported_only_audit.csv"
+    $unsupportedContent = @"
+ID,Category,Name,Method,MethodArgument,RegistryPath,RegistryItem,DefaultValue,RecommendedValue,Operator,Severity,CurrentValue,Status
+CIS-TEST-ACC,Privilege Rights,Backup Priv,accesschk,SeBackupPrivilege,,,BUILTIN\Administrators,BUILTIN\Administrators,=,Medium,,Failed
+CIS-TEST-CMD,Software,EMET Installed,command,,,,,EMET 5\.52,=,Medium,Not Installed,Failed
+"@
+    [System.IO.File]::WriteAllLines($unsupportedAuditReport, @($unsupportedContent))
+
+    $allUnsupportedOutput = powershell.exe -ExecutionPolicy Bypass -File "$remediatePath" -AuditReport "$unsupportedAuditReport" -BackupDir "$guardrailTestDir"
+    $allUnsupportedText = [string]::Join("`n", @($allUnsupportedOutput))
+
+    Assert-True "All-unsupported exits cleanly with notification" ($allUnsupportedText.IndexOf("No failed findings with supported remediation methods found") -ge 0)
+    $leftoverSessions = @(Get-ChildItem -Path $guardrailTestDir -Filter "backup_session_*")
+    Assert-Equal "No session directories created when all methods are unsupported" ($leftoverSessions.Length) 0
 }
 finally {
     if (Test-Path $tempDir) {

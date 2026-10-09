@@ -111,6 +111,38 @@ try {
         $rawRules3 = Import-Csv -Path $findingList2012
         Assert-Equal "Server 2012 R2 row count matches finding list" ($rows3.Count) ($rawRules3.Count)
     }
+
+    # 4. Test running against original 21-column CIS Benchmark file
+    $findingList21Col = Join-Path $rootDir "lists\CIS_MS_Windows_Server_2008_R2_MS_Level_1_v3.3.1.csv"
+    $s21ColOut = Join-Path $tempDir "s2008_21col_vbs_report.csv"
+    $psi4 = New-Object System.Diagnostics.ProcessStartInfo
+    $psi4.FileName = "cscript.exe"
+    $psi4.Arguments = "//nologo `"$vbsPath`" `"$findingList21Col`" `"$s21ColOut`""
+    $psi4.CreateNoWindow = $true
+    $psi4.UseShellExecute = $false
+    $proc4 = [System.Diagnostics.Process]::Start($psi4)
+    $proc4.WaitForExit()
+
+    Assert-Equal "VBScript exit code for 21-column CIS file" ($proc4.ExitCode) 0
+    Assert-True "21-column VBScript report generated" (Test-Path $s21ColOut)
+
+    if (Test-Path $s21ColOut) {
+        $rows4 = Import-Csv -Path $s21ColOut
+        $rawRules4 = Import-Csv -Path $findingList21Col
+        Assert-Equal "21-column row count matches finding list (324)" ($rows4.Count) ($rawRules4.Count)
+
+        # Verify dynamic header mapping extracted expected fields correctly
+        $rule112 = $null
+        foreach ($r in $rows4) {
+            if ($r.ID -eq "1.1.2") { $rule112 = $r; break }
+        }
+        Assert-True "Found ID 1.1.2 in report" ($null -ne $rule112)
+        if ($null -ne $rule112) {
+            Assert-Equal "ID 1.1.2 Operator is <=!0" ($rule112.Operator) "<=!0"
+            Assert-Equal "ID 1.1.2 RecommendedValue is 365" ($rule112.RecommendedValue) "365"
+            Assert-Equal "ID 1.1.2 Method is accountpolicy" ($rule112.Method) "accountpolicy"
+        }
+    }
 }
 finally {
     if (Test-Path $tempDir) {

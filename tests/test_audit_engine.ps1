@@ -120,6 +120,127 @@ finally {
     if (Test-Path $dummyOutput) { Remove-Item $dummyOutput -Force -ErrorAction SilentlyContinue }
 }
 
+# 3. Test Method Adapters (accesschk, accountpolicy, localaccount, command, unknown)
+Write-Host "`n=== TEST SUITE: Method Adapters & Unknown Method Safety ===" -ForegroundColor Cyan
+$adapterFindingList = [System.IO.Path]::GetTempFileName() + ".csv"
+$adapterCsvContent = @"
+ID,Category,Name,Method,MethodArgument,RegistryPath,RegistryItem,DefaultValue,RecommendedValue,Operator,Severity
+TEST-ACC-1,Privilege Rights,Credential Manager,accesschk,SeTrustedCredManAccessPrivilege,,,,,,Low
+TEST-ACC-2,Privilege Rights,NonExistentPriv,accesschk,SeNonExistentPrivilege,,,BUILTIN\Administrators,BUILTIN\Administrators,=,Medium
+TEST-POL-1,Account Policies,Max Password Age,accountpolicy,MAXIMUM_PASSWORD_AGE,,,42,365,<=!0,Medium
+TEST-POL-2,Account Policies,Enforce History,accountpolicy,ENFORCE_PASSWORD_HISTORY,,,0,24,>=,Medium
+TEST-USR-1,Security Options,Admin Rename Check,localaccount,500,,,Administrator,Administrator,!=,Medium
+TEST-USR-2,Security Options,Guest Status Check,localaccount,501,,,False,False,=,Medium
+TEST-CMD-1,Software,EMET Installed Check,command,,,,,EMET 5\.52,=,Medium
+TEST-UNK-1,Unknown Area,Unknown Custom Method,unknownmethod,Arg1,,,0,,=,High
+"@
+[System.IO.File]::WriteAllText($adapterFindingList, $adapterCsvContent)
+$adapterOutput = [System.IO.Path]::GetTempFileName() + ".csv"
+
+try {
+    & $auditEnginePath -FindingList $adapterFindingList -OutputDir $adapterOutput
+    Assert-True "Adapter audit report produced" (Test-Path $adapterOutput)
+
+    if (Test-Path $adapterOutput) {
+        $adapterRows = Import-Csv -Path $adapterOutput
+        Assert-Equal "Adapter test finding count" $adapterRows.Count 8
+
+        # TEST-ACC-1: empty current vs empty recommended -> Passed
+        $rAcc1 = $adapterRows | Where-Object { $_.ID -eq "TEST-ACC-1" }
+        Assert-Equal "TEST-ACC-1 status is Passed" $rAcc1.Status "Passed"
+
+        # TEST-ACC-2: non-existent privilege -> current is "" vs recommended BUILTIN\Administrators -> Failed
+        $rAcc2 = $adapterRows | Where-Object { $_.ID -eq "TEST-ACC-2" }
+        Assert-Equal "TEST-ACC-2 status is Failed" $rAcc2.Status "Failed"
+
+        # TEST-POL-1: MAXIMUM_PASSWORD_AGE via net accounts fallback -> 42 <=!0 365 -> Passed
+        $rPol1 = $adapterRows | Where-Object { $_.ID -eq "TEST-POL-1" }
+        Assert-Equal "TEST-POL-1 status is Passed" $rPol1.Status "Passed"
+
+        # TEST-USR-1: Administrator name is 'Administrator' -> 'Administrator' != 'Administrator' is False -> Failed
+        $rUsr1 = $adapterRows | Where-Object { $_.ID -eq "TEST-USR-1" }
+        Assert-Equal "TEST-USR-1 status is Failed" $rUsr1.Status "Failed"
+
+        # TEST-CMD-1: EMET is not installed -> Not Installed -> Failed
+        $rCmd1 = $adapterRows | Where-Object { $_.ID -eq "TEST-CMD-1" }
+        Assert-Equal "TEST-CMD-1 status is Failed" $rCmd1.Status "Failed"
+        Assert-Equal "TEST-CMD-1 CurrentValue is Not Installed" $rCmd1.CurrentValue "Not Installed"
+
+        # TEST-UNK-1: Unknown method MUST be Skipped, NEVER Passed!
+        $rUnk1 = $adapterRows | Where-Object { $_.ID -eq "TEST-UNK-1" }
+        Assert-Equal "TEST-UNK-1 status is Skipped" $rUnk1.Status "Skipped"
+    }
+}
+finally {
+    if (Test-Path $adapterFindingList) { Remove-Item $adapterFindingList -Force -ErrorAction SilentlyContinue }
+    if (Test-Path $adapterOutput) { Remove-Item $adapterOutput -Force -ErrorAction SilentlyContinue }
+}
+
+# 4. Test running against original 21-column CIS Benchmark file
+Write-Host "`n=== TEST SUITE: 21-Column CIS Benchmark Processing & Dual Engine Parity ===" -ForegroundColor Cyan
+$findingList21Col = Join-Path $rootDir "lists\CIS_MS_Windows_Server_2008_R2_MS_Level_1_v3.3.1.csv"
+$tempReport21ColPS = Join-Path $tempOutputDir ("test_audit_report_21col_ps_" + [System.Guid]::NewGuid().ToString("N") + ".csv")
+$tempReport21ColVBS = Join-Path $tempOutputDir ("test_audit_report_21col_vbs_" + [System.Guid]::NewGuid().ToString("N") + ".csv")
+$vbsEnginePath = Join-Path $rootDir "src\Audit-LegacyWin.vbs"
+
+try {
+    # Full run with PS2 Engine (without SkipMethods)
+    & $auditEnginePath -FindingList $findingList21Col -OutputDir $tempReport21ColPS
+    Assert-True "21-column PS2 audit report CSV created" (Test-Path $tempReport21ColPS)
+
+    # Full run with VBScript Engine
+    $psiVbs = New-Object System.Diagnostics.ProcessStartInfo
+    $psiVbs.FileName = "cscript.exe"
+    $psiVbs.Arguments = "//nologo `"$vbsEnginePath`" `"$findingList21Col`" `"$tempReport21ColVBS`""
+    $psiVbs.CreateNoWindow = $true
+    $psiVbs.UseShellExecute = $false
+    $procVbs = [System.Diagnostics.Process]::Start($psiVbs)
+    if ($null -ne $procVbs) { $procVbs.WaitForExit() }
+    Assert-True "21-column VBScript audit report CSV created" (Test-Path $tempReport21ColVBS)
+
+    if ((Test-Path $tempReport21ColPS) -and (Test-Path $tempReport21ColVBS)) {
+        $rowsPS = @(Import-Csv -Path $tempReport21ColPS)
+        $rowsVBS = @(Import-Csv -Path $tempReport21ColVBS)
+
+        Assert-Equal "PS2 report row count is exactly 324" ($rowsPS.Length) 324
+        Assert-Equal "VBScript report row count is exactly 324" ($rowsVBS.Length) 324
+
+        # Verify no unknown status values
+        $validStatuses = $true
+        foreach ($r in $rowsPS) {
+            if ($r.Status -ne "Passed" -and $r.Status -ne "Failed" -and $r.Status -ne "Skipped") {
+                $validStatuses = $false
+            }
+        }
+        Assert-True "PS2 status values are all Passed/Failed/Skipped" $validStatuses
+
+        # Dual-engine parity verification across all 324 rules
+        $discrepancies = 0
+        for ($i = 0; $i -lt $rowsPS.Length; $i++) {
+            if ($rowsPS[$i].Status -ne $rowsVBS[$i].Status) {
+                $discrepancies++
+            }
+        }
+        Assert-Equal "Dual-engine status discrepancies across all 324 rules" $discrepancies 0
+
+        # Verify ID 1.1.2 safe property extraction
+        $rule112 = $null
+        foreach ($r in $rowsPS) {
+            if ($r.ID -eq "1.1.2") { $rule112 = $r; break }
+        }
+        Assert-True "Found ID 1.1.2 in report" ($null -ne $rule112)
+        if ($null -ne $rule112) {
+            Assert-Equal "ID 1.1.2 Operator is <=!0" ($rule112.Operator) "<=!0"
+            Assert-Equal "ID 1.1.2 RecommendedValue is 365" ($rule112.RecommendedValue) "365"
+            Assert-Equal "ID 1.1.2 DefaultValue is 42" ($rule112.DefaultValue) "42"
+        }
+    }
+}
+finally {
+    if (Test-Path $tempReport21ColPS) { Remove-Item $tempReport21ColPS -Force -ErrorAction SilentlyContinue }
+    if (Test-Path $tempReport21ColVBS) { Remove-Item $tempReport21ColVBS -Force -ErrorAction SilentlyContinue }
+}
+
 Write-Host "`n=== SUMMARY ===" -ForegroundColor Cyan
 Write-Host "Total Passed: $passCount" -ForegroundColor Green
 Write-Host "Total Failed: $failCount" -ForegroundColor $(if ($failCount -gt 0) { "Red" } else { "Green" })

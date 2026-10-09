@@ -39,6 +39,19 @@ Assert-Equal "Op = (case insensitive)" (Compare-HKValue -Current "disabled" -Rec
 Assert-Equal "Op = (empty strings)" (Compare-HKValue -Current "" -Recommended "" -Operator "=") $true
 Assert-Equal "Op = (null and empty)" (Compare-HKValue -Current $null -Recommended "" -Operator "=") $true
 
+# Operator: Default / empty fallback
+Assert-Equal "Op default (omitted operator param)" (Compare-HKValue -Current "Enabled" -Recommended "Enabled") $true
+Assert-Equal "Op default (null operator param)" (Compare-HKValue -Current "Enabled" -Recommended "Enabled" -Operator $null) $true
+Assert-Equal "Op default (empty operator param)" (Compare-HKValue -Current "Enabled" -Recommended "Enabled" -Operator "") $true
+Assert-Equal "Op default (mismatched value)" (Compare-HKValue -Current "Disabled" -Recommended "Enabled" -Operator "") $false
+
+# Operator: = with Regex matching
+Assert-Equal "Op = regex (Win2008 R2 pattern match)" (Compare-HKValue -Current "Windows Server 2008 R2 Standard" -Recommended "[a-zA-Z0-9\(\)\s]*2008\s[rR]2[-a-zA-Z0-9\(\)\s]*" -Operator "=") $true
+Assert-Equal "Op = regex (Win10 against Win2008 R2 pattern)" (Compare-HKValue -Current "Windows 10 Pro" -Recommended "[a-zA-Z0-9\(\)\s]*2008\s[rR]2[-a-zA-Z0-9\(\)\s]*" -Operator "=") $false
+Assert-Equal "Op = regex (screen saver timeout 900)" (Compare-HKValue -Current "900" -Recommended "([1-9]|[1-9][0-9]|[1-8][0-9]{2}|900)" -Operator "=") $true
+Assert-Equal "Op = regex (screen saver timeout 901 fail)" (Compare-HKValue -Current "901" -Recommended "([1-9]|[1-9][0-9]|[1-8][0-9]{2}|900)" -Operator "=") $false
+Assert-Equal "Op = regex (HardenedPaths mutual auth)" (Compare-HKValue -Current "RequireMutualAuthentication=1,RequireIntegrity=1" -Recommended "[Rr]equire([Mm]utual[Aa]uthentication|[Ii]ntegrity)=1.*[Rr]equire([Mm]utual[Aa]uthentication|[Ii]ntegrity)=1" -Operator "=") $true
+
 # Operator: !=
 Assert-Equal "Op != (different strings)" (Compare-HKValue -Current "SecAdmin" -Recommended "Administrator" -Operator "!=") $true
 Assert-Equal "Op != (identical strings)" (Compare-HKValue -Current "Administrator" -Recommended "Administrator" -Operator "!=") $false
@@ -56,6 +69,17 @@ Assert-Equal "Op <= (equal number)" (Compare-HKValue -Current 5 -Recommended 5 -
 Assert-Equal "Op <= (smaller number)" (Compare-HKValue -Current 3 -Recommended 5 -Operator "<=") $true
 Assert-Equal "Op <= (greater number)" (Compare-HKValue -Current 10 -Recommended 5 -Operator "<=") $false
 Assert-Equal "Op <= (null current)" (Compare-HKValue -Current $null -Recommended 5 -Operator "<=") $false
+
+# Operator: <=!0
+Assert-Equal "Op <=!0 (Current = 5, Recommended = 5 -> True)" (Compare-HKValue -Current 5 -Recommended 5 -Operator "<=!0") $true
+Assert-Equal "Op <=!0 (Current = 3, Recommended = 5 -> True)" (Compare-HKValue -Current 3 -Recommended 5 -Operator "<=!0") $true
+Assert-Equal "Op <=!0 (Current = 0, Recommended = 5 -> False)" (Compare-HKValue -Current 0 -Recommended 5 -Operator "<=!0") $false
+Assert-Equal "Op <=!0 (Current = '0' string, Recommended = 5 -> False)" (Compare-HKValue -Current "0" -Recommended 5 -Operator "<=!0") $false
+Assert-Equal "Op <=!0 (Current = 6, Recommended = 5 -> False)" (Compare-HKValue -Current 6 -Recommended 5 -Operator "<=!0") $false
+Assert-Equal "Op <=!0 (Current = null, Recommended = 5 -> False)" (Compare-HKValue -Current $null -Recommended 5 -Operator "<=!0") $false
+Assert-Equal "Op <=!0 (Current = empty string, Recommended = 5 -> False)" (Compare-HKValue -Current "" -Recommended 5 -Operator "<=!0") $false
+Assert-Equal "Op <=!0 (Current = 42, Recommended = 365 -> True)" (Compare-HKValue -Current 42 -Recommended 365 -Operator "<=!0") $true
+Assert-Equal "Op <=!0 (Current = 0, Recommended = 365 -> False)" (Compare-HKValue -Current 0 -Recommended 365 -Operator "<=!0") $false
 
 # Operator: contains
 Assert-Equal "Op contains (substring present)" (Compare-HKValue -Current "Success and Failure" -Recommended "Success" -Operator "contains") $true
