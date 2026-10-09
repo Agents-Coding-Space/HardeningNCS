@@ -1,0 +1,77 @@
+﻿CID,Profile,Scored,Title,Type,Tag,Conditional Path,Description,Info / Rationale,Solution / Remediation,Reference,See Also,Cmd / Request,Expect,Value Data,Value Type,Reg Key,Reg Item,Reg Option,File,Severity,Line,Source File
+,,,Test secure string,AUDIT_EXCHANGE,custom_item,group_policy > if > condition,Test secure string,,,,,,,.*,POLICY_TEXT,,,,,Medium,48,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2016_Level_1_Edge_v1.0.0.audit
+,,,CIS_Microsoft_Exchange_Server_2016_Level_1_Edge_v1.0.0.audit from CIS Microsoft Exchange Server 2016 v1.0.0 Benchmark,AUDIT_EXCHANGE,custom_item,group_policy > if > then,CIS_Microsoft_Exchange_Server_2016_Level_1_Edge_v1.0.0.audit from CIS Microsoft Exchange Server 2016 v1.0.0 Benchmark,NOTE: Nessus has provided the target output to assist in reviewing the benchmark to ensure target compliance.,,"800-171|3.14.1,800-53|SI-2c.,800-53r5|SI-2c.,CN-L3|8.1.4.4(e),CN-L3|8.1.10.5(a),CN-L3|8.1.10.5(b),CN-L3|8.5.4.1(b),CN-L3|8.5.4.1(d),CN-L3|8.5.4.1(e),CSF|ID.RA-1,CSF|PR.IP-12,CSF2.0|ID.IM-01,CSF2.0|ID.IM-02,CSF2.0|ID.IM-03,CSF2.0|PR.PS-02,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SI-2,NESA|T7.6.2,NESA|T7.7.1,NIAv2|AM38,NIAv2|AM39,NIAv2|SS14b,PCI-DSSv3.2.1|6.2,PCI-DSSv4.0|6.3,PCI-DSSv4.0|6.3.3,QCSC-v1|11.2,SWIFT-CSCv1|2.2",,,,[\s]+15\.1[\s]+.*[\s]+True,POLICY_TEXT,,,,,Medium,60,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2016_Level_1_Edge_v1.0.0.audit
+,,,Platform check,AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > condition,Platform check,,,,,,,[\s]+15\.1[\s]+.*[\s]+True,POLICY_TEXT,,,,,Medium,75,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2016_Level_1_Edge_v1.0.0.audit
+1.1,,,Set 'Maximum send size - connector level' to '10240',AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,1.1 Set 'Maximum send size - connector level' to '10240',"This setting limits the total size of messages at the connector level. This includes the message header, the message body, and any attachments. For internal message flow, Exchange Server uses the custom X-MS-Exchange-Organization-OriginalSize message header to record the original message size of the message as it enters the Exchange Server organization. Whenever the message is checked against the specified message size limits, the lower value of the current message size or the original message size header is used. The size of the message can change because of content conversion, encoding, and agent processing.
+
+Rationale:
+
+This setting somewhat limits the impact a malicious user or a computer with malware can have on the Exchange infrastructure by restricting the size of incoming messages.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+Set-SendConnector 'Connection to Contoso.com' -MaxMessageSize 10240KB","800-53|SC-5(1),800-53r5|SC-5(1),CSF|DE.CM-1,CSF|PR.DS-4,CSF2.0|DE.CM-01,CSF2.0|PR.IR-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SC-5(1),LEVEL|1M,NESA|T3.3.1,NIAv2|GS8e,NIAv2|GS10c,QCSC-v1|8.2.1",https://workbench.cisecurity.org/files/1514,,,All policies compliant,POLICY_TEXT,,,,,Medium,87,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2016_Level_1_Edge_v1.0.0.audit
+1.3,,,Set 'Enable Sender ID agent' to 'True',AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,1.3 Set 'Enable Sender ID agent' to 'True',"The Sender ID agent is an antispam agent enabled on Exchange servers that perform the Edge Transport server role. Sender ID tries to verify that every e-mail message originates from the Internet domain from which it claims to have been sent. Sender ID checks the address of the server that sends the message against a registered list of servers that the domain owner has authorized to send e-mail.
+
+Rationale:
+
+Spam consumes a large amount of network bandwidth and server capacity. In addition, it is often the source of malicious software.","To remediate this settings, execute the following cmdlet:
+
+Set-SenderIDConfig -Enabled $true","800-53|SI-8a.,800-53r5|SI-8a.,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SI-8a.,LEVEL|1A,QCSC-v1|3.2,QCSC-v1|8.2.1",https://workbench.cisecurity.org/files/1514,,,Enabled[\s]+:[\s]+True,POLICY_TEXT,,,,,Medium,107,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2016_Level_1_Edge_v1.0.0.audit
+1.4,,,Set 'External send connector authentication: DNS Routing' to 'True',AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,1.4 Set 'External send connector authentication: DNS Routing' to 'True',"Select this option to use DNS to route outbound mail. If enabled the connector will use DNS to resolve the IP address of the remote SMTP server.
+
+Rationale:
+
+Basic authentication sends credentials across the network in plaintext. DNS routing helps protect connections from tampering or interception by unauthorized users.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+Set-SendConnector 'Connection to Contoso.com' -DNSRoutingEnabled $true","800-53|SC-11,800-53r5|SC-11,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SC-11,ITSG-33|SC-11a.,LEVEL|1M,NIAv2|NS8,QCSC-v1|5.2.2,QCSC-v1|6.2",https://workbench.cisecurity.org/files/1514,,,All policies compliant,POLICY_TEXT,,,,,Medium,127,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2016_Level_1_Edge_v1.0.0.audit
+1.6,,,Set 'Enable Sender reputation' to 'True' - SenderBlockingEnabled,AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,1.6 Set 'Enable Sender reputation' to 'True' - SenderBlockingEnabled,"When sender reputation is enabled on a computer, sender reputation filters all messages from all Receive connectors on that computer. Only messages from external sources are filtered. External sources are defined as non-authenticated sources, which are considered anonymous Internet sources.
+
+Rationale:
+
+Spam consumes a large amount of network bandwidth and server capacity. In addition, it is often the source of malicious software.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+Set-SenderReputationConfig -SenderBlockingEnabled $true -OpenProxyDetectionEnabled $true","800-53|SI-8a.,800-53r5|SI-8a.,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SI-8a.,LEVEL|1A,QCSC-v1|3.2,QCSC-v1|8.2.1",https://workbench.cisecurity.org/files/1514,,,SenderBlockingEnabled[\s]+:[\s]+True,POLICY_TEXT,,,,,Medium,147,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2016_Level_1_Edge_v1.0.0.audit
+1.6,,,Set 'Enable Sender reputation' to 'True' - OpenProxyDetectionEnabled,AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,1.6 Set 'Enable Sender reputation' to 'True' - OpenProxyDetectionEnabled,"When sender reputation is enabled on a computer, sender reputation filters all messages from all Receive connectors on that computer. Only messages from external sources are filtered. External sources are defined as non-authenticated sources, which are considered anonymous Internet sources.
+
+Rationale:
+
+Spam consumes a large amount of network bandwidth and server capacity. In addition, it is often the source of malicious software.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+Set-SenderReputationConfig -SenderBlockingEnabled $true -OpenProxyDetectionEnabled $true","800-53|SI-8a.,800-53r5|SI-8a.,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SI-8a.,LEVEL|1A,QCSC-v1|3.2,QCSC-v1|8.2.1",https://workbench.cisecurity.org/files/1514,,,OpenProxyDetectionEnabled[\s]+:[\s]+True,POLICY_TEXT,,,,,Medium,167,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2016_Level_1_Edge_v1.0.0.audit
+1.8,,,Set 'External send connector authentication: Ignore Start TLS' to 'False',AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,1.8 Set 'External send connector authentication: Ignore Start TLS' to 'False',"If this setting is enabled then you will not be able to configure mutual authentication TLS, referred to as 'External send connector authentication: Domain Security' in this baseline.
+
+Rationale:
+
+Basic authentication sends credentials across the network in plaintext. TLS helps protect credentials from interception by unauthorized users.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+set-SendConnector -identity <connector_name> -IgnoreSTARTTLS: $false","800-171|3.13.11,800-53|SC-13,800-53r5|SC-13,CSF|PR.DS-5,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO/IEC-27001|A.10.1.1,ITSG-33|SC-13,ITSG-33|SC-13a.,LEVEL|1A,NESA|M5.2.6,NESA|T7.4.1,NIAv2|CY3,NIAv2|CY4,NIAv2|CY5b,NIAv2|CY5c,NIAv2|CY5d,NIAv2|CY7,NIAv2|NS5e,QCSC-v1|6.2",https://workbench.cisecurity.org/files/1514,,,All policies compliant,POLICY_TEXT,,,,,Medium,187,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2016_Level_1_Edge_v1.0.0.audit
+1.10,,,Set receive connector 'Configure Protocol logging' to 'Verbose',AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,1.10 Set receive connector 'Configure Protocol logging' to 'Verbose',"A protocol log is a record of the SMTP activity between messaging servers as part of message delivery. This SMTP activity occurs on Send connectors and Receive connectors that are configured on Hub Transport servers and Edge Transport servers. By default, protocol logging is disabled.
+
+Rationale:
+
+If events are not recorded it may be difficult or impossible to determine the root cause of system problems or the unauthorized activities of malicious users.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+Set-ReceiveConnector '<IDENTITY>' -ProtocolLoggingLevel Verbose","800-171|3.3.1,800-171|3.3.2,800-53|AU-12,800-53r5|AU-12,CSF|DE.CM-1,CSF|DE.CM-3,CSF|DE.CM-7,CSF|PR.PT-1,CSF2.0|DE.CM-01,CSF2.0|DE.CM-03,CSF2.0|DE.CM-09,CSF2.0|PR.PS-04,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(b),ITSG-33|AU-12,LEVEL|1A,PCI-DSSv3.2.1|10.1,QCSC-v1|3.2,QCSC-v1|6.2,QCSC-v1|8.2.1,QCSC-v1|13.2,SWIFT-CSCv1|6.4",https://workbench.cisecurity.org/files/1514,,,All policies compliant,POLICY_TEXT,,,,,Medium,207,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2016_Level_1_Edge_v1.0.0.audit
+1.11,,,Set send connector 'Configure Protocol logging' to 'Verbose',AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,1.11 Set send connector 'Configure Protocol logging' to 'Verbose',"A protocol log is a record of the SMTP activity between messaging servers as part of message delivery. This SMTP activity occurs on Send connectors and Receive connectors that are configured on Hub Transport servers and Edge Transport servers. By default, protocol logging is disabled.
+
+Rationale:
+
+If events are not recorded it may be difficult or impossible to determine the root cause of system problems or the unauthorized activities of malicious users.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+Set-SendConnector 'IDENTITY' -ProtocolLoggingLevel Verbose","800-171|3.3.1,800-171|3.3.2,800-53|AU-12,800-53r5|AU-12,CSF|DE.CM-1,CSF|DE.CM-3,CSF|DE.CM-7,CSF|PR.PT-1,CSF2.0|DE.CM-01,CSF2.0|DE.CM-03,CSF2.0|DE.CM-09,CSF2.0|PR.PS-04,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(b),ITSG-33|AU-12,LEVEL|1A,PCI-DSSv3.2.1|10.1,QCSC-v1|3.2,QCSC-v1|6.2,QCSC-v1|8.2.1,QCSC-v1|13.2,SWIFT-CSCv1|6.4",https://workbench.cisecurity.org/files/1514,,,All policies compliant,POLICY_TEXT,,,,,Medium,227,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2016_Level_1_Edge_v1.0.0.audit
+1.12,,,Set 'External send connector authentication: Domain Security' to 'True',AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,1.12 Set 'External send connector authentication: Domain Security' to 'True',"It is preferable to use Exchange Authentication or IPsec for external send connectors. However, if you must use Basic authentication to enable Domain Security, using (Mutual Auth TLS) for external send connectors helps to protect credentials and e-mail sent to other organizations.
+
+	If enabled, the Send connector will attempt to establish a mutual Transport Layer Security (TLS) connection with remote servers when sending mail. There are additional configuration steps required before you can start using TLS. For more information about how to configure mutual TLS, see Using Domain Security: Configuring Mutual TLS [http://technet.microsoft.com/en-us/library/bb123543(EXCHG.140).aspx].
+
+Rationale:
+
+Basic authentication sends credentials across the network in plaintext. Domain Security (Mutual Auth TLS) helps protect credentials from interception by unauthorized users.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+set-sendconnector -Identity <SendConnectorIdParameter> -DomainSecureEnabled $true","800-171|3.13.11,800-53|SC-13,800-53r5|SC-13,CSF|PR.DS-5,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO/IEC-27001|A.10.1.1,ITSG-33|SC-13,ITSG-33|SC-13a.,LEVEL|1A,NESA|M5.2.6,NESA|T7.4.1,NIAv2|CY3,NIAv2|CY4,NIAv2|CY5b,NIAv2|CY5c,NIAv2|CY5d,NIAv2|CY7,NIAv2|NS5e,QCSC-v1|6.2",https://workbench.cisecurity.org/files/1514,,,All policies compliant,POLICY_TEXT,,,,,Medium,247,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2016_Level_1_Edge_v1.0.0.audit
+1.16,,,Set 'Turn on Connectivity logging' to 'True',AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,1.16 Set 'Turn on Connectivity logging' to 'True',"A connectivity log is a record of the SMTP connection activity of the outbound message delivery queues to the destination Mailbox server, smart host, or domain. Connectivity logging is available on Hub Transport servers and Edge Transport servers. By default, connectivity logging is disabled.
+
+Rationale:
+
+If events are not recorded it may be difficult or impossible to determine the root cause of system problems or the unauthorized activities of malicious users.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+Set-TransportService EXCHANGE1 -ConnectivityLogEnabled $true","800-171|3.3.1,800-171|3.3.2,800-53|AU-12,800-53r5|AU-12,CSF|DE.CM-1,CSF|DE.CM-3,CSF|DE.CM-7,CSF|PR.PT-1,CSF2.0|DE.CM-01,CSF2.0|DE.CM-03,CSF2.0|DE.CM-09,CSF2.0|PR.PS-04,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(b),ITSG-33|AU-12,LEVEL|1A,PCI-DSSv3.2.1|10.1,QCSC-v1|3.2,QCSC-v1|6.2,QCSC-v1|8.2.1,QCSC-v1|13.2,SWIFT-CSCv1|6.4",https://workbench.cisecurity.org/files/1514,,,All policies compliant,POLICY_TEXT,,,,,Medium,269,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2016_Level_1_Edge_v1.0.0.audit
+,,,Authentication Failure,FAILED,report,group_policy > if > else,Authentication Failure,Secure string passed to powershell was invalid or empty.,,,,,,,,,,,,Medium,293,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2016_Level_1_Edge_v1.0.0.audit

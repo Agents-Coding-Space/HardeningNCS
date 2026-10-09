@@ -1,0 +1,1108 @@
+﻿CID,Profile,Scored,Title,Type,Tag,Conditional Path,Description,Info / Rationale,Solution / Remediation,Reference,See Also,Cmd / Request,Expect,Value Data,Value Type,Reg Key,Reg Item,Reg Option,File,Severity,Line,Source File
+,,,Verify IIS is installed.,REG_CHECK,custom_item,group_policy > if > condition,Verify IIS is installed.,,,,,,,HKLM\Software\Microsoft\Inetstp,POLICY_TEXT,,,MUST_EXIST,,Medium,56,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Verify IIS 8.0 or 8.5 installed.,REGISTRY_SETTING,custom_item,group_policy > if > condition,Verify IIS 8.0 or 8.5 installed.,,,,,,,^Version 8\.[05][\s]*$,POLICY_TEXT,HKLM\Software\Microsoft\Inetstp,VersionString,,,Medium,64,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Windows Server 2012 or 2012 R2 installed,REGISTRY_SETTING,custom_item,group_policy > if > condition,Windows Server 2012 or 2012 R2 installed,,,,,,,^[a-zA-Z0-9\(\)\s]*2012[a-zA-Z0-9\(\)\s]*$,POLICY_TEXT,HKLM\Software\Microsoft\Windows Nt\Currentversion,ProductName,,,Medium,74,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,CIS Microsoft IIS 8 Benchmark v1.5.1 Level 1,PASSED,report,group_policy > if > then,CIS Microsoft IIS 8 Benchmark v1.5.1 Level 1,,,,https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,86,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+1.1,,,Ensure web content is on non-system partition,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then,1.1 Ensure web content is on non-system partition,"Web resources published through IIS are mapped, via Virtual Directories, to physical locations on disk. It is recommended to map all Virtual Directories to a non-system disk volume.
+
+Rationale:
+
+Isolating web content from system files may reduce the probability of:
+
+Web sites/applications exhausting system disk space
+
+File IO vulnerability in the web site/application from affecting the confidentiality and/or integrity of system files","Browse to web content in C:\inetpub\wwwroot\
+
+Copy or cut content onto a dedicated and restricted web folder on a non-system drive such as D:\webroot\
+
+Change mappings for any applications or Virtual Directories to reflect the new location
+
+To change the mapping for the application named app1 which resides under the Default Web Site, open IIS Manager:
+
+Expand the server node
+
+Expand Sites
+
+Expand Default Web Site
+
+Click on app1
+
+In the Actions pane, select Basic Settings
+
+In the Physical path text box, put the new location of the application, D:\wwwroot\app1 in the example above","800-171|3.4.2,800-53|CM-6b.,800-53r5|CM-6b.,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-6b.,LEVEL|1A,NESA|T3.2.1,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/14293,,,physicalPath:(\%SystemDrive\%|C:),POLICY_TEXT,,,,,Medium,91,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+1.2,,,Ensure 'host headers' are on all sites,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then,1.2 Ensure 'host headers' are on all sites,"Host headers provide the ability to host multiple websites on the same IP address and port. It is recommended that host headers be configured for all sites.
+
+Rationale:
+
+Requiring a Host header for all sites may reduce the probability of:
+
+DNS rebinding attacks successfully compromising or abusing site data or functionality
+
+IP-based scans successfully identifying or interacting with a target application hosted on IIS","Obtain a listing of all sites by using the following appcmd.exe command:
+
+%systemroot%\system32\inetsrv\appcmd list sites
+
+Perform the following in IIS Manager to configure host headers for the Default Web Site:
+
+Open IIS Manager
+
+In the Connections pane expand the Sites node and select Default Web Site
+
+In the Actions pane click Bindings
+
+In the Site Bindings dialog box, select the binding for which host headers are going to be configured, Port 80 in this example
+
+Click Edit
+
+Under host name, enter the sites FQDN, such as <www.examplesite.com>
+
+Click OK, then Close
+
+Note: Requiring a host header may impair site functionality for HTTP/1.0 clients.","800-171|3.4.2,800-53|CM-6b.,800-53r5|CM-6b.,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-6b.,LEVEL|1A,NESA|T3.2.1,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/14293,,,"\(id:[0-9]*,bindings:.*https*/[0-9\.\*]+:[0-9]*:,.*state:[A-Za-z]*\)",POLICY_TEXT,,,,,Medium,130,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+1.3,,,Ensure 'directory browsing' is set to disabled,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then,1.3 Ensure 'directory browsing' is set to disabled,"Directory browsing allows the contents of a directory to be displayed upon request from a web client. If directory browsing is enabled for a directory in Internet Information Services, users receive a page that lists the contents of the directory when the following two conditions are met:
+
+No specific file is requested in the URL
+
+The Default Documents feature is disabled in IIS, or if it is enabled, IIS is unable to locate a file in the directory that matches a name specified in the IIS default document list
+
+It is recommended that directory browsing be disabled.
+
+Rationale:
+
+Ensuring that directory browsing is disabled may reduce the probability of disclosing sensitive content that is inadvertently accessible via IIS.","Directory Browsing can be set by using the UI, running appcmd.exe commands, by editing configuration files directly, or by writing WMI scripts. To disable directory browsing at the server level using an appcmd.exe command:
+
+%systemroot%\system32\inetsrv\appcmd set config /section:directoryBrowse /enabled:false","800-171|3.4.6,800-171|3.4.7,800-53|CM-7b.,800-53r5|CM-7b.,CN-L3|7.1.3.5(c),CN-L3|7.1.3.7(d),CN-L3|8.1.4.4(b),CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-7a.,LEVEL|1A,NIAv2|SS13b,NIAv2|SS14a,NIAv2|SS14c,PCI-DSSv3.2.1|2.2.2,PCI-DSSv4.0|2.2.4,QCSC-v1|3.2,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/14293,,,false,POLICY_TEXT,,,,,Medium,171,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+1.4,,,Ensure 'application pool identity' is configured for all application pools,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then,1.4 Ensure 'application pool identity' is configured for all application pools,"Application Pool Identities are the actual users/authorities that will run the worker process - w3wp.exe. Assigning the correct user authority will help ensure that applications can function properly, while not giving overly permissive permissions on the system. These identities can further be used in ACLs to protect system content. It is recommended that each Application Pool run under a unique identity.
+
+IIS has additional built-in least privilege identities intended for use by Application Pools. It is recommended that the default Application Pool Identity be changed to a least privilege principle other than Network Service. Furthermore, it is recommended that all application pool identities be assigned a unique least privilege principal.
+
+To achieve isolation in IIS, application pools can be run as separate identities. IIS can be configured to automatically use the application pool identity if no anonymous user account is configured for a Web site. This can greatly reduce the number of accounts needed for Web sites and make management of the accounts easier. It is recommended the Application Pool Identity be set as the Anonymous User Identity.
+
+The name of the Application Pool account corresponds to the name of the Application Pool. Application Pool Identities were introduced in Windows Server 2008 SP2. It is recommended that Application Pools be set to run as ApplicationPoolIdentity unless there is an underlying reason that the application pool needs to run as a specified end user account. One example where this is needed is for web farms using Kerberos authentication.
+
+Rationale:
+
+Setting Application Pools to use unique least privilege identities such as ApplicationPoolIdentity reduces the potential harm the identity could cause should the application ever become compromised.
+
+Additionally, it will simplify application pools configuration and account management.","The default Application Pool identity may be set for an application using the IIS Manager GUI, using AppCmd.exe commands in a command-line window, directly editing the configuration files, or by writing WMI scripts. Perform the following to change the default identity to the built-in ApplicationPoolIdentity in the IIS Manager GUI:
+
+Open the IIS Manager GUI
+
+In the connections pane, expand the server node and click Application Pools
+
+On the Application Pools page, select the DefaultAppPool, and then click Advanced Settings in the Actions pane
+
+For the Identity property, click the '...' button to open the Application Pool Identity dialog box
+
+Select the Built-in account option choose ApplicationPoolIdentity from the list, or input a unique application user created for this purpose
+
+Restart IIS
+
+To change the ApplicationPool identity to the built-in ApplicationPoolIdentity using AppCmd.exe, run the following from a command prompt:
+
+%systemroot%\system32\inetsrv\appcmd set config /section:applicationPools /[name='<your apppool>'].processModel.identityType:ApplicationPoolIdentity
+
+The example code above will set just the DefaultAppPool. Run this command for each configured Application Pool. Additionally, ApplicationPoolIdentity can be made the default for all Application Pools by using the Set Application Pool Defaults action on the Application Pools node.
+
+If using a custom defined Windows user such as a dedicated service account, that user will need to be a member of the IIS_IUSRS group. The IIS_IUSRS group has access to all the necessary file and system resources so that an account, when added to this group, can seamlessly act as an application pool identity.","800-171|3.1.5,800-53|AC-6,800-53r5|AC-6,CN-L3|7.1.3.2(b),CN-L3|7.1.3.2(g),CN-L3|8.1.4.2(d),CN-L3|8.1.10.6(a),CSF|PR.AC-4,CSF|PR.DS-5,CSF2.0|PR.AA-05,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(1),ITSG-33|AC-6,LEVEL|1A,NESA|T5.1.1,NESA|T5.2.2,NESA|T5.4.1,NESA|T5.4.4,NESA|T5.4.5,NESA|T5.5.4,NESA|T5.6.1,NESA|T7.5.3,NIAv2|AM1,NIAv2|AM23f,NIAv2|SS13c,NIAv2|SS15c,PCI-DSSv3.2.1|7.1.2,PCI-DSSv4.0|7.2.1,PCI-DSSv4.0|7.2.2,QCSC-v1|5.2.2,QCSC-v1|6.2,QCSC-v1|13.2,SWIFT-CSCv1|5.1,TBA-FIISB|31.4.2,TBA-FIISB|31.4.3",https://workbench.cisecurity.org/benchmarks/14293,,,^(ApplicationPoolIdentity|SpecificUser)[\s]*$,POLICY_TEXT,,,,,Medium,195,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+1.5,,,Ensure 'unique application pools' is set for sites,AUDIT_POWERSHELL,custom_item,group_policy > if > then,1.5 Ensure 'unique application pools' is set for sites,"IIS introduced a new security feature called Application Pool Identities that allows Application Pools to be run under unique accounts without the need to create and manage local or domain accounts. It is recommended that all Sites run under unique, dedicated Application Pools.
+
+Rationale:
+
+By setting sites to run under unique Application Pools, resource-intensive applications can be assigned to their own application pools which could improve server and application performance. In addition, it can help maintain application availability: if an application in one pool fails, applications in other pools are not affected. Last, isolating applications helps mitigate the potential risk of one application being allowed access to the resources of another application. It is also recommended to stop any application pool that is not in use or was created by an installation such as .Net 4.0.","Open IIS Manager
+
+Open the Sites node underneath the machine node
+
+Select the Site to be changed
+
+In the Actions pane, select Basic Settings
+
+Click the Select... box next to the Application Pool text box
+
+Select the desired Application Pool
+
+Once selected, click OK","800-53|SC-39,800-53r5|SC-39,CSF2.0|PR.DS-01,CSF2.0|PR.DS-10,CSF2.0|PR.IR-03,GDPR|32.1.b,HIPAA|164.306(a)(1),LEVEL|1A,QCSC-v1|5.2.1",https://workbench.cisecurity.org/benchmarks/14293,,,^[\s]*([2-9]|[1-9][0-9]+)[\s]*,POLICY_TEXT,,,,,Medium,241,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Confirm applicationHost.config is available in standard location.,FILE_CHECK,custom_item,group_policy > if > then > if > condition,Confirm applicationHost.config is available in standard location.,,,,,,,%systemroot%\system32\inetsrv\config\applicationHost.config,POLICY_TEXT,,,,,Medium,272,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+1.6,,,Ensure 'application pool identity' is configured for anonymous user identity,FILE_CONTENT_CHECK,custom_item,group_policy > if > then > if > then,1.6 Ensure 'application pool identity' is configured for anonymous user identity,"To achieve isolation in IIS, application pools can be run as separate identities. IIS can be configured to automatically use the application pool identity if no anonymous user account is configured for a Web site. This can greatly reduce the number of accounts needed for Web sites and make management of the accounts easier. It is recommended the Application Pool Identity be set as the Anonymous User Identity.
+
+Rationale:
+
+Configuring the anonymous user identity to use the application pool identity will help ensure site isolation - provided sites are set to use the application pool identity. Since a unique principal will run each application pool, it will ensure the identity is least privilege. Additionally, it will simplify Site management.","The Anonymous User Identity can be set to Application Pool Identity by using the IIS Manager GUI, using AppCmd.exe commands in a command-line window, directly editing the configuration files, or by writing WMI scripts. Perform the following to set the username attribute of the anonymousAuthentication node in the IIS Manager GUI:
+
+Open the IIS Manager GUI and navigate to the desired server, site, or application
+
+In Features View, find and double-click the Authentication icon
+
+Select the Anonymous Authentication option and in the Actions pane select Edit...
+
+Choose Application pool identity in the modal window and then press the OK button
+
+To use AppCmd.exe to configure anonymousAuthentication at the server level, the command would look like this:
+
+%systemroot%\system32\inetsrv\appcmd set config -section:anonymousAuthentication /username:'' --password","800-171|3.4.2,800-53|CM-6b.,800-53r5|CM-6b.,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-6b.,LEVEL|1A,NESA|T3.2.1,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/14293,,[\s]*userName[\s]*=[\s]*..[\s]*,%systemroot%\system32\inetsrv\config\applicationHost.config,POLICY_TEXT,,,,,Medium,282,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+1.6,,,Ensure 'application pool identity' is configured for anonymous user identity,FAILED,report,group_policy > if > then > if > else,1.6 Ensure 'application pool identity' is configured for anonymous user identity,"To achieve isolation in IIS, application pools can be run as separate identities. IIS can be configured to automatically use the application pool identity if no anonymous user account is configured for a Web site. This can greatly reduce the number of accounts needed for Web sites and make management of the accounts easier. It is recommended the Application Pool Identity be set as the Anonymous User Identity.
+
+Rationale:
+
+Configuring the anonymous user identity to use the application pool identity will help ensure site isolation - provided sites are set to use the application pool identity. Since a unique principal will run each application pool, it will ensure the identity is least privilege. Additionally, it will simplify Site management.","The Anonymous User Identity can be set to Application Pool Identity by using the IIS Manager GUI, using AppCmd.exe commands in a command-line window, directly editing the configuration files, or by writing WMI scripts. Perform the following to set the username attribute of the anonymousAuthentication node in the IIS Manager GUI:
+
+Open the IIS Manager GUI and navigate to the desired server, site, or application
+
+In Features View, find and double-click the Authentication icon
+
+Select the Anonymous Authentication option and in the Actions pane select Edit...
+
+Choose Application pool identity in the modal window and then press the OK button
+
+To use AppCmd.exe to configure anonymousAuthentication at the server level, the command would look like this:
+
+%systemroot%\system32\inetsrv\appcmd set config -section:anonymousAuthentication /username:'' --password","800-171|3.4.2,800-53|CM-6b.,800-53r5|CM-6b.,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-6b.,LEVEL|1A,NESA|T3.2.1,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,314,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+2.1,,,Ensure 'global authorization rule' is set to restrict access,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then,2.1 Ensure 'global authorization rule' is set to restrict access,"IIS introduced URL Authorization, which allows the addition of Authorization rules to the actual URL, instead of the underlying file system resource, as a way to protect it. Authorization rules can be configured at the server, web site, folder (including Virtual Directories), or file level. The native URL Authorization module applies to all requests, whether they are .NET managed or other types of files (e.g. static files or ASP files). It is recommended that URL Authorization be configured to only grant access to the necessary security principals.
+
+Rationale:
+
+Configuring a global Authorization rule that restricts access will ensure inheritance of the settings down through the hierarchy of web directories; if that content is copied elsewhere, the authorization rules flow with it. This will ensure access to current and future content is only granted to the appropriate principals, mitigating risk of accidental or unauthorized access.","To configure URL Authorization at the server level using IIS Manager:
+
+Connect to Internet Information Services (IIS Manager)
+
+Select the server
+
+Select Authorization Rules
+
+Remove the 'Allow All Users' rule
+
+Click Add Allow Rule...
+
+Allow access to the user(s), user groups, or roles that are authorized across all of the web sites and applications (e.g. the Administratorsgroup)","800-171|3.1.1,800-53|AC-3,800-53r5|AC-3,CN-L3|8.1.4.2(f),CN-L3|8.1.4.11(b),CN-L3|8.1.10.2(c),CN-L3|8.5.3.1,CN-L3|8.5.4.1(a),CSF|PR.AC-4,CSF|PR.PT-3,CSF2.0|PR.AA-05,CSF2.0|PR.DS-10,CSF2.0|PR.IR-01,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(1),ISO/IEC-27001|A.9.4.1,ISO/IEC-27001|A.9.4.5,ITSG-33|AC-3,LEVEL|1M,NESA|T4.2.1,NESA|T5.4.4,NESA|T5.4.5,NESA|T5.5.4,NESA|T5.6.1,NESA|T7.5.2,NESA|T7.5.3,NIAv2|AM3,NIAv2|SS29,QCSC-v1|3.2,QCSC-v1|5.2.2,QCSC-v1|13.2,TBA-FIISB|31.1",https://workbench.cisecurity.org/benchmarks/14293,,,<allow[\s]+users=.\*.[\s]*/>,POLICY_TEXT,,,,,Medium,340,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Check IIS for Anonymous authentication,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > condition,Check IIS for Anonymous authentication,,,,,,,false,POLICY_TEXT,,,,,Medium,371,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Check IIS for Forms authentication,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > condition,Check IIS for Forms authentication,,,,,,,Forms,POLICY_TEXT,,,,,Medium,379,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Applications,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,Applications,,,,,,,.*failed.*,POLICY_TEXT,,,,,Medium,387,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+2.2,,,Ensure access to sensitive site features is restricted to authenticated principals only,PASSED,report,group_policy > if > then > if > then,2.2 Ensure access to sensitive site features is restricted to authenticated principals only,"IIS supports both challenge-based and login redirection-based authentication methods. Challenge-based authentication methods, such as Integrated Windows Authentication, require a client to respond correctly to a server-initiated challenge. A login redirection-based authentication method such as Forms Authentication relies on redirection to a login page to determine the identity of the principal. Challenge-based authentication and login redirection-based authentication methods cannot be used in conjunction with one another.
+
+Public servers/sites are typically configured to use Anonymous Authentication. This method typically works, provided the content or services is intended for use by the public. When sites, applications, or specific content containers are not intended for anonymous public use, an appropriate authentication mechanism should be utilized. Authentication will help confirm the identity of clients who request access to sites, application, and content. IIS provides the following authentication modules by default:
+
+Anonymous Authentication - allows anonymous users to access sites, applications, and/or content
+
+Integrated Windows Authentication - authenticates users using the NTLM or Kerberos protocols; Kerberos v5 requires a connection to Active Directory
+
+ASP.NET Impersonation - allows ASP.NET applications to run under a security context different from the default security context for an application
+
+Forms Authentication - enables a user to login to the configured space with a valid user name and password which is then validated against a database or other credentials store
+
+Basic authentication - requires a valid user name and password to access content
+
+Client Certificate Mapping Authentication - allows automatic authentication of users who log on with client certificates that have been configured; requires SSL
+
+Digest Authentication - uses Windows domain controller to authenticate users who request access
+
+Note that none of the challenge-based authentication modules can be used at the same time Forms Authentication is enabled for certain applications/content. Forms Authentication does not rely on IIS authentication, so anonymous access for the ASP.NET application can be configured if Forms Authentication will be used.
+
+It is recommended that sites containing sensitive information, confidential data, or non-public web services be configured with a credentials-based authentication mechanism.
+
+Rationale:
+
+Configuring authentication will help mitigate the risk of unauthorized users accessing data and/or services, and in some cases reduce the potential harm that can be done to a system.","When configuring an authentication module for the first time, each mechanism must be completely configured before use.
+Enabling authentication can be performed by using the user interface (UI), running AppCmd.exe commands in a command-line window, editing configuration files directly, or by writing WMI scripts. To verify an authentication mechanism is in place for sensitive content using the IIS Manager GUI:
+
+Open IIS Manager and navigate to level with sensitive content
+
+In Features View, double-click Authentication
+
+On the Authentication page, make sure an authentication module is enabled, while anonymous authentication is enabled (Forms Authentication can have anonymous as well)
+
+If necessary, select the desired authentication module, then in the Actions pane, click Enable","800-171|3.1.1,800-171|3.1.5,800-53|AC-2,800-53|AC-6(3),800-53r5|AC-2,800-53r5|AC-6(3),CN-L3|7.1.3.2(b),CN-L3|7.1.3.2(d),CN-L3|7.1.3.2(g),CN-L3|8.1.4.2(d),CN-L3|8.1.10.6(a),CSF|DE.CM-1,CSF|DE.CM-3,CSF|PR.AC-1,CSF|PR.AC-4,QCSC-v1|8.2.1,CSF2.0|DE.CM-01,CSF2.0|DE.CM-03,CSF2.0|PR.AA-01,CSF2.0|PR.AA-05,QCSC-v1|13.2,CSF2.0|PR.DS-10,GDPR|32.1.b,QCSC-v1|15.2,HIPAA|164.306(a)(1),SWIFT-CSCv1|5.1,HIPAA|164.312(a)(1),TBA-FIISB|31.4.2,ISO/IEC-27001|A.9.1.2,ISO/IEC-27001|A.9.2.1,ISO/IEC-27001|A.9.4.4,ITSG-33|AC-2,ITSG-33|AC-6(3),NESA|T5.1.1,NESA|T5.5.4,NIAv2|AM1,NIAv2|AM23f,NIAv2|AM28,NIAv2|NS5j,NIAv2|SS13c,NIAv2|SS14e,NIAv2|SS15c,PCI-DSSv3.2.1|7.1.2,PCI-DSSv4.0|7.2.1,PCI-DSSv4.0|7.2.2,QCSC-v1|5.2.2,TBA-FIISB|31.4.3,QCSC-v1|6.2",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,398,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Verify .net extensibility is installed - NetFxExtensibility45,REGISTRY_SETTING,custom_item,group_policy > if > then > if > condition,Verify .net extensibility is installed - NetFxExtensibility45,,,,,,,1,POLICY_DWORD,HKLM\Software\Microsoft\Inetstp\Components,NetFxExtensibility45,CAN_NOT_BE_NULL,,Medium,444,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Verify .net extensibility is installed - ASPNET45,REGISTRY_SETTING,custom_item,group_policy > if > then > if > condition,Verify .net extensibility is installed - ASPNET45,,,,,,,1,POLICY_DWORD,HKLM\Software\Microsoft\Inetstp\Components,ASPNET45,CAN_NOT_BE_NULL,,Medium,454,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Default,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > condition,Default,,,,,,,true,POLICY_TEXT,,,,,Medium,468,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Applications,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > then > if > condition,Applications,,,,,,,.*failed.*,POLICY_TEXT,,,,,Medium,476,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+2.3,,,Ensure 'forms authentication' require SSL,PASSED,report,group_policy > if > then > if > then > if > then,2.3 Ensure 'forms authentication' require SSL,"Forms-based authentication can pass credentials across the network in clear text. It is therefore imperative that the traffic between client and server be encrypted using SSL, especially in cases where the site is publicly accessible. It is recommended that communications with any portion of a site using Forms Authentication be encrypted using SSL.
+
+Rationale:
+
+Requiring SSL for Forms Authentication will protect the confidentiality of credentials during the login process, helping mitigate the risk of stolen user information.","Open IIS Manager and navigate to the appropriate tier
+
+In Features View, double-click Authentication
+
+On the Authentication page, select Forms Authentication
+
+In the Actions pane, click Edit
+
+Check the Requires SSL checkbox in the cookie settings section, click OK","800-171|3.13.8,HIPAA|164.312(e)(1),800-53|SC-8(1),PCI-DSSv3.2.1|2.3,800-53r5|SC-8(1),HIPAA|164.312(e)(2)(i),CN-L3|8.1.2.2(a),QCSC-v1|5.2.2,CN-L3|8.1.2.2(b),ISO/IEC-27001|A.10.1.1,CN-L3|8.1.4.7(a),PCI-DSSv3.2.1|4.1,CN-L3|8.1.4.8(a),ISO/IEC-27001|A.13.2.3,CN-L3|8.2.4.5(c),SWIFT-CSCv1|2.1,CN-L3|8.2.4.5(d),ITSG-33|SC-8(1),CN-L3|8.5.2.2,PCI-DSSv4.0|2.2.7,CSF|PR.DS-2,NESA|T7.4.1,CSF|PR.DS-5,QCSC-v1|6.2,CSF2.0|PR.DS-02,NIAv2|NS5d,GDPR|32.1.a,PCI-DSSv4.0|4.2.1,GDPR|32.1.b,NIAv2|NS6b,HIPAA|164.306(a)(1),TBA-FIISB|29.1",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,487,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Default,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > condition,Default,,,,,,,All,POLICY_TEXT,,,,,Medium,512,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Applications,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > condition,Applications,,,,,,,All,POLICY_TEXT,,,,,Medium,520,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+2.5,,,Ensure 'cookie protection mode' is configured for forms authentication,PASSED,report,group_policy > if > then > if > then > if > then,2.5 Ensure 'cookie protection mode' is configured for forms authentication,"The cookie protection mode defines the protection Forms Authentication cookies will be given within a configured application. The four cookie protection modes that can be defined are:
+
+Encryption and validation - Specifies that the application use both data validation and encryption to help protect the cookie; this option uses the configured data validation algorithm (based on the machine key) and triple-DES (3DES) for encryption, if available and if the key is long enough (48 bytes or more)
+
+None - Specifies that both encryption and validation are disabled for sites that are using cookies only for personalization and have weaker security requirements
+
+Encryption - Specifies that the cookie is encrypted by using Triple-DES or DES, but data validation is not performed on the cookie; cookies used in this manner might be subject to plain text attacks
+
+Validation - Specifies that a validation scheme verifies that the contents of an encrypted cookie have not been changed in transit
+
+It is recommended that cookie protection mode always encrypt and validate Forms Authentication cookies.
+
+Rationale:
+
+By encrypting and validating the cookie, the confidentiality and integrity of data within the cookie is assured. This helps mitigate the risk of attacks such as session hijacking and impersonation.","Cookie protection mode can be configured by using the user interface (UI), by running Appcmd.exe commands in a command-line window, by editing configuration files directly, or by writing WMI scripts. Using IIS Manager:
+
+Open IIS Manager and navigate to the level where Forms Authentication is enabled
+
+In Features View, double-click Authentication
+
+On the Authentication page, select Forms Authentication
+
+In the Actions pane, click Edit
+
+In the Cookie settings section, verify the drop-down for Protection mode is set for Encryption and validation","800-171|3.13.16,PCI-DSSv4.0|3.3.2,800-53|SC-28(1),HIPAA|164.312(a)(2)(iv),800-53r5|SC-28(1),TBA-FIISB|28.1,CN-L3|8.1.4.7(b),HIPAA|164.312(e)(2)(ii),CN-L3|8.1.4.8(b),PCI-DSSv4.0|3.5.1,CSF|PR.DS-1,ITSG-33|SC-28(1),CSF2.0|PR.DS-01,QCSC-v1|6.2,GDPR|32.1.a,PCI-DSSv3.2.1|3.4,GDPR|32.1.b,QCSC-v1|5.2.2,HIPAA|164.306(a)(1)",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,533,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+2.3,,,Ensure 'forms authentication' require SSL,PASSED,report,group_policy > if > then > if > else,2.3 Ensure 'forms authentication' require SSL,"Forms-based authentication can pass credentials across the network in clear text. It is therefore imperative that the traffic between client and server be encrypted using SSL, especially in cases where the site is publicly accessible. It is recommended that communications with any portion of a site using Forms Authentication be encrypted using SSL.
+
+Rationale:
+
+Requiring SSL for Forms Authentication will protect the confidentiality of credentials during the login process, helping mitigate the risk of stolen user information.","Open IIS Manager and navigate to the appropriate tier
+
+In Features View, double-click Authentication
+
+On the Authentication page, select Forms Authentication
+
+In the Actions pane, click Edit
+
+Check the Requires SSL checkbox in the cookie settings section, click OK",LEVEL|1A,https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,570,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+2.5,,,Ensure 'cookie protection mode' is configured for forms authentication,PASSED,report,group_policy > if > then > if > else,2.5 Ensure 'cookie protection mode' is configured for forms authentication,"The cookie protection mode defines the protection Forms Authentication cookies will be given within a configured application. The four cookie protection modes that can be defined are:
+
+Encryption and validation - Specifies that the application use both data validation and encryption to help protect the cookie; this option uses the configured data validation algorithm (based on the machine key) and triple-DES (3DES) for encryption, if available and if the key is long enough (48 bytes or more)
+
+None - Specifies that both encryption and validation are disabled for sites that are using cookies only for personalization and have weaker security requirements
+
+Encryption - Specifies that the cookie is encrypted by using Triple-DES or DES, but data validation is not performed on the cookie; cookies used in this manner might be subject to plain text attacks
+
+Validation - Specifies that a validation scheme verifies that the contents of an encrypted cookie have not been changed in transit
+
+It is recommended that cookie protection mode always encrypt and validate Forms Authentication cookies.
+
+Rationale:
+
+By encrypting and validating the cookie, the confidentiality and integrity of data within the cookie is assured. This helps mitigate the risk of attacks such as session hijacking and impersonation.","Cookie protection mode can be configured by using the user interface (UI), by running Appcmd.exe commands in a command-line window, by editing configuration files directly, or by writing WMI scripts. Using IIS Manager:
+
+Open IIS Manager and navigate to the level where Forms Authentication is enabled
+
+In Features View, double-click Authentication
+
+On the Authentication page, select Forms Authentication
+
+In the Actions pane, click Edit
+
+In the Cookie settings section, verify the drop-down for Protection mode is set for Encryption and validation",LEVEL|1A,https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,590,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Verify basic authentication is installed,REGISTRY_SETTING,custom_item,group_policy > if > then > if > condition,Verify basic authentication is installed,,,,,,,1,POLICY_DWORD,HKLM\Software\Microsoft\Inetstp\Components,BasicAuthentication,CAN_NOT_BE_NULL,,High,626,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+2.6,,,Ensure transport layer security for 'basic authentication' is configured,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then,2.6 Ensure transport layer security for 'basic authentication' is configured,"Basic Authentication can pass credentials across the network in clear text. It is therefore imperative that the traffic between client and server be encrypted, especially in cases where the site is publicly accessible and is recommended that TLS be configured and required for any Site or Application using Basic Authentication.
+
+Rationale:
+
+Credentials sent in clear text can be easily intercepted by malicious code or persons. Enforcing the use of Transport Layer Security will help mitigate the chances of hijacked credentials.","To protect Basic Authentication with transport layer security:
+
+Open IIS Manager
+
+In the Connections pane on the left, select the server to be configured
+
+In the Connections pane, expand the server, then expand Sites and select the site to be configured
+
+In the Actions pane, click Bindings; the Site Bindings dialog appears
+
+If an HTTPS binding is available, click Close and see below 'To require SSL'
+
+If no HTTPS binding is visible, perform the following steps
+
+To add an HTTPS binding:
+
+In the Site Bindings dialog, click Add; the Add Site Binding dialog appears
+
+Under Type, select https
+
+Under SSL certificate, select an X.509 certificate
+
+Click OK, then close
+
+To require SSL:
+
+In Features View, double-click SSL Settings
+
+On the SSL Settings page, select Require SSL.
+
+In the Actions pane, click Apply","800-171|3.5.10,800-53|IA-5(1)(c),800-53r5|IA-5(1)(c),CSF|PR.AC-1,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),ITSG-33|IA-5(1)(c),LEVEL|1A,NESA|T5.2.3,NIAv2|CY6,QCSC-v1|5.2.2,QCSC-v1|13.2,SWIFT-CSCv1|4.1,TBA-FIISB|26.1",https://workbench.cisecurity.org/benchmarks/14293,,,"^Ssl(,.*|)[\s]*$",POLICY_TEXT,,,,,Medium,638,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+2.6,,,Ensure transport layer security for 'basic authentication' is configured,PASSED,report,group_policy > if > then > if > else,2.6 Ensure transport layer security for 'basic authentication' is configured,"Basic Authentication can pass credentials across the network in clear text. It is therefore imperative that the traffic between client and server be encrypted, especially in cases where the site is publicly accessible and is recommended that TLS be configured and required for any Site or Application using Basic Authentication.
+
+Rationale:
+
+Credentials sent in clear text can be easily intercepted by malicious code or persons. Enforcing the use of Transport Layer Security will help mitigate the chances of hijacked credentials.","To protect Basic Authentication with transport layer security:
+
+Open IIS Manager
+
+In the Connections pane on the left, select the server to be configured
+
+In the Connections pane, expand the server, then expand Sites and select the site to be configured
+
+In the Actions pane, click Bindings; the Site Bindings dialog appears
+
+If an HTTPS binding is available, click Close and see below 'To require SSL'
+
+If no HTTPS binding is visible, perform the following steps
+
+To add an HTTPS binding:
+
+In the Site Bindings dialog, click Add; the Add Site Binding dialog appears
+
+Under Type, select https
+
+Under SSL certificate, select an X.509 certificate
+
+Click OK, then close
+
+To require SSL:
+
+In Features View, double-click SSL Settings
+
+On the SSL Settings page, select Require SSL.
+
+In the Actions pane, click Apply","800-171|3.5.10,800-53|IA-5(1)(c),800-53r5|IA-5(1)(c),CSF|PR.AC-1,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),ITSG-33|IA-5(1)(c),LEVEL|1A,NESA|T5.2.3,NIAv2|CY6,QCSC-v1|5.2.2,QCSC-v1|13.2,SWIFT-CSCv1|4.1,TBA-FIISB|26.1",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,690,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Default,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > condition,Default,,,,,,,Clear,POLICY_TEXT,,,,,Medium,736,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Applications,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > condition,Applications,,,,,,,Clear,POLICY_TEXT,,,,,Medium,745,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+2.7,,,Ensure 'passwordFormat' is not set to clear,PASSED,report,group_policy > if > then > if > then,2.7 Ensure 'passwordFormat' is not set to clear,"The <credentials> element of the <authentication> element allows optional definitions of name and password for IIS Manager User accounts within the configuration file. Forms based authentication also uses these elements to define the users. IIS Manager Users can use the administration interface to connect to sites and applications in which they've been granted authorization. Note that the <credentials> element only applies when the default provider, ConfigurationAuthenticationProvider, is configured as the authentication provider. It is recommended that passwordFormat be set to a value other than Clear, such as SHA1.
+
+Rationale:
+
+Authentication credentials should always be protected to reduce the risk of stolen authentication credentials.","Authentication mode is configurable at the machine.config, root-level web.config, or application-level web.config:
+
+Locate and open the configuration file where the credentials are stored
+
+Find the <credentials> element
+
+If present, ensure passwordFormat is not set to Clear
+
+Change passwordFormat to SHA1
+
+The clear text passwords will need to be replaced with the appropriate hashed version.","800-171|3.5.10,TBA-FIISB|26.1,800-53|IA-5(1)(c),HIPAA|164.312(d),800-53r5|IA-5(1)(c),QCSC-v1|5.2.2,CSF|PR.AC-1,ITSG-33|IA-5(1)(c),CSF2.0|PR.AA-01,SWIFT-CSCv1|4.1,CSF2.0|PR.AA-03,NESA|T5.2.3,GDPR|32.1.b,QCSC-v1|13.2,HIPAA|164.306(a)(1),NIAv2|CY6,HIPAA|164.312(a)(2)(i)",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,759,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Verify .net extensibility is installed - ASPNET45,REGISTRY_SETTING,custom_item,group_policy > if > then > if > condition,Verify .net extensibility is installed - ASPNET45,,,,,,,1,POLICY_DWORD,HKLM\Software\Microsoft\Inetstp\Components,ASPNET45,CAN_NOT_BE_NULL,,Medium,786,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Verify .net extensibility is installed - NetFxExtensibility45,REGISTRY_SETTING,custom_item,group_policy > if > then > if > condition,Verify .net extensibility is installed - NetFxExtensibility45,,,,,,,1,POLICY_DWORD,HKLM\Software\Microsoft\Inetstp\Components,NetFxExtensibility45,CAN_NOT_BE_NULL,,Medium,796,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+3.1,,,Ensure 'deployment method retail' is set,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then,3.1 Ensure 'deployment method retail' is set,"The <deployment retail> switch is intended for use by production IIS servers. This switch is used to help applications run with the best possible performance and least possible security information leakages by disabling the application's ability to generate trace output on a page, disabling the ability to display detailed error messages to end users, and disabling the debug switch. Often times, switches and options that are developer-focused, such as failed request tracing and debugging, are enabled during active development. It is recommended that the deployment method on any production server be set to retail.
+
+Rationale:
+
+Utilizing the switch specifically intended for production IIS servers will eliminate the risk of vital application and system information leakages that would otherwise occur if tracing or debug were to be left enabled, or customErrors were to be left off.","Open the machine.config file located in: %systemroot%\Microsoft.NET\Framework<bitness (if not the 32 bit)>\<framework version>\CONFIG
+
+Add the line <deployment retail='true' /> within the <system.web> section
+
+If systems are 64-bit, do the same for the machine.config located in: %systemroot%\Microsoft.NET\Framework<bitness (if not the 32 bit)>\<framework version>\CONFIG","800-171|3.4.2,800-53|CM-6b.,800-53r5|CM-6b.,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-6b.,LEVEL|1A,NESA|T3.2.1,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/14293,,,true,POLICY_TEXT,,,,,Medium,808,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Default,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > condition,Default,,,,,,,"""DetailedLocalOnly"" || ""Custom""",POLICY_TEXT,,,,,Medium,830,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Applications,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > condition,Applications,,,,,,,"""DetailedLocalOnly"" || ""Custom""",POLICY_TEXT,,,,,Medium,838,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+3.4,,,Ensure IIS HTTP detailed errors are hidden from displaying remotely,PASSED,report,group_policy > if > then > if > then > if > then,3.4 Ensure IIS HTTP detailed errors are hidden from displaying remotely,"A Web site's error pages are often set to show detailed error information for troubleshooting purposes during testing or initial deployment. To prevent unauthorized users from viewing this privileged information, detailed error pages must not be seen by remote users. This setting can be modified in the errorMode attribute setting for a Web site's error pages. By default, the errorMode attribute is set in the Web.config file for the Web site or application and is located in the <httpErrors> element of the <system.webServer> section. It is recommended that custom errors be prevented from displaying remotely.
+
+Rationale:
+
+The information contained in custom error messages can provide clues as to how applications function, opening up unnecessary attack vectors. Ensuring custom errors are never displayed remotely can help mitigate the risk of malicious persons obtaining information as to how the application works.","The following describes how to change the errorMode attribute to DetailedLocalOnly or Custom for a Web site by using IIS Manager:
+
+Open IIS Manager with Administrative privileges
+
+In the Connections pane on the left, expand the server, then expand the Sites folder
+
+Select the Web site or application to be configured
+
+In Features View, select Error Pages, in the Actions pane, select Open Feature
+
+In the Actions pane, select Edit Feature Settings
+
+In the Edit Error Pages Settings dialog, under Error Responses, select either Custom error pages or Detailed errors for local requests and custom error pages for remote requests
+
+Click OK and exit the Edit Error Pages Settings dialog","800-53|SI-11a.,ITSG-33|SI-11b.,800-53r5|SI-11a.,HIPAA|164.306(a)(1),GDPR|32.1.b",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,849,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Default,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > condition,Default,,,,,,,true,POLICY_TEXT,,,,,Medium,880,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Applications,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > condition,Applications,,,,,,,true,POLICY_TEXT,,,,,Medium,888,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+3.7,,,Ensure 'cookies' are set with HttpOnly attribute,PASSED,report,group_policy > if > then > if > then > if > then,3.7 Ensure 'cookies' are set with HttpOnly attribute,"The httpOnlyCookies attribute of the httpCookies node determines if IIS will set the HttpOnly flag on HTTP cookies it sets. The HttpOnly flag indicates to the user agent that the cookie must not be accessible by client-side script (i.e document.cookie). It is recommended that the httpOnlyCookies attribute be set to true.
+
+Rationale:
+
+When cookies are set with the HttpOnly flag, they cannot be accessed by client side scripting running in the user's browser. Preventing client-side scripting from accessing cookie content may reduce the probability of a cross site scripting attack materializing into a successful session hijack.","Locate and open the application's web.config file
+
+Add the <httpCookies httpOnlyCookies='true' /> tag within <system.web>:
+
+
+<configuration>
+  <system.web>
+    <httpCookies httpOnlyCookies='true' />
+  </system.web>
+</configuration>
+
+Setting the value of the httpOnlyCookies attribute of the httpCookies element to true will add the HttpOnly flag to all the cookies set by the application. All modern versions of browsers recognize HttpOnly attribute; older versions will either treat them as normal cookies or simply ignore them altogether.","800-171|3.1.5,PCI-DSSv3.2.1|7.1.2,800-53|AC-6,NESA|T5.4.5,800-53r5|AC-6,TBA-FIISB|31.4.3,CN-L3|7.1.3.2(b),NESA|T5.5.4,CN-L3|7.1.3.2(g),PCI-DSSv4.0|7.2.1,CN-L3|8.1.4.2(d),NESA|T5.6.1,CN-L3|8.1.10.6(a),QCSC-v1|13.2,CSF|PR.AC-4,NESA|T7.5.3,CSF|PR.DS-5,PCI-DSSv4.0|7.2.2,CSF2.0|PR.AA-05,NIAv2|AM1,GDPR|32.1.b,TBA-FIISB|31.4.2,HIPAA|164.306(a)(1),NIAv2|AM23f,HIPAA|164.312(a)(1),QCSC-v1|5.2.2,ITSG-33|AC-6,NIAv2|SS13c,NESA|T5.1.1,SWIFT-CSCv1|5.1,NESA|T5.2.2,NIAv2|SS15c,NESA|T5.4.1,QCSC-v1|6.2,NESA|T5.4.4",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,899,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Default,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > condition,Default,,,,,,,^(HMACSHA256|HMACSHA512)[\s]*$,POLICY_TEXT,,,,,Medium,927,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Applications,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > then > if > condition,Applications,,,,,,,.*failed.*,POLICY_TEXT,,,,,Medium,936,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+3.9,,,Ensure 'MachineKey validation method - .Net 4.5' is configured,PASSED,report,group_policy > if > then > if > then > if > then,3.9 Ensure 'MachineKey validation method - .Net 4.5' is configured,"The machineKey element of the ASP.NET web.config specifies the algorithm and keys that ASP.NET will use for encryption. The Machine Key feature can be managed to specify hashing and encryption settings for application services such as view state, Forms authentication, membership and roles, and anonymous identification.
+
+The following validation methods are available:
+
+Advanced Encryption Standard (AES) is relatively easy to implement and requires little memory. AES has a key size of 128, 192, or 256 bits. This method uses the same private key to encrypt and decrypt data, whereas a public-key method must use a pair of keys
+
+Message Digest 5 (MD5) is used for digital signing of applications. This method produces a 128-bit message digest, which is a compressed form of the original data
+
+Secure Hash Algorithm (SHA1) is considered more secure than MD5 because it produces a 160-bit message digest
+
+Triple Data Encryption Standard (TripleDES) is a minor variation of Data Encryption Standard (DES). It is three times slower than regular DES but can be more secure because it has a key size of 192 bits. If performance is not a primary consideration, consider using TripleDES
+
+Secure Hash Algorithm (SHA-2) is a family of two similar hash functions, with different block sizes known as SHA-256 and SHA-512. They differ in the word size; SHAS-256 used 32-bit words and SHA-512 uses 64-bit words.
+
+It is recommended that SHA-2 methods be configured for use at the global level.
+
+Rationale:
+
+SHA-2 is the strongest hashing algorithm supported by the validation property so it should be used as the validation method for the MachineKey in .Net 4.5.","Machine key encryption can be set by using the UI, running appcmd.exe commands, by editing configuration files directly, or by writing WMI scripts. To set the Machine Key encryption at the global level using an appcmd.exe command:
+
+%systemroot%\system32\inetsrv\appcmd set config /commit:WEBROOT /section:machineKey /validation:HMACSHA256
+
+Note: When Appcmd.exe is used to configure the <machineKey> element at the global level in IIS, the /commit:WEBROOT switch must be included so that configuration changes are made to the root web.config file instead of ApplicationHost.config.","800-171|3.13.8,HIPAA|164.312(e)(1),800-53|SC-8(1),PCI-DSSv3.2.1|2.3,800-53r5|SC-8(1),HIPAA|164.312(e)(2)(i),CN-L3|8.1.2.2(a),QCSC-v1|5.2.2,CN-L3|8.1.2.2(b),ISO/IEC-27001|A.10.1.1,CN-L3|8.1.4.7(a),PCI-DSSv3.2.1|4.1,CN-L3|8.1.4.8(a),ISO/IEC-27001|A.13.2.3,CN-L3|8.2.4.5(c),SWIFT-CSCv1|2.1,CN-L3|8.2.4.5(d),ITSG-33|SC-8(1),CN-L3|8.5.2.2,PCI-DSSv4.0|2.2.7,CSF|PR.DS-2,NESA|T7.4.1,CSF|PR.DS-5,QCSC-v1|6.2,CSF2.0|PR.DS-02,NIAv2|NS5d,GDPR|32.1.a,PCI-DSSv4.0|4.2.1,GDPR|32.1.b,NIAv2|NS6b,HIPAA|164.306(a)(1),TBA-FIISB|29.1",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,947,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Verify .Net 2.0 is installed,REG_CHECK,custom_item,group_policy > if > then > if > then > if > condition,Verify .Net 2.0 is installed,,,,,,,HKLM\Software\Microsoft\Net Framework Setup\Ndp\V2.0.50727,POLICY_TEXT,,,MUST_EXIST,,Medium,982,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Verify asp.net is installed,REGISTRY_SETTING,custom_item,group_policy > if > then > if > then > if > condition,Verify asp.net is installed,,,,,,,1,POLICY_DWORD,HKLM\Software\Microsoft\Net Framework Setup\Ndp\V2.0.50727,Install,,,Medium,990,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Default,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > condition,Default,,,,,,,^(Medium|Low|Minimal)[\s]*$,POLICY_TEXT,,,,,Medium,999,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Applications,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > condition,Applications,,,,,,,^(Medium|Low|Minimal)[\s]*$,POLICY_TEXT,,,,,Medium,1008,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+3.10,,,Ensure global .NET trust level is configured,PASSED,report,group_policy > if > then > if > then > if > then,3.10 Ensure global .NET trust level is configured,"This only applies to .Net 2.0. Future versions have stopped supporting this feature.
+
+An application's trust level determines the permissions that are granted by the ASP.NET code access security (CAS) policy. CAS defines two trust categories: full trust and partial trust. An application that has full trust permissions may access all resource types on a server and perform privileged operations, while applications that run with partial trust have varying levels of operating permissions and access to resources.
+
+The possible values for the Level property of the TrustSection class are:
+
+Full: Specifies unrestricted permissions and grants the ASP.NET application permissions to access any resource that is subject to operating system security; all privileged operations are supported
+
+High: specifies a high level of code access security which limits the application from doing the following:
+
+Call unmanaged code
+
+Call serviced components
+
+Write to the event log
+
+Access Microsoft Windows Message Queuing queues
+
+Access ODBC, OLD DB, or Oracle data sources
+
+Medium: specifies a medium level of code access security, which means that in addition to the restrictions for High, the ASP.NET application cannot do any of the following things:
+
+Access files outside the application directory
+
+Access the registry
+
+Low: specifies a low level of code access security, which means that in addition to the restrictions for Medium, the application is prevented from performing any of the following actions:
+
+Write to the file system
+
+Call the System.Security.CodeAccessPermission.Assert method to expand permissions to resources
+
+Minimal: specifies a minimal level of code access security, which means that the application has only execute permission
+
+It is recommended that the global .NET Trust Level be set to Medium or lower.
+
+Rationale:
+
+The CAS determines the permissions that are granted to the application on the server. Setting a minimal level of trust that is compatible with the applications will limit the potential harm that a compromised application could cause to a system.","Trust level can be set by using the UI, running appcmd.exe commands, by editing configuration files directly, or by writing WMI scripts. To set the .Net Trust Level to Medium at the server level using an appcmd.exe command:
+
+%systemroot%\system32\inetsrv\appcmd set config /commit:WEBROOT /section:trust /level:Medium
+
+When Appcmd.exe is used to configure the element at the global level in IIS, the /commit:WEBROOT switch must be included so that configuration changes are made to the root web.config file instead of ApplicationHost.config.","800-171|3.1.5,PCI-DSSv3.2.1|7.1.2,800-53|AC-6,NESA|T5.4.5,800-53r5|AC-6,TBA-FIISB|31.4.3,CN-L3|7.1.3.2(b),NESA|T5.5.4,CN-L3|7.1.3.2(g),PCI-DSSv4.0|7.2.1,CN-L3|8.1.4.2(d),NESA|T5.6.1,CN-L3|8.1.10.6(a),QCSC-v1|13.2,CSF|PR.AC-4,NESA|T7.5.3,CSF|PR.DS-5,PCI-DSSv4.0|7.2.2,CSF2.0|PR.AA-05,NIAv2|AM1,GDPR|32.1.b,TBA-FIISB|31.4.2,HIPAA|164.306(a)(1),NIAv2|AM23f,HIPAA|164.312(a)(1),QCSC-v1|5.2.2,ITSG-33|AC-6,NIAv2|SS13c,NESA|T5.1.1,SWIFT-CSCv1|5.1,NESA|T5.2.2,NIAv2|SS15c,NESA|T5.4.1,QCSC-v1|6.2,NESA|T5.4.4",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,1020,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+3.1,,,Ensure 'deployment method retail' is set,PASSED,report,group_policy > if > then > if > else,3.1 Ensure 'deployment method retail' is set,"The <deployment retail> switch is intended for use by production IIS servers. This switch is used to help applications run with the best possible performance and least possible security information leakages by disabling the application's ability to generate trace output on a page, disabling the ability to display detailed error messages to end users, and disabling the debug switch. Often times, switches and options that are developer-focused, such as failed request tracing and debugging, are enabled during active development. It is recommended that the deployment method on any production server be set to retail.
+
+Rationale:
+
+Utilizing the switch specifically intended for production IIS servers will eliminate the risk of vital application and system information leakages that would otherwise occur if tracing or debug were to be left enabled, or customErrors were to be left off.","Open the machine.config file located in: %systemroot%\Microsoft.NET\Framework<bitness (if not the 32 bit)>\<framework version>\CONFIG
+
+Add the line <deployment retail='true' /> within the <system.web> section
+
+If systems are 64-bit, do the same for the machine.config located in: %systemroot%\Microsoft.NET\Framework<bitness (if not the 32 bit)>\<framework version>\CONFIG","800-171|3.4.2,800-53|CM-6b.,800-53r5|CM-6b.,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-6b.,LEVEL|1A,NESA|T3.2.1,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,1075,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+3.4,,,Ensure IIS HTTP detailed errors are hidden from displaying remotely,PASSED,report,group_policy > if > then > if > else,3.4 Ensure IIS HTTP detailed errors are hidden from displaying remotely,"A Web site's error pages are often set to show detailed error information for troubleshooting purposes during testing or initial deployment. To prevent unauthorized users from viewing this privileged information, detailed error pages must not be seen by remote users. This setting can be modified in the errorMode attribute setting for a Web site's error pages. By default, the errorMode attribute is set in the Web.config file for the Web site or application and is located in the <httpErrors> element of the <system.webServer> section. It is recommended that custom errors be prevented from displaying remotely.
+
+Rationale:
+
+The information contained in custom error messages can provide clues as to how applications function, opening up unnecessary attack vectors. Ensuring custom errors are never displayed remotely can help mitigate the risk of malicious persons obtaining information as to how the application works.","The following describes how to change the errorMode attribute to DetailedLocalOnly or Custom for a Web site by using IIS Manager:
+
+Open IIS Manager with Administrative privileges
+
+In the Connections pane on the left, expand the server, then expand the Sites folder
+
+Select the Web site or application to be configured
+
+In Features View, select Error Pages, in the Actions pane, select Open Feature
+
+In the Actions pane, select Edit Feature Settings
+
+In the Edit Error Pages Settings dialog, under Error Responses, select either Custom error pages or Detailed errors for local requests and custom error pages for remote requests
+
+Click OK and exit the Edit Error Pages Settings dialog",LEVEL|1A,https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,1091,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+3.7,,,Ensure 'cookies' are set with HttpOnly attribute,PASSED,report,group_policy > if > then > if > else,3.7 Ensure 'cookies' are set with HttpOnly attribute,"The httpOnlyCookies attribute of the httpCookies node determines if IIS will set the HttpOnly flag on HTTP cookies it sets. The HttpOnly flag indicates to the user agent that the cookie must not be accessible by client-side script (i.e document.cookie). It is recommended that the httpOnlyCookies attribute be set to true.
+
+Rationale:
+
+When cookies are set with the HttpOnly flag, they cannot be accessed by client side scripting running in the user's browser. Preventing client-side scripting from accessing cookie content may reduce the probability of a cross site scripting attack materializing into a successful session hijack.","Locate and open the application's web.config file
+
+Add the <httpCookies httpOnlyCookies='true' /> tag within <system.web>:
+
+
+<configuration>
+  <system.web>
+    <httpCookies httpOnlyCookies='true' />
+  </system.web>
+</configuration>
+
+Setting the value of the httpOnlyCookies attribute of the httpCookies element to true will add the HttpOnly flag to all the cookies set by the application. All modern versions of browsers recognize HttpOnly attribute; older versions will either treat them as normal cookies or simply ignore them altogether.",LEVEL|1A,https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,1117,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+3.9,,,Ensure 'MachineKey validation method - .Net 4.5' is configured,PASSED,report,group_policy > if > then > if > else,3.9 Ensure 'MachineKey validation method - .Net 4.5' is configured,"The machineKey element of the ASP.NET web.config specifies the algorithm and keys that ASP.NET will use for encryption. The Machine Key feature can be managed to specify hashing and encryption settings for application services such as view state, Forms authentication, membership and roles, and anonymous identification.
+
+The following validation methods are available:
+
+Advanced Encryption Standard (AES) is relatively easy to implement and requires little memory. AES has a key size of 128, 192, or 256 bits. This method uses the same private key to encrypt and decrypt data, whereas a public-key method must use a pair of keys
+
+Message Digest 5 (MD5) is used for digital signing of applications. This method produces a 128-bit message digest, which is a compressed form of the original data
+
+Secure Hash Algorithm (SHA1) is considered more secure than MD5 because it produces a 160-bit message digest
+
+Triple Data Encryption Standard (TripleDES) is a minor variation of Data Encryption Standard (DES). It is three times slower than regular DES but can be more secure because it has a key size of 192 bits. If performance is not a primary consideration, consider using TripleDES
+
+Secure Hash Algorithm (SHA-2) is a family of two similar hash functions, with different block sizes known as SHA-256 and SHA-512. They differ in the word size; SHAS-256 used 32-bit words and SHA-512 uses 64-bit words.
+
+It is recommended that SHA-2 methods be configured for use at the global level.
+
+Rationale:
+
+SHA-2 is the strongest hashing algorithm supported by the validation property so it should be used as the validation method for the MachineKey in .Net 4.5.","Machine key encryption can be set by using the UI, running appcmd.exe commands, by editing configuration files directly, or by writing WMI scripts. To set the Machine Key encryption at the global level using an appcmd.exe command:
+
+%systemroot%\system32\inetsrv\appcmd set config /commit:WEBROOT /section:machineKey /validation:HMACSHA256
+
+Note: When Appcmd.exe is used to configure the <machineKey> element at the global level in IIS, the /commit:WEBROOT switch must be included so that configuration changes are made to the root web.config file instead of ApplicationHost.config.",LEVEL|1A,https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,1140,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+3.10,,,Ensure global .NET trust level is configured,PASSED,report,group_policy > if > then > if > else,3.10 Ensure global .NET trust level is configured,"This only applies to .Net 2.0. Future versions have stopped supporting this feature.
+
+An application's trust level determines the permissions that are granted by the ASP.NET code access security (CAS) policy. CAS defines two trust categories: full trust and partial trust. An application that has full trust permissions may access all resource types on a server and perform privileged operations, while applications that run with partial trust have varying levels of operating permissions and access to resources.
+
+The possible values for the Level property of the TrustSection class are:
+
+Full: Specifies unrestricted permissions and grants the ASP.NET application permissions to access any resource that is subject to operating system security; all privileged operations are supported
+
+High: specifies a high level of code access security which limits the application from doing the following:
+
+Call unmanaged code
+
+Call serviced components
+
+Write to the event log
+
+Access Microsoft Windows Message Queuing queues
+
+Access ODBC, OLD DB, or Oracle data sources
+
+Medium: specifies a medium level of code access security, which means that in addition to the restrictions for High, the ASP.NET application cannot do any of the following things:
+
+Access files outside the application directory
+
+Access the registry
+
+Low: specifies a low level of code access security, which means that in addition to the restrictions for Medium, the application is prevented from performing any of the following actions:
+
+Write to the file system
+
+Call the System.Security.CodeAccessPermission.Assert method to expand permissions to resources
+
+Minimal: specifies a minimal level of code access security, which means that the application has only execute permission
+
+It is recommended that the global .NET Trust Level be set to Medium or lower.
+
+Rationale:
+
+The CAS determines the permissions that are granted to the application on the server. Setting a minimal level of trust that is compatible with the applications will limit the potential harm that a compromised application could cause to a system.","Trust level can be set by using the UI, running appcmd.exe commands, by editing configuration files directly, or by writing WMI scripts. To set the .Net Trust Level to Medium at the server level using an appcmd.exe command:
+
+%systemroot%\system32\inetsrv\appcmd set config /commit:WEBROOT /section:trust /level:Medium
+
+When Appcmd.exe is used to configure the element at the global level in IIS, the /commit:WEBROOT switch must be included so that configuration changes are made to the root web.config file instead of ApplicationHost.config.",LEVEL|1A,https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,1170,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Default,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > condition,Default,,,,,,,false,POLICY_TEXT,,,,,Medium,1224,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Applications,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > condition,Applications,,,,,,,false,POLICY_TEXT,,,,,Medium,1232,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+4.5,,,Ensure Double-Encoded requests will be rejected,PASSED,report,group_policy > if > then > if > then,4.5 Ensure Double-Encoded requests will be rejected,"This Request Filter feature prevents attacks that rely on double-encoded requests and applies if an attacker submits a double-encoded request to IIS. When the double-encoded requests filter is enabled, IIS will go through a two iteration process of normalizing the request. If the first normalization differs from the second, the request is rejected and the error code is logged as a 404.11. The double-encoded requests filter was the VerifyNormalization option in UrlScan. It is recommended that double-encoded requests be rejected.
+
+Rationale:
+
+This feature will help prevent attacks that rely on URLs that have been crafted to contain double-encoded request(s).","The allowDoubleEscaping Request Filter may be set for a server, website, or application using the IIS Manager GUI, using AppCmd.exe commands in a command-line window, and/or directly editing the configuration files. To configure using the IIS Manager GUI:
+
+Open Internet Information Services (IIS) Manager
+
+In the Connections pane, select the site, application, or directory to be configured
+
+In the Home pane, double-click Request Filtering
+
+Click Edit Feature Settings... in the Actions pane
+
+Under the General section, uncheck Allow double escaping
+
+If a file name in a URL includes '+' then allowDoubleEscaping must be set to true to allow functionality.
+To set this Request Filter using an AppCmd.exe command, run the following command at an elevated command prompt:
+
+%systemroot%\system32\inetsrv\appcmd set config /section:requestfiltering /allowDoubleEscaping:false","800-171|3.4.2,CSF2.0|PR.PS-01,800-53|CM-6b.,ITSG-33|CM-6b.,800-53r5|CM-6b.,GDPR|32.1.b,CN-L3|8.1.10.6(d),SWIFT-CSCv1|2.3,CSF|PR.IP-1,HIPAA|164.306(a)(1),CSF2.0|DE.CM-09,NESA|T3.2.1",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,1243,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Default,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > condition,Default,,,,,,,<add verb=.TRACE.[\s]+allowed=.false.[\s]*/>,POLICY_TEXT,,,,,Medium,1275,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Applications,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > condition,Applications,,,,,,,<add verb=.TRACE.[\s]+allowed=.false.[\s]*/>,POLICY_TEXT,,,,,Medium,1284,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+4.6,,,Ensure 'HTTP Trace Method' is disabled,PASSED,report,group_policy > if > then > if > then,4.6 Ensure 'HTTP Trace Method' is disabled,"The HTTP TRACE method returns the contents of client HTTP requests in the entity-body of the TRACE response. Attackers could leverage this behavior to access sensitive information, such as authentication data or cookies, contained in the HTTP headers of the request. One such way to mitigate this is by using the <verbs> element of the <requestFiltering> collection. The <verbs> element replaces the [AllowVerbs] and [DenyVerbs] features in UrlScan. It is recommended the HTTP TRACE method be denied.
+
+Rationale:
+
+Attackers may abuse HTTP TRACE functionality to gain access to information in HTTP headers such as cookies and authentication data. This risk can be mitigated by not allowing the TRACE verb.","Open Internet Information Services (IIS) Manager
+
+In the Connections pane, select the site, application, or directory to be configured
+
+In the Home pane, double-click Request Filtering
+
+In the Request Filtering pane, click the HTTP verbs tab, and then click Deny Verb... in the Actions pane
+
+In the Deny Verb dialog box, enter the TRACE, and then click OK
+
+To set this Request Filter using an AppCmd.exe command, run the following command at an elevated command prompt:
+
+%systemroot%\system32\inetsrv\appcmd set config /section:requestfiltering /+verbs.[verb='TRACE',allowed='false']","800-171|3.4.6,800-171|3.4.7,800-53|CM-7b.,800-53r5|CM-7b.,CN-L3|7.1.3.5(c),CN-L3|7.1.3.7(d),CN-L3|8.1.4.4(b),CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-7a.,LEVEL|1A,NIAv2|SS13b,NIAv2|SS14a,NIAv2|SS14c,PCI-DSSv3.2.1|2.2.2,PCI-DSSv4.0|2.2.4,QCSC-v1|3.2,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,1296,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Default,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > condition,Default,,,,,,,false,POLICY_TEXT,,,,,Medium,1325,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Applications,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > condition,Applications,,,,,,,false,POLICY_TEXT,,,,,Medium,1333,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+4.7,,,Ensure Unlisted File Extensions are not allowed,PASSED,report,group_policy > if > then > if > then,4.7 Ensure Unlisted File Extensions are not allowed,"The FileExtensions Request Filter allows administrators to define specific extensions their web server(s) will allow and disallow. The property allowUnlisted will cover all other file extensions not explicitly allowed or denied. Often times, extensions such as .config, .bat, .exe, to name a few, should never be served. The AllowExtensions and DenyExtensions options are the UrlScan equivalents. It is recommended that all extensions be unallowed at the most global level possible, with only those necessary being allowed.
+
+Rationale:
+
+Disallowing all but the necessary file extensions can greatly reduce the attack surface of applications and servers.","The allowUnlisted Request Filter may be set for a server, website, or application using the IIS Manager GUI, using AppCmd.exe commands in a command-line window, and/or directly editing the configuration files. To configure at the server level using the IIS Manager GUI:
+
+Open Internet Information Services (IIS) Manager
+
+In the Connections pane, select the server
+
+In the Home pane, double-click Request Filtering
+
+Click Edit Feature Settings... in the Actions pane
+
+Under the General section, uncheck Allow unlisted file name extensions
+
+To set this Request Filter using an AppCmd.exe command, run the following command at an elevated command prompt:
+
+%systemroot%\system32\inetsrv\appcmd set config /section:requestfiltering /fileExtensions.allowunlisted:false","800-171|3.4.8,ISO/IEC-27001|A.12.6.2,800-53|CM-7(4),QCSC-v1|3.2,800-53r5|CM-7(4),ITSG-33|CM-7,CSF|PR.IP-1,TBA-FIISB|44.2.2,CSF|PR.PT-3,NIAv2|SS13a,CSF2.0|PR.PS-01,SWIFT-CSCv1|2.3,GDPR|32.1.b,PCI-DSSv3.2.1|2.2.2,HIPAA|164.306(a)(1),TBA-FIISB|49.2.3",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,1344,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Default,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > condition,Default,,,,,,,Write.*[\s]*(Execute|Script).*[\s]*$,POLICY_TEXT,,,,,Medium,1375,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Applications,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > condition,Applications,,,,,,,Write.*[\s]*(Execute|Script).*[\s]*$,POLICY_TEXT,,,,,Medium,1384,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+4.8,,,Ensure Handler is not granted Write and Script/Execute,PASSED,report,group_policy > if > then > if > then,4.8 Ensure Handler is not granted Write and Script/Execute,"Handler mappings can be configured to give permissions to Read, Write, Script, or Execute depending on what the use is for - reading static content, uploading files, executing scripts, etc. It is recommended to grant a handler either Execute/''Script or Write permissions, but not both.
+
+Rationale:
+
+By allowing both Execute/_Script_ and Write permissions, a handler can run malicious code on the target server. Ensuring these two permissions are never together will help lower the risk of malicious code being executed on the server.","The accessPolicy attribute in the <handlers> section of either the ApplicationHost.config (server-wide) or web.config (site or application) must not have Write present when Script or Execute are present. To resolve this issue for a Web server, the attribute in the <handlers> section of the ApplicationHost.config file for the server must manually be edited. To edit the ApplicationHost.config file by using Notepad, perform the following steps:
+
+Open Notepad as Administrator
+
+Open the ApplicationHost.config file in %systemroot%\system32\inetsrv\config
+
+Edit the <handlers> section accessPolicy attribute so that Write is not present when Script or Execute are present
+
+To set this Request Filter using an AppCmd.exe command, run the following command at an elevated command prompt:
+
+%systemroot%\system32\inetsrv\appcmd set config /section:handlers /accessPolicy:Read,Script
+
+Note: This configuration change cannot be made by using IIS Manager.","800-171|3.1.5,PCI-DSSv3.2.1|7.1.2,800-53|AC-6,NESA|T5.4.5,800-53r5|AC-6,TBA-FIISB|31.4.3,CN-L3|7.1.3.2(b),NESA|T5.5.4,CN-L3|7.1.3.2(g),PCI-DSSv4.0|7.2.1,CN-L3|8.1.4.2(d),NESA|T5.6.1,CN-L3|8.1.10.6(a),QCSC-v1|13.2,CSF|PR.AC-4,NESA|T7.5.3,CSF|PR.DS-5,PCI-DSSv4.0|7.2.2,CSF2.0|PR.AA-05,NIAv2|AM1,GDPR|32.1.b,TBA-FIISB|31.4.2,HIPAA|164.306(a)(1),NIAv2|AM23f,HIPAA|164.312(a)(1),QCSC-v1|5.2.2,ITSG-33|AC-6,NIAv2|SS13c,NESA|T5.1.1,SWIFT-CSCv1|5.1,NESA|T5.2.2,NIAv2|SS15c,NESA|T5.4.1,QCSC-v1|6.2,NESA|T5.4.4",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,1396,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+4.9,,,Ensure 'notListedIsapisAllowed' is set to false,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then,4.9 Ensure 'notListedIsapisAllowed' is set to false,"The notListedIsapisAllowed attribute is a server-level setting that is located in the ApplicationHost.config file in the <isapiCgiRestriction> element of the <system.webServer> section under <security>. This element ensures that malicious users cannot copy unauthorized ISAPI binaries to the Web server and then run them. It is recommended that notListedIsapisAllowed be set to false.
+
+Rationale:
+
+Restricting this attribute to false will help prevent potentially malicious ISAPI extensions from being run.","To use IIS Manager to set the notListedIsapisAllowed attribute to false:
+
+Open IIS Manager as Administrator
+
+In the Connections pane on the left, select server to be configured
+
+In Features View, select ISAPI and CGI Restrictions; in the Actions pane, select Open Feature
+
+In the Actions pane, select Edit Feature Settings
+
+In the Edit ISAPI and CGI Restrictions Settings dialog, clear the Allow unspecified ISAPI modules check box, if checked
+
+Click OK
+
+To set this Request Filter using an AppCmd.exe command, run the following command at an elevated command prompt:
+
+%systemroot%\system32\inetsrv\appcmd.exe set config  -section:system.webServer/security/isapiCgiRestriction /notListedIsapisAllowed:false","800-171|3.13.13,800-53|SC-18b.,800-53r5|SC-18,CSF|DE.CM-5,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SC-18b.,LEVEL|1A,NIAv2|NS26a,NIAv2|NS26d,QCSC-v1|3.2,QCSC-v1|8.2.1",https://workbench.cisecurity.org/benchmarks/14293,,,false,POLICY_TEXT,,,,,Medium,1423,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+4.10,,,Ensure 'notListedCgisAllowed' is set to false,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then,4.10 Ensure 'notListedCgisAllowed' is set to false,"The notListedCgisAllowed attribute is a server-level setting that is located in the ApplicationHost.config file in the <isapiCgiRestriction> element of the <system.webServer> section under <security>. This element ensures that malicious users cannot copy unauthorized CGI binaries to the Web server and then run them. It is recommended that notListedCgisAllowed be set to false.
+
+Rationale:
+
+Restricting this attribute to false will help prevent unlisted CGI extensions, including potentially malicious CGI scripts from being run.","To set the notListedCgisAllowed attribute to false using IIS Manager:
+
+Open IIS Manager as Administrator
+
+In the Connections pane on the left, select the server to configure
+
+In Features View, select ISAPI and CGI Restrictions; in the Actions pane, select Open Feature
+
+In the Actions pane, select Edit Feature Settings
+
+In the Edit ISAPI and CGI Restrictions Settings dialog, clear the Allow unspecified CGI modules check box
+
+Click OK
+
+To set this Request Filter using an AppCmd.exe command, run the following command at an elevated command prompt:
+
+%systemroot%\system32\inetsrv\appcmd.exe set config  -section:system.webServer/security/isapiCgiRestriction /notListedCgisAllowed:false","800-171|3.13.13,800-53|SC-18b.,800-53r5|SC-18,CSF|DE.CM-5,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SC-18b.,LEVEL|1A,NIAv2|NS26a,NIAv2|NS26d,QCSC-v1|3.2,QCSC-v1|8.2.1",https://workbench.cisecurity.org/benchmarks/14293,,,false,POLICY_TEXT,,,,,Medium,1455,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,"If deny by concurrent requests, then confirm Blocking",AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > condition,"If deny by concurrent requests, then confirm Blocking",,,,,,,true,POLICY_TEXT,,,,,Medium,1489,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,"If deny by request rate, then confirm Blocking",AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > condition,"If deny by request rate, then confirm Blocking",,,,,,,true,POLICY_TEXT,,,,,Medium,1497,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+4.11,,,Ensure 'Dynamic IP Address Restrictions' is enabled,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then,4.11 Ensure 'Dynamic IP Address Restrictions' is enabled,"IIS Dynamic IP Address Restrictions capability can be used to thwart DDos attacks. This is complimentary to the IP Addresses and Domain names Restrictions lists that can be manually maintained within IIS. In contrast, Dynamic IP address filtering allows administrators to configure the server to block access for IPs that exceed the specified request threshold. The default action Deny action for restrictions is to return a Forbidden response to the client.
+
+Rationale:
+
+Dynamic IP address filtering allows administrators to configure the server to block access for IPs that exceed the specified number of requests or requests frequency. Ensure that you receive the Forbidden page once the block has been enforced.","1. Open IIS Manager.
+2. Open the IP Address and Domain Restrictions feature.
+3. Click Edit Dynamic Restrictions Settings..
+4. Check the Deny IP Address based on the number of concurrent requests and the Deny IP Address based on the number of requests over a period of time boxes. The values can be tweaked as needed for your specific environment.
+
+Default Value:
+
+By default Dynamic IP Restrictions are not enabled.","800-53|SC-5,800-53r5|SC-5,CSF|DE.CM-1,CSF|PR.DS-4,CSF2.0|DE.CM-01,CSF2.0|PR.IR-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SC-5,ITSG-33|SC-5a.,LEVEL|1M,NESA|T3.3.1,NIAv2|GS8e,NIAv2|GS10c,QCSC-v1|8.2.1",https://workbench.cisecurity.org/benchmarks/14293,,,false,POLICY_TEXT,,,,,Medium,1507,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Verify IP Security is installed,REGISTRY_SETTING,custom_item,group_policy > if > then > if > else > if > condition,Verify IP Security is installed,,,,,,,1,POLICY_DWORD,HKLM\Software\Microsoft\Inetstp\Components,IPSecurity,CAN_NOT_BE_NULL,,Medium,1534,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Deny By Conccurent Requests,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > else > if > condition,Deny By Conccurent Requests,,,,,,,true,POLICY_TEXT,,,,,Medium,1544,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Deny By Request Rate,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > else > if > condition,Deny By Request Rate,,,,,,,true,POLICY_TEXT,,,,,Medium,1552,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+4.11,,,Ensure 'Dynamic IP Address Restrictions' is enabled,PASSED,report,group_policy > if > then > if > else > if > then,4.11 Ensure 'Dynamic IP Address Restrictions' is enabled,"IIS Dynamic IP Address Restrictions capability can be used to thwart DDos attacks. This is complimentary to the IP Addresses and Domain names Restrictions lists that can be manually maintained within IIS. In contrast, Dynamic IP address filtering allows administrators to configure the server to block access for IPs that exceed the specified request threshold. The default action Deny action for restrictions is to return a Forbidden response to the client.
+
+Rationale:
+
+Dynamic IP address filtering allows administrators to configure the server to block access for IPs that exceed the specified number of requests or requests frequency. Ensure that you receive the Forbidden page once the block has been enforced.","1. Open IIS Manager.
+2. Open the IP Address and Domain Restrictions feature.
+3. Click Edit Dynamic Restrictions Settings..
+4. Check the Deny IP Address based on the number of concurrent requests and the Deny IP Address based on the number of requests over a period of time boxes. The values can be tweaked as needed for your specific environment.
+
+Default Value:
+
+By default Dynamic IP Restrictions are not enabled.","800-53|SC-5,800-53r5|SC-5,CSF|DE.CM-1,CSF|PR.DS-4,CSF2.0|DE.CM-01,CSF2.0|PR.IR-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SC-5,ITSG-33|SC-5a.,LEVEL|1M,NESA|T3.3.1,NIAv2|GS8e,NIAv2|GS10c,QCSC-v1|8.2.1",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,1562,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+5.1,,,Ensure Default IIS web log location is moved,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then,5.1 Ensure Default IIS web log location is moved,"IIS will log relatively detailed information on every request. These logs are usually the first item looked at in a security response, and can be the most valuable. Malicious users are aware of this, and will often try to remove evidence of their activities. It is therefore recommended that the default location for IIS log files be changed to a restricted, non-system drive.
+
+Rationale:
+
+Moving IIS logging to a restricted, non-system drive will help mitigate the risk of logs being maliciously altered, removed, or lost in the event of system drive failure(s).","Moving the default log location can be easily accomplished using the Logging feature in the IIS Management UI or AppCmd.exe. To change to D:\LogFiles using AppCmd.exe:
+
+%systemroot%\system32\inetsrv\appcmd set config -section:sites -siteDefaults.logfile.directory:'D:\LogFiles'
+
+Moving log file stores to a non-system drive or partition separate from where web applications run and/or content is served is preferred. Additionally, folder-level NTFS permissions should be set as restrictive as possible; Administrators and SYSTEM are typically the only principals requiring access.
+
+While standard IIS logs can be moved and edited using IIS Manager, additional management tool add-ons are required in order to manage logs generated by other IIS features, such as Request Filtering and IIS Advanced Logging. These add-ons can be obtained using the Web Platform Installer or from Microsoft's site. The HTTPErr logging location can be changed by adding a registry key.","800-171|3.3.8,800-53|AU-9,800-53r5|AU-9,CN-L3|7.1.2.3(d),CN-L3|7.1.3.3(f),CN-L3|8.1.3.5(c),CN-L3|8.1.4.3(c),CSF|PR.PT-1,CSF2.0|PR.DS-10,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(b),ISO/IEC-27001|A.12.4.2,ITSG-33|AU-9,LEVEL|1A,NESA|M5.2.3,NESA|M5.5.2,NESA|T3.6.4,NESA|T8.2.9,NIAv2|SM5,NIAv2|SM6,PCI-DSSv3.2.1|10.5,PCI-DSSv3.2.1|10.5.2,PCI-DSSv4.0|10.3.2,QCSC-v1|8.2.1,QCSC-v1|13.2",https://workbench.cisecurity.org/benchmarks/14293,,,^(\%SystemDrive\%|C:),POLICY_TEXT,,,,,Medium,1586,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Verify Advanced Logging IIS Extensions is installed,REGISTRY_SETTING,custom_item,group_policy > if > then > if > condition,Verify Advanced Logging IIS Extensions is installed,,,,,,,1,POLICY_DWORD,HKLM\Software\Microsoft\Iis Extensions\Advanced Logging,Install,CAN_NOT_BE_NULL,,Medium,1611,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+5.2,,,Ensure Advanced IIS logging is enabled,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then,5.2 Ensure Advanced IIS logging is enabled,"IIS Advanced Logging is a module which provides flexibility in logging requests and client data. It provides controls that allow businesses to specify what fields are important, easily add additional fields, and provide policies pertaining to log file rollover and Request Filtering. HTTP request/response headers, server variables, and client-side fields can be easily logged with minor configuration in the IIS management console. It is recommended that Advanced Logging be enabled, and the fields which could be of value to the type of business or application in the event of a security incident, be identified and logged.
+
+Rationale:
+
+Many of the fields available in Advanced Logging many can provide extensive, real-time data and details not otherwise obtainable. Developers and security professionals can use this information to identify and remediate application vulnerabilities/attack patterns.","IIS Advanced Logging can be configured for servers, Web sites, and directories in IIS Manager. To enable Advanced Logging using the UI:
+
+Open Internet Information Services (IIS) Manager
+
+Click the server in the Connections pane
+
+Double-click the Advanced Logging icon on the Home page
+
+Click Enable Advanced Logging in the Actions pane
+
+The fields that will be logged need to be configured using the Edit Logging Fields action. As with IIS's standard log files, their location should be changed.
+Note: There may be performance considerations depending on the extent of the configuration. Advanced logging requires installation using Web Platform Installer or manually form the download link in the References section.","800-171|3.3.1,800-171|3.3.2,800-53|AU-12c.,800-53r5|AU-12c.,CN-L3|7.1.3.3(a),CN-L3|7.1.3.3(b),CN-L3|7.1.3.3(c),CN-L3|8.1.3.5(a),CN-L3|8.1.3.5(b),CN-L3|8.1.4.3(a),CSF|DE.CM-1,CSF|DE.CM-3,CSF|DE.CM-7,CSF|PR.PT-1,CSF2.0|DE.CM-01,CSF2.0|DE.CM-03,CSF2.0|DE.CM-09,CSF2.0|PR.PS-04,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(b),ISO/IEC-27001|A.12.4.1,ITSG-33|AU-12c.,LEVEL|1A,NESA|T3.6.2,NESA|T3.6.5,NESA|T3.6.6,NIAv2|SM8,PCI-DSSv3.2.1|10.1,QCSC-v1|3.2,QCSC-v1|6.2,QCSC-v1|8.2.1,QCSC-v1|13.2,SWIFT-CSCv1|6.4,TBA-FIISB|45.1.1",https://workbench.cisecurity.org/benchmarks/14293,,,true,POLICY_TEXT,,,,,Medium,1623,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+5.2,,,Ensure Advanced IIS logging is enabled,FAILED,report,group_policy > if > then > if > else,5.2 Ensure Advanced IIS logging is enabled,"IIS Advanced Logging is a module which provides flexibility in logging requests and client data. It provides controls that allow businesses to specify what fields are important, easily add additional fields, and provide policies pertaining to log file rollover and Request Filtering. HTTP request/response headers, server variables, and client-side fields can be easily logged with minor configuration in the IIS management console. It is recommended that Advanced Logging be enabled, and the fields which could be of value to the type of business or application in the event of a security incident, be identified and logged.
+
+Rationale:
+
+Many of the fields available in Advanced Logging many can provide extensive, real-time data and details not otherwise obtainable. Developers and security professionals can use this information to identify and remediate application vulnerabilities/attack patterns.","IIS Advanced Logging can be configured for servers, Web sites, and directories in IIS Manager. To enable Advanced Logging using the UI:
+
+Open Internet Information Services (IIS) Manager
+
+Click the server in the Connections pane
+
+Double-click the Advanced Logging icon on the Home page
+
+Click Enable Advanced Logging in the Actions pane
+
+The fields that will be logged need to be configured using the Edit Logging Fields action. As with IIS's standard log files, their location should be changed.
+Note: There may be performance considerations depending on the extent of the configuration. Advanced logging requires installation using Web Platform Installer or manually form the download link in the References section.","800-171|3.3.1,800-171|3.3.2,800-53|AU-12c.,800-53r5|AU-12c.,CN-L3|7.1.3.3(a),CN-L3|7.1.3.3(b),CN-L3|7.1.3.3(c),CN-L3|8.1.3.5(a),CN-L3|8.1.3.5(b),CN-L3|8.1.4.3(a),CSF|DE.CM-1,CSF|DE.CM-3,CSF|DE.CM-7,CSF|PR.PT-1,CSF2.0|DE.CM-01,CSF2.0|DE.CM-03,CSF2.0|DE.CM-09,CSF2.0|PR.PS-04,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(b),ISO/IEC-27001|A.12.4.1,ITSG-33|AU-12c.,LEVEL|1A,NESA|T3.6.2,NESA|T3.6.5,NESA|T3.6.6,NIAv2|SM8,PCI-DSSv3.2.1|10.1,QCSC-v1|3.2,QCSC-v1|6.2,QCSC-v1|8.2.1,QCSC-v1|13.2,SWIFT-CSCv1|6.4,TBA-FIISB|45.1.1",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,1652,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Verify version of IIS 8.5 installed.,REGISTRY_SETTING,custom_item,group_policy > if > then > if > condition,Verify version of IIS 8.5 installed.,,,,,,,^Version 8\.5[\s]*$,POLICY_TEXT,HKLM\Software\Microsoft\Inetstp,VersionString,,,Medium,1679,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Verify log format is W3c,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > condition,Verify log format is W3c,,,,,,,W3C,POLICY_TEXT,,,,,Medium,1693,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+5.3,,,Ensure 'ETW Logging' is enabled - Default ETW,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > then,5.3 Ensure 'ETW Logging' is enabled - Default ETW,"IIS introduces a new logging method. Administrators can now send logging information to Event Tracing for Windows (ETW).
+
+IIS flushes log information to disk, therefore prior to IIS, administrators do not have access to real-time logging information. Text-based log files can also be difficult and time consuming to process. By enabling ETW, administrators have access to use standard query tools for viewing real-time logging information.","To configure ETW logging:
+ 1. Open IIS Manager
+ 2. Select the server or site to enable ETW
+ 3. Select Logging.
+ 4. Ensure Log file format is W3C.
+ 5. Select Both log file and ETW event
+ 6. Save your settings.","800-171|3.3.1,800-171|3.3.2,800-53|AU-3,800-53r5|AU-3,CN-L3|7.1.2.3(a),CN-L3|7.1.2.3(b),CN-L3|7.1.3.3(a),CN-L3|8.1.4.3(b),CSCv6|6.2,CSF|PR.PT-1,CSF2.0|PR.PS-04,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(b),ITSG-33|AU-3,LEVEL|1NS,NESA|T3.6.2,NIAv2|AM34a,NIAv2|AM34b,NIAv2|AM34c,NIAv2|AM34d,NIAv2|AM34e,NIAv2|AM34f,NIAv2|AM34g,PCI-DSSv3.2.1|10.3,PCI-DSSv3.2.1|10.3.1,PCI-DSSv3.2.1|10.3.2,PCI-DSSv3.2.1|10.3.3,PCI-DSSv3.2.1|10.3.4,PCI-DSSv3.2.1|10.3.5,PCI-DSSv3.2.1|10.3.6,PCI-DSSv4.0|10.2.2,QCSC-v1|8.2.1,QCSC-v1|13.2,SWIFT-CSCv1|6.4",https://workbench.cisecurity.org/benchmarks/14293,,,^.*ETW.*[\s]*$,POLICY_TEXT,,,,,Medium,1703,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+5.3,,,Ensure 'ETW Logging' is enabled - Default W3C,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > else,5.3 Ensure 'ETW Logging' is enabled - Default W3C,"IIS introduces a new logging method. Administrators can now send logging information to Event Tracing for Windows (ETW).
+
+IIS flushes log information to disk, therefore prior to IIS, administrators do not have access to real-time logging information. Text-based log files can also be difficult and time consuming to process. By enabling ETW, administrators have access to use standard query tools for viewing real-time logging information.","To configure ETW logging:
+ 1. Open IIS Manager
+ 2. Select the server or site to enable ETW
+ 3. Select Logging.
+ 4. Ensure Log file format is W3C.
+ 5. Select Both log file and ETW event
+ 6. Save your settings.","800-171|3.3.1,800-171|3.3.2,800-53|AU-3,800-53r5|AU-3,CN-L3|7.1.2.3(a),CN-L3|7.1.2.3(b),CN-L3|7.1.3.3(a),CN-L3|8.1.4.3(b),CSCv6|6.2,CSF|PR.PT-1,CSF2.0|PR.PS-04,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(b),ITSG-33|AU-3,LEVEL|1NS,NESA|T3.6.2,NIAv2|AM34a,NIAv2|AM34b,NIAv2|AM34c,NIAv2|AM34d,NIAv2|AM34e,NIAv2|AM34f,NIAv2|AM34g,PCI-DSSv3.2.1|10.3,PCI-DSSv3.2.1|10.3.1,PCI-DSSv3.2.1|10.3.2,PCI-DSSv3.2.1|10.3.3,PCI-DSSv3.2.1|10.3.4,PCI-DSSv3.2.1|10.3.5,PCI-DSSv3.2.1|10.3.6,PCI-DSSv4.0|10.2.2,QCSC-v1|8.2.1,QCSC-v1|13.2,SWIFT-CSCv1|6.4",https://workbench.cisecurity.org/benchmarks/14293,,,W3C,POLICY_TEXT,,,,,Medium,1726,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+5.3,,,Ensure 'ETW Logging' is enabled - Sites logFormat W3C,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then,5.3 Ensure 'ETW Logging' is enabled - Sites logFormat W3C,"IIS introduces a new logging method. Administrators can now send logging information to Event Tracing for Windows (ETW).
+
+IIS flushes log information to disk, therefore prior to IIS, administrators do not have access to real-time logging information. Text-based log files can also be difficult and time consuming to process. By enabling ETW, administrators have access to use standard query tools for viewing real-time logging information.","To configure ETW logging:
+ 1. Open IIS Manager
+ 2. Select the server or site to enable ETW
+ 3. Select Logging.
+ 4. Ensure Log file format is W3C.
+ 5. Select Both log file and ETW event
+ 6. Save your settings.","800-171|3.3.1,800-171|3.3.2,800-53|AU-3,800-53r5|AU-3,CN-L3|7.1.2.3(a),CN-L3|7.1.2.3(b),CN-L3|7.1.3.3(a),CN-L3|8.1.4.3(b),CSCv6|6.2,CSF|PR.PT-1,CSF2.0|PR.PS-04,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(b),ITSG-33|AU-3,LEVEL|1NS,NESA|T3.6.2,NIAv2|AM34a,NIAv2|AM34b,NIAv2|AM34c,NIAv2|AM34d,NIAv2|AM34e,NIAv2|AM34f,NIAv2|AM34g,PCI-DSSv3.2.1|10.3,PCI-DSSv3.2.1|10.3.1,PCI-DSSv3.2.1|10.3.2,PCI-DSSv3.2.1|10.3.3,PCI-DSSv3.2.1|10.3.4,PCI-DSSv3.2.1|10.3.5,PCI-DSSv3.2.1|10.3.6,PCI-DSSv4.0|10.2.2,QCSC-v1|8.2.1,QCSC-v1|13.2,SWIFT-CSCv1|6.4",https://workbench.cisecurity.org/benchmarks/14293,,,W3C,POLICY_TEXT,,,,,Medium,1748,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+5.3,,,Ensure 'ETW Logging' is enabled - Sites logFormat W3C with ETW target,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then,5.3 Ensure 'ETW Logging' is enabled - Sites logFormat W3C with ETW target,"IIS introduces a new logging method. Administrators can now send logging information to Event Tracing for Windows (ETW).
+
+IIS flushes log information to disk, therefore prior to IIS, administrators do not have access to real-time logging information. Text-based log files can also be difficult and time consuming to process. By enabling ETW, administrators have access to use standard query tools for viewing real-time logging information.","To configure ETW logging:
+ 1. Open IIS Manager
+ 2. Select the server or site to enable ETW
+ 3. Select Logging.
+ 4. Ensure Log file format is W3C.
+ 5. Select Both log file and ETW event
+ 6. Save your settings.","800-171|3.3.1,800-171|3.3.2,800-53|AU-3,800-53r5|AU-3,CN-L3|7.1.2.3(a),CN-L3|7.1.2.3(b),CN-L3|7.1.3.3(a),CN-L3|8.1.4.3(b),CSCv6|6.2,CSF|PR.PT-1,CSF2.0|PR.PS-04,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(b),ITSG-33|AU-3,LEVEL|1NS,NESA|T3.6.2,NIAv2|AM34a,NIAv2|AM34b,NIAv2|AM34c,NIAv2|AM34d,NIAv2|AM34e,NIAv2|AM34f,NIAv2|AM34g,PCI-DSSv3.2.1|10.3,PCI-DSSv3.2.1|10.3.1,PCI-DSSv3.2.1|10.3.2,PCI-DSSv3.2.1|10.3.3,PCI-DSSv3.2.1|10.3.4,PCI-DSSv3.2.1|10.3.5,PCI-DSSv3.2.1|10.3.6,PCI-DSSv4.0|10.2.2,QCSC-v1|8.2.1,QCSC-v1|13.2,SWIFT-CSCv1|6.4",https://workbench.cisecurity.org/benchmarks/14293,,,^.*ETW.*[\s]*$,POLICY_TEXT,,,,,Medium,1769,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+5.3,,,Ensure 'ETW Logging' is enabled,PASSED,report,group_policy > if > then > if > else,5.3 Ensure 'ETW Logging' is enabled,"IIS introduces a new logging method. Administrators can now send logging information to Event Tracing for Windows (ETW).
+
+IIS flushes log information to disk, therefore prior to IIS, administrators do not have access to real-time logging information. Text-based log files can also be difficult and time consuming to process. By enabling ETW, administrators have access to use standard query tools for viewing real-time logging information.
+
+NOTE: IIS was not discovered as installed on the target.",,"800-171|3.3.1,800-171|3.3.2,800-53|AU-12c.,800-53r5|AU-12c.,CN-L3|7.1.3.3(a),CN-L3|7.1.3.3(b),CN-L3|7.1.3.3(c),CN-L3|8.1.3.5(a),CN-L3|8.1.3.5(b),CN-L3|8.1.4.3(a),CSF|DE.CM-1,CSF|DE.CM-3,CSF|DE.CM-7,CSF|PR.PT-1,CSF2.0|DE.CM-01,CSF2.0|DE.CM-03,CSF2.0|DE.CM-09,CSF2.0|PR.PS-04,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(b),ISO/IEC-27001|A.12.4.1,ITSG-33|AU-12c.,LEVEL|1NS,NESA|T3.6.2,NESA|T3.6.5,NESA|T3.6.6,NIAv2|SM8,PCI-DSSv3.2.1|10.1,QCSC-v1|3.2,QCSC-v1|6.2,QCSC-v1|8.2.1,QCSC-v1|13.2,SWIFT-CSCv1|6.4,TBA-FIISB|45.1.1",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,1795,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Verify FTP service is installed,REGISTRY_SETTING,custom_item,group_policy > if > then > if > condition,Verify FTP service is installed,,,,,,,1,POLICY_DWORD,HKLM\Software\Microsoft\Inetstp\Components,FTPSvc,CAN_NOT_BE_NULL,,Medium,1810,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Control Channel Default,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > condition,Control Channel Default,,,,,,,SslRequire,POLICY_TEXT,,,,,Medium,1824,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Data Channel Default,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > condition,Data Channel Default,,,,,,,SslRequire,POLICY_TEXT,,,,,Medium,1832,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Control Channel Sites,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > condition,Control Channel Sites,,,,,,,SslRequire,POLICY_TEXT,,,,,Medium,1841,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Data Channel Sites,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > condition,Data Channel Sites,,,,,,,SslRequire,POLICY_TEXT,,,,,Medium,1852,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+6.1,,,Ensure FTP requests are encrypted,PASSED,report,group_policy > if > then > if > then > if > then,6.1 Ensure FTP requests are encrypted,"The new FTP Publishing Service for IIS supports adding an SSL certificate to an FTP site. Using an SSL certificate with an FTP site is also known as FTP-S or FTP over Secure Socket Layers (SSL). FTP-S is an RFC standard (RFC 4217) where an SSL certificate is added to an FTP site and thereby making it possible to perform secure file transfers.
+
+Rationale:
+
+By using SSL, the FTP transmission is encrypted and secured from point to point and all FTP traffic as well as credentials are thereby guarded against interception.","To secure an existing FTP site using a SSL Certificate, a certificate must first be installed on the system. Production systems should always use a third party certificate from a trusted root, such as VeriSign. Once that certificate is installed for use in IIS, follow the steps below to configure the FTP site for SSL:
+
+Open IIS Manager, select the FTP server and choose FTP SSL Settings in the Features View pane
+
+Under the SSL Certificate dropdown, choose the X.509 certificate to be configured for use
+
+In the SSL Policy section, click the radio button next to Require SSL connections; it is important to require SSL, because allow SSL still permits non-SSL FTP
+
+Click Apply in the Actions pane","800-171|3.13.8,CN-L3|8.2.4.5(d),GDPR|32.1.b,PCI-DSSv4.0|2.2.7,800-53|SC-8(1),NIAv2|NS5d,CN-L3|8.5.2.2,ISO/IEC-27001|A.13.2.3,800-53r5|SC-8(1),HIPAA|164.306(a)(1),TBA-FIISB|29.1,CSF|PR.DS-2,CN-L3|8.1.2.2(a),SWIFT-CSCv1|2.1,PCI-DSSv3.2.1|4.1,HIPAA|164.312(e)(1),CN-L3|8.1.2.2(b),CSF|PR.DS-5,ITSG-33|SC-8(1),NIAv2|NS6b,CN-L3|8.1.4.7(a),QCSC-v1|5.2.2,CSF2.0|PR.DS-02,HIPAA|164.312(e)(2)(i),CN-L3|8.1.4.8(a),PCI-DSSv4.0|4.2.1,NESA|T7.4.1,GDPR|32.1.a,CN-L3|8.2.4.5(c),QCSC-v1|6.2,ISO/IEC-27001|A.10.1.1,PCI-DSSv3.2.1|2.3",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,1865,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+6.1,,,Ensure FTP requests are encrypted,PASSED,report,group_policy > if > then > if > else,6.1 Ensure FTP requests are encrypted,"The new FTP Publishing Service for IIS supports adding an SSL certificate to an FTP site. Using an SSL certificate with an FTP site is also known as FTP-S or FTP over Secure Socket Layers (SSL). FTP-S is an RFC standard (RFC 4217) where an SSL certificate is added to an FTP site and thereby making it possible to perform secure file transfers.
+
+Rationale:
+
+By using SSL, the FTP transmission is encrypted and secured from point to point and all FTP traffic as well as credentials are thereby guarded against interception.","To secure an existing FTP site using a SSL Certificate, a certificate must first be installed on the system. Production systems should always use a third party certificate from a trusted root, such as VeriSign. Once that certificate is installed for use in IIS, follow the steps below to configure the FTP site for SSL:
+
+Open IIS Manager, select the FTP server and choose FTP SSL Settings in the Features View pane
+
+Under the SSL Certificate dropdown, choose the X.509 certificate to be configured for use
+
+In the SSL Policy section, click the radio button next to Require SSL connections; it is important to require SSL, because allow SSL still permits non-SSL FTP
+
+Click Apply in the Actions pane",LEVEL|1A,https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,1890,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Verify FTP service is installed,REGISTRY_SETTING,custom_item,group_policy > if > then > if > condition,Verify FTP service is installed,,,,,,,1,POLICY_DWORD,HKLM\Software\Microsoft\Inetstp\Components,FTPSvc,CAN_NOT_BE_NULL,,Medium,1914,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+6.2,,,Ensure FTP Logon attempt restrictions is enabled - Deny By Failure Enabled,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then,6.2 Ensure FTP Logon attempt restrictions is enabled - Deny By Failure Enabled,"IIS introduced a built-in network security feature to automatically block brute force FTP attacks. This can be used to mitigate a malicious client from attempting a brute-force attack on a discovered account, such as the local administrator account.
+
+Rationale:
+
+Successful brute force FTP attacks can allow an otherwise unauthorized user to make changes to data that should not be made. This could allow the unauthorized user to modify website code by uploading malicious software or even changing functionality for items such as online payments.","1. Open IIS Manager
+2. At the server level, open the FTP Logon Attempt Restrictions feature.
+3. Check Enable FTP Logon Attempt Restrictions and enter the maximum number of failed attempts and the time period. Enable Deny IP addresses based on the number of failed login attempts.
+4. Click Apply
+
+Default Value:
+
+By default, this feature is not enabled when FTP is installed.","800-171|3.13.1,800-53|SC-7(12),800-53r5|SC-7(12),CN-L3|8.1.10.6(j),CSF|DE.CM-1,CSF|PR.AC-5,CSF|PR.DS-5,CSF|PR.PT-4,CSF2.0|DE.CM-01,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,CSF2.0|PR.IR-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO/IEC-27001|A.13.1.3,ITSG-33|SC-7(12),LEVEL|1M,NESA|T4.5.4,NIAv2|AM38,NIAv2|SS13d,NIAv2|SS26,PCI-DSSv3.2.1|1.4,PCI-DSSv4.0|1.5.1,QCSC-v1|5.2.1,QCSC-v1|5.2.2,QCSC-v1|6.2,QCSC-v1|8.2.1,TBA-FIISB|43.1",https://workbench.cisecurity.org/benchmarks/14293,,,true,POLICY_TEXT,,,,,Medium,1926,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Check deny IP address,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > condition,Check deny IP address,,,,,,,true,POLICY_TEXT,,,,,Medium,1951,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+6.2,,,Ensure FTP Logon attempt restrictions is enabled - Deny IP Address,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > then,6.2 Ensure FTP Logon attempt restrictions is enabled - Deny IP Address,"IIS introduced a built-in network security feature to automatically block brute force FTP attacks. This can be used to mitigate a malicious client from attempting a brute-force attack on a discovered account, such as the local administrator account.
+
+Rationale:
+
+Successful brute force FTP attacks can allow an otherwise unauthorized user to make changes to data that should not be made. This could allow the unauthorized user to modify website code by uploading malicious software or even changing functionality for items such as online payments.","1. Open IIS Manager
+2. At the server level, open the FTP Logon Attempt Restrictions feature.
+3. Check Enable FTP Logon Attempt Restrictions and enter the maximum number of failed attempts and the time period. Enable Deny IP addresses based on the number of failed login attempts.
+4. Click Apply
+
+Default Value:
+
+By default, this feature is not enabled when FTP is installed.","800-171|3.3.1,800-171|3.3.2,800-53|AU-12c.,800-53r5|AU-12c.,CN-L3|7.1.3.3(a),CN-L3|7.1.3.3(b),CN-L3|7.1.3.3(c),CN-L3|8.1.3.5(a),CN-L3|8.1.3.5(b),CN-L3|8.1.4.3(a),CSF|DE.CM-1,CSF|DE.CM-3,CSF|DE.CM-7,CSF|PR.PT-1,CSF2.0|DE.CM-01,CSF2.0|DE.CM-03,CSF2.0|DE.CM-09,CSF2.0|PR.PS-04,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(b),ISO/IEC-27001|A.12.4.1,ITSG-33|AU-12c.,LEVEL|1M,NESA|T3.6.2,NESA|T3.6.5,NESA|T3.6.6,NIAv2|SM8,PCI-DSSv3.2.1|10.1,QCSC-v1|3.2,QCSC-v1|6.2,QCSC-v1|8.2.1,QCSC-v1|13.2,SWIFT-CSCv1|6.4,TBA-FIISB|45.1.1",https://workbench.cisecurity.org/benchmarks/14293,,,false,POLICY_TEXT,,,,,Medium,1961,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+6.2,,,Ensure FTP Logon attempt restrictions is enabled,PASSED,report,group_policy > if > then > if > else,6.2 Ensure FTP Logon attempt restrictions is enabled,"IIS introduced a built-in network security feature to automatically block brute force FTP attacks. This can be used to mitigate a malicious client from attempting a brute-force attack on a discovered account, such as the local administrator account.
+
+Rationale:
+
+Successful brute force FTP attacks can allow an otherwise unauthorized user to make changes to data that should not be made. This could allow the unauthorized user to modify website code by uploading malicious software or even changing functionality for items such as online payments.","1. Open IIS Manager
+2. At the server level, open the FTP Logon Attempt Restrictions feature.
+3. Check Enable FTP Logon Attempt Restrictions and enter the maximum number of failed attempts and the time period. Enable Deny IP addresses based on the number of failed login attempts.
+4. Click Apply
+
+Default Value:
+
+By default, this feature is not enabled when FTP is installed.",LEVEL|1M,https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,1988,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,SSL 2.0 key exists,REG_CHECK,custom_item,group_policy > if > then > if > condition,SSL 2.0 key exists,,,,,,,HKLM\System\Currentcontrolset\Control\Securityproviders\Schannel\Protocols\Ssl 2.0,POLICY_TEXT,,,MUST_EXIST,,Medium,2011,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+7.2,,,Ensure SSLv2 is disabled,REGISTRY_SETTING,custom_item,group_policy > if > then > if > then,7.2 Ensure SSLv2 is disabled,"This protocol is not considered cryptographically secure. Disabling it is recommended. This protocol is disabled by default if the registry key is not present. A reboot is required for these changes to be reflected.
+
+Rationale:
+
+Disabling weak protocols will help ensure the confidentiality and integrity of in-transit data.","Perform the following to disable SSL 2.0:
+1. If the following key is not present, SSL 2.0 is disabled. You can delete the key to disable the protocol. If you delete the key, steps 2 and 3 are not necessary.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 2.0
+
+If the key exists, set it to 0.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 2.0\Server\Enabled
+
+Default Value:
+
+Enabled","800-171|3.13.11,800-53|SC-13,800-53r5|SC-13,CSF|PR.DS-5,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO/IEC-27001|A.10.1.1,ITSG-33|SC-13,ITSG-33|SC-13a.,LEVEL|1A,NESA|M5.2.6,NESA|T7.4.1,NIAv2|CY3,NIAv2|CY4,NIAv2|CY5b,NIAv2|CY5c,NIAv2|CY5d,NIAv2|CY7,NIAv2|NS5e,QCSC-v1|6.2",https://workbench.cisecurity.org/benchmarks/14293,,,0,POLICY_DWORD,HKLM\System\Currentcontrolset\Control\Securityproviders\Schannel\Protocols\Ssl 2.0\Server,Enabled,CAN_NOT_BE_NULL,,Medium,2021,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+7.2,,,Ensure SSLv2 is disabled,PASSED,report,group_policy > if > then > if > else,7.2 Ensure SSLv2 is disabled,"This protocol is not considered cryptographically secure. Disabling it is recommended. This protocol is disabled by default if the registry key is not present. A reboot is required for these changes to be reflected.
+
+Rationale:
+
+Disabling weak protocols will help ensure the confidentiality and integrity of in-transit data.","Perform the following to disable SSL 2.0:
+1. If the following key is not present, SSL 2.0 is disabled. You can delete the key to disable the protocol. If you delete the key, steps 2 and 3 are not necessary.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 2.0
+
+If the key exists, set it to 0.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 2.0\Server\Enabled
+
+Default Value:
+
+Enabled","800-171|3.13.11,800-53|SC-13,800-53r5|SC-13,CSF|PR.DS-5,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO/IEC-27001|A.10.1.1,ITSG-33|SC-13,ITSG-33|SC-13a.,LEVEL|1A,NESA|M5.2.6,NESA|T7.4.1,NIAv2|CY3,NIAv2|CY4,NIAv2|CY5b,NIAv2|CY5c,NIAv2|CY5d,NIAv2|CY7,NIAv2|NS5e,QCSC-v1|6.2",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,2052,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+7.3,,,Ensure SSLv3 is disabled,REGISTRY_SETTING,custom_item,group_policy > if > then,7.3 Ensure SSLv3 is disabled,"This protocol is not considered cryptographically secure. Disabling it is recommended.
+
+Rationale:
+
+Disabling weak protocols will help ensure the confidentiality and integrity of in-transit data.","Perform the following to disable SSL 3.0:
+1. Set the following keyto 0.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Server\Enabled
+
+Default Value:
+
+Enabled","800-171|3.13.11,800-53|SC-13,800-53r5|SC-13,CSF|PR.DS-5,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO/IEC-27001|A.10.1.1,ITSG-33|SC-13,ITSG-33|SC-13a.,LEVEL|1A,NESA|M5.2.6,NESA|T7.4.1,NIAv2|CY3,NIAv2|CY4,NIAv2|CY5b,NIAv2|CY5c,NIAv2|CY5d,NIAv2|CY7,NIAv2|NS5e,QCSC-v1|6.2",https://workbench.cisecurity.org/benchmarks/14293,,,0,POLICY_DWORD,HKLM\System\Currentcontrolset\Control\Securityproviders\Schannel\Protocols\Ssl 3.0\Server,Enabled,CAN_NOT_BE_NULL,,Medium,2077,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+7.5,,,Ensure TLS 1.1 is enabled,REGISTRY_SETTING,custom_item,group_policy > if > then,7.5 Ensure TLS 1.1 is enabled,"Enabling TLS 1.1 is required for backward compatibility.
+
+Rationale:
+
+This item is Not Scored for the following reasons:
+
+Enabling TLS 1.2 is recommended.
+
+This protocol does not suffer from known practical attacks.","Set the following registry locations to enable TLS 1.1. Set Enabled to 1.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server\Enabled","800-171|3.13.11,800-53|SC-13,800-53r5|SC-13,CSF|PR.DS-5,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO/IEC-27001|A.10.1.1,ITSG-33|SC-13,ITSG-33|SC-13a.,LEVEL|1M,NESA|M5.2.6,NESA|T7.4.1,NIAv2|CY3,NIAv2|CY4,NIAv2|CY5b,NIAv2|CY5c,NIAv2|CY5d,NIAv2|CY7,NIAv2|NS5e,QCSC-v1|6.2",https://workbench.cisecurity.org/benchmarks/14293,,,1,POLICY_DWORD,HKLM\System\Currentcontrolset\Control\Securityproviders\Schannel\Protocols\Tls 1.1\Server,Enabled,CAN_BE_NULL,,Medium,2102,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Protocols TLS 1.2 key exists,REG_CHECK,custom_item,group_policy > if > then > if > condition,Protocols TLS 1.2 key exists,,,,,,,HKLM\System\Currentcontrolset\Control\Securityproviders\Schannel\Protocols\Tls 1.2,POLICY_TEXT,,,MUST_EXIST,,Medium,2128,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+7.6,,,Ensure TLS 1.2 is enabled,REGISTRY_SETTING,custom_item,group_policy > if > then > if > then,7.6 Ensure TLS 1.2 is enabled,"TLS 1.2 is the most recent and mature protocol for protecting the confidentiality and integrity of HTTP traffic. Enabling TLS 1.2 is recommended. This protocol is enabled by default if the registry key is not present. As with any registry changes, a reboot is required for changes to take effect.
+
+Rationale:
+
+Enabling this protocol will help ensure the confidentiality and integrity of data in transit.","Perform the following to enable TLS 1.2:
+1. Check to see if the following key exists. If it doesn't, TLS 1.2 is enabled by default. If it does, you can delete it or follow step 2.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\
+
+2. If the key exists, set the following key to 0xFFFFFFFF
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server\Enabled","800-171|3.13.11,800-53|SC-13,800-53r5|SC-13,CSF|PR.DS-5,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO/IEC-27001|A.10.1.1,ITSG-33|SC-13,ITSG-33|SC-13a.,LEVEL|1A,NESA|M5.2.6,NESA|T7.4.1,NIAv2|CY3,NIAv2|CY4,NIAv2|CY5b,NIAv2|CY5c,NIAv2|CY5d,NIAv2|CY7,NIAv2|NS5e,QCSC-v1|6.2",https://workbench.cisecurity.org/benchmarks/14293,,,4294967295,POLICY_DWORD,HKLM\System\Currentcontrolset\Control\Securityproviders\Schannel\Protocols\Tls 1.2\Server,Enabled,CAN_NOT_BE_NULL,,Medium,2138,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+7.6,,,Ensure TLS 1.2 is enabled,PASSED,report,group_policy > if > then > if > else,7.6 Ensure TLS 1.2 is enabled,"TLS 1.2 is the most recent and mature protocol for protecting the confidentiality and integrity of HTTP traffic. Enabling TLS 1.2 is recommended. This protocol is enabled by default if the registry key is not present. As with any registry changes, a reboot is required for changes to take effect.
+
+Rationale:
+
+Enabling this protocol will help ensure the confidentiality and integrity of data in transit.","Perform the following to enable TLS 1.2:
+1. Check to see if the following key exists. If it doesn't, TLS 1.2 is enabled by default. If it does, you can delete it or follow step 2.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\
+
+2. If the key exists, set the following key to 0xFFFFFFFF
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server\Enabled","800-171|3.13.11,800-53|SC-13,800-53r5|SC-13,CSF|PR.DS-5,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO/IEC-27001|A.10.1.1,ITSG-33|SC-13,ITSG-33|SC-13a.,LEVEL|1A,NESA|M5.2.6,NESA|T7.4.1,NIAv2|CY3,NIAv2|CY4,NIAv2|CY5b,NIAv2|CY5c,NIAv2|CY5d,NIAv2|CY7,NIAv2|NS5e,QCSC-v1|6.2",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,2164,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+7.7,,,Ensure NULL Cipher Suites is disabled,REGISTRY_SETTING,custom_item,group_policy > if > then,7.7 Ensure NULL Cipher Suites is disabled,"The NULL cipher does not provide data confidentiality or integrity. It is recommended that the NULL cipher be disabled.
+
+Rationale:
+
+By disabling the NULL cipher, there is a better chance of maintaining data confidentiality and integrity.","To disable the NULL cipher, ensure the following key is absent. If the key is present, ensure it is set to 0.
+
+HKLM System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\NULL\Enabled","800-171|3.13.11,800-53|SC-13,800-53r5|SC-13,CSF|PR.DS-5,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO/IEC-27001|A.10.1.1,ITSG-33|SC-13,ITSG-33|SC-13a.,LEVEL|1A,NESA|M5.2.6,NESA|T7.4.1,NIAv2|CY3,NIAv2|CY4,NIAv2|CY5b,NIAv2|CY5c,NIAv2|CY5d,NIAv2|CY7,NIAv2|NS5e,QCSC-v1|6.2",https://workbench.cisecurity.org/benchmarks/14293,,,0,POLICY_DWORD,HKLM\System\Currentcontrolset\Control\Securityproviders\Schannel\Ciphers\Null,Enabled,CAN_BE_NULL,,Medium,2184,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+7.8,,,Ensure DES Cipher Suites is disabled,REGISTRY_SETTING,custom_item,group_policy > if > then,7.8 Ensure DES Cipher Suites is disabled,"DES is a weak symmetric-key cipher. It is recommended that it be disabled.
+
+Rationale:
+
+By disabling DES, there is a better chance of maintaining data confidentiality and integrity.","To disable DES 56/56, ensure the following key is absent. If the key is present, ensure it is set to 0.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\DES 56/56\Enabled","800-171|3.13.11,800-53|SC-13,800-53r5|SC-13,CSF|PR.DS-5,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO/IEC-27001|A.10.1.1,ITSG-33|SC-13,ITSG-33|SC-13a.,LEVEL|1A,NESA|M5.2.6,NESA|T7.4.1,NIAv2|CY3,NIAv2|CY4,NIAv2|CY5b,NIAv2|CY5c,NIAv2|CY5d,NIAv2|CY7,NIAv2|NS5e,QCSC-v1|6.2",https://workbench.cisecurity.org/benchmarks/14293,,,0,POLICY_DWORD,HKLM\System\Currentcontrolset\Control\Securityproviders\Schannel\Ciphers\Des 56/56,Enabled,CAN_BE_NULL,,Medium,2204,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,RC2 40/128,REGISTRY_SETTING,custom_item,group_policy > if > then > if > condition,RC2 40/128,,,,,,,0,POLICY_DWORD,HKLM\System\Currentcontrolset\Control\Securityproviders\Schannel\Ciphers\Rc2 40/128,Enabled,CAN_BE_NULL,,Medium,2226,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,RC2 56/128,REGISTRY_SETTING,custom_item,group_policy > if > then > if > condition,RC2 56/128,,,,,,,0,POLICY_DWORD,HKLM\System\Currentcontrolset\Control\Securityproviders\Schannel\Ciphers\Rc2 56/128,Enabled,CAN_BE_NULL,,Medium,2236,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+7.9,,,Ensure RC2 Cipher Suites is disabled,PASSED,report,group_policy > if > then > if > then,7.9 Ensure RC2 Cipher Suites is disabled,"RC2 is a weak symmetric-key block cipher. It is recommended that it be disabled.
+
+Rationale:
+
+By disabling RC2, there is a better chance of maintaining data confidentiality and integrity.","To disable RC2 40/128, ensure the following key is absent. If the key is present, ensure it is set to 0.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC2 40/128\Enabled
+
+To disable RC2 56/128, ensure the following key is absent. If the key is present, ensure it is set to 0.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC2 56/128\Enabled","800-171|3.13.11,800-53|SC-13,800-53r5|SC-13,CSF|PR.DS-5,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO/IEC-27001|A.10.1.1,ITSG-33|SC-13,ITSG-33|SC-13a.,LEVEL|1A,NESA|M5.2.6,NESA|T7.4.1,NIAv2|CY3,NIAv2|CY4,NIAv2|CY5b,NIAv2|CY5c,NIAv2|CY5d,NIAv2|CY7,NIAv2|NS5e,QCSC-v1|6.2",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,2248,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,RC4 40/128,REGISTRY_SETTING,custom_item,group_policy > if > then > if > condition,RC4 40/128,,,,,,,0,POLICY_DWORD,HKLM\System\Currentcontrolset\Control\Securityproviders\Schannel\Ciphers\Rc4 40/128,Enabled,CAN_BE_NULL,,Medium,2271,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,RC4 56/128,REGISTRY_SETTING,custom_item,group_policy > if > then > if > condition,RC4 56/128,,,,,,,0,POLICY_DWORD,HKLM\System\Currentcontrolset\Control\Securityproviders\Schannel\Ciphers\Rc4 56/128,Enabled,CAN_BE_NULL,,Medium,2281,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,RC4 64/128,REGISTRY_SETTING,custom_item,group_policy > if > then > if > condition,RC4 64/128,,,,,,,0,POLICY_DWORD,HKLM\System\Currentcontrolset\Control\Securityproviders\Schannel\Ciphers\Rc4 64/128,Enabled,CAN_BE_NULL,,Medium,2291,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,RC4 128/128,REGISTRY_SETTING,custom_item,group_policy > if > then > if > condition,RC4 128/128,,,,,,,0,POLICY_DWORD,HKLM\System\Currentcontrolset\Control\Securityproviders\Schannel\Ciphers\Rc4 128/128,Enabled,CAN_NOT_BE_NULL,,Medium,2301,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+7.10,,,Ensure RC4 Cipher Suites is disabled,PASSED,report,group_policy > if > then > if > then,7.10 Ensure RC4 Cipher Suites is disabled,"RC4 is a stream cipher that has known practical attacks. It is recommended that RC4 be disabled. The only RC4 cipher enabled by default on Server 2012 and 2012 R2 is RC4 128/128.
+
+Rationale:
+
+The use of RC4 may increase an adversaries ability to read sensitive information sent over SSL/TLS.","To disable RC4 40/128, ensure the following key is absent. If the key is present, ensure it is set to 0.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC4 40/128\Enabled
+
+To disable RC4 56/128, ensure the following key is absent. If the key is present, ensure it is set to 0.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC4 56/128\Enabled
+
+To disable RC4 64/128, ensure the following key is absent. If the key is present, ensure it is set to 0.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC4 64/128\Enabled
+
+To disable RC4 128/128, ensure the following key is set to 0.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC4 128/128\Enabled","800-171|3.13.11,800-53|SC-13,800-53r5|SC-13,CSF|PR.DS-5,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO/IEC-27001|A.10.1.1,ITSG-33|SC-13,ITSG-33|SC-13a.,LEVEL|1A,NESA|M5.2.6,NESA|T7.4.1,NIAv2|CY3,NIAv2|CY4,NIAv2|CY5b,NIAv2|CY5c,NIAv2|CY5d,NIAv2|CY7,NIAv2|NS5e,QCSC-v1|6.2",https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,2313,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+7.11,,,Ensure Triple DES Cipher Suite is configured,REGISTRY_SETTING,custom_item,group_policy > if > then,7.11 Ensure Triple DES Cipher Suite is configured,"Enabling Triple DES Cipher Suites may be required for client compatibility. Enable or disable this cipher suite accordingly.
+
+Rationale:
+
+This item is Not Scored for the following reasons:
+
+Enabling AES 256/256 is recommended.
+
+This cipher does not suffer from known practical attacks.","To enable Triple DES 168/168, ensure the following key is not present or is set to 0xFFFFFFFF.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\Triple DES 168/168\Enabled","800-171|3.13.11,800-53|SC-13,800-53r5|SC-13,CSF|PR.DS-5,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO/IEC-27001|A.10.1.1,ITSG-33|SC-13,ITSG-33|SC-13a.,LEVEL|1M,NESA|M5.2.6,NESA|T7.4.1,NIAv2|CY3,NIAv2|CY4,NIAv2|CY5b,NIAv2|CY5c,NIAv2|CY5d,NIAv2|CY7,NIAv2|NS5e,QCSC-v1|6.2",https://workbench.cisecurity.org/benchmarks/14293,,,4294967295,POLICY_DWORD,HKLM\System\Currentcontrolset\Control\Securityproviders\Schannel\Ciphers\Triple Des 168/168,Enabled,CAN_BE_NULL,,Medium,2342,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+7.12,,,Ensure AES 128/128 Cipher Suite is configured,REGISTRY_SETTING,custom_item,group_policy > if > then,7.12 Ensure AES 128/128 Cipher Suite is configured,"Enabling AES 128/128 may be required for client compatibility. Enable or disable this cipher suite accordingly.
+
+Rationale:
+
+This item is Not Scored for the following reasons:
+
+Enabling AES 256/256 is recommended.
+
+This cipher does not suffer from known practical attacks.","To enable the AES 128/128 cipher, ensure the following key is set to 0xFFFFFFFF:
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\AES 128/128\Enabled","800-171|3.13.11,800-53|SC-13,800-53r5|SC-13,CSF|PR.DS-5,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO/IEC-27001|A.10.1.1,ITSG-33|SC-13,ITSG-33|SC-13a.,LEVEL|1M,NESA|M5.2.6,NESA|T7.4.1,NIAv2|CY3,NIAv2|CY4,NIAv2|CY5b,NIAv2|CY5c,NIAv2|CY5d,NIAv2|CY7,NIAv2|NS5e,QCSC-v1|6.2",https://workbench.cisecurity.org/benchmarks/14293,,,4294967295,POLICY_DWORD,HKLM\System\Currentcontrolset\Control\Securityproviders\Schannel\Ciphers\Aes 128/128,Enabled,CAN_NOT_BE_NULL,,Medium,2366,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,Ciphers\AES 256/256 Exists,REG_CHECK,custom_item,group_policy > if > then > if > condition,Ciphers\AES 256/256 Exists,,,,,,,HKLM\System\Currentcontrolset\Control\Securityproviders\Schannel\Ciphers\Aes 256/256,POLICY_TEXT,,,CAN_NOT_BE_NULL,,Medium,2392,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+7.13,,,Ensure AES 256/256 Cipher Suite is enabled - Enabled,REGISTRY_SETTING,custom_item,group_policy > if > then > if > then,7.13 Ensure AES 256/256 Cipher Suite is enabled - Enabled,"AES 256/256 is the most recent and mature cipher suite for protecting the confidentiality and integrity of HTTP traffic. Enabling AES 256/256 is recommended. This is enabled by default on Server 2012 and 2012 R2.
+
+Rationale:
+
+Enabling this cipher will help ensure the confidentiality and integrity of data in transit.","To enable the AES 256/256 cipher:
+1. Ensure that the following key does not exist. If it does exist, you can either delete the key or proceed to step 2.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\AES 256/256\
+
+2. If the key exists, ensure the following is set to 0xFFFFFFFF.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\AES 256/256\Enabled","800-171|3.13.11,800-53|SC-13,800-53r5|SC-13,CSF|PR.DS-5,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO/IEC-27001|A.10.1.1,ITSG-33|SC-13,ITSG-33|SC-13a.,LEVEL|1A,NESA|M5.2.6,NESA|T7.4.1,NIAv2|CY3,NIAv2|CY4,NIAv2|CY5b,NIAv2|CY5c,NIAv2|CY5d,NIAv2|CY7,NIAv2|NS5e,QCSC-v1|6.2",https://workbench.cisecurity.org/benchmarks/14293,,,4294967295,POLICY_DWORD,HKLM\System\Currentcontrolset\Control\Securityproviders\Schannel\Ciphers\Aes 256/256,Enabled,CAN_NOT_BE_NULL,,Medium,2402,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+7.13,,,Ensure AES 256/256 Cipher Suite is enabled,PASSED,report,group_policy > if > then > if > else,7.13 Ensure AES 256/256 Cipher Suite is enabled,"AES 256/256 is the most recent and mature cipher suite for protecting the confidentiality and integrity of HTTP traffic. Enabling AES 256/256 is recommended. This is enabled by default on Server 2012 and 2012 R2.
+
+Rationale:
+
+Enabling this cipher will help ensure the confidentiality and integrity of data in transit.","To enable the AES 256/256 cipher:
+1. Ensure that the following key does not exist. If it does exist, you can either delete the key or proceed to step 2.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\AES 256/256\
+
+2. If the key exists, ensure the following is set to 0xFFFFFFFF.
+
+HKLM\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\AES 256/256\Enabled",LEVEL|1A,https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,2428,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit
+,,,CIS Microsoft IIS 8 Benchmark v1.5.1 Level 1,WARNING,report,group_policy > if > else,CIS Microsoft IIS 8 Benchmark v1.5.1 Level 1,"This audit checks the testable Level 1 guidance in the CIS Microsoft IIS 8 Benchmark v1.5.1 document against Microsoft IIS 8.0 running on Microsoft Windows Server 2012 and Microsoft IIS 8.5 running on Microsoft Windows Server 2012 R2.
+
+Microsoft IIS 8.0/8.5 or Windows Server 2012/2012 R2 is not found as installed on the target.
+
+NOTE: Nessus has not identified that the chosen audit applies to the target device.
+
+NOTE: Nessus has not performed this check. Please review the benchmark to ensure target compliance.",,,https://workbench.cisecurity.org/benchmarks/14293,,,,,,,,,Medium,2450,audits\portal_audits\Windows\CIS_v1.5.1_MS_IIS_8_Level_1.audit

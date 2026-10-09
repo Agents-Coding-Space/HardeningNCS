@@ -660,7 +660,6 @@ skippedCount = 0
 
 WScript.Echo ""
 WScript.Echo "=========================================================="
-WScript.Echo "   VIETNAM NATIONAL CYBER SECURITY TECHNOLOGY JSC (NCS)"
 WScript.Echo "       HardeningNCS | VBScript Zero-Dep Edition"
 WScript.Echo "=========================================================="
 WScript.Echo ""

@@ -1,0 +1,423 @@
+﻿CID,Profile,Scored,Title,Type,Tag,Conditional Path,Description,Info / Rationale,Solution / Remediation,Reference,See Also,Cmd / Request,Expect,Value Data,Value Type,Reg Key,Reg Item,Reg Option,File,Severity,Line,Source File
+,,,Verify that NET Framework 4 is installed.,REGISTRY_SETTING,custom_item,group_policy > if > condition,Verify that NET Framework 4 is installed.,,,,,,,1,POLICY_DWORD,HKLM\Software\Microsoft\Net Framework Setup\Ndp\V4,Install,,,Medium,46,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit from DISA Microsoft DotNet Framework 4.0 STIG v2r9,PASSED,report,group_policy > if > then,DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit from DISA Microsoft DotNet Framework 4.0 STIG v2r9,,,,https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,,,,,,,Medium,58,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,.NET 4.x Installation Key Exists,REG_CHECK,custom_item,group_policy > if > then > if > condition,.NET 4.x Installation Key Exists,,,,,,,HKLM\Software\Microsoft\NET Framework Setup\NDP\v4\Full,POLICY_TEXT,,,MUST_EXIST,,Medium,66,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0010 - The version of .NET running on the system must be a supported version.,REGISTRY_SETTING,custom_item,group_policy > if > then > if > then,APPNET0010 - The version of .NET running on the system must be a supported version.,"Security flaws with software applications are discovered daily. Vendors are constantly updating and patching their products to address newly discovered security vulnerabilities. Organizations (including any contractor to the organization) are required to promptly install security-relevant software updates (e.g., patches, service packs, and hot fixes). Flaws discovered during security assessments, continuous monitoring, incident response activities, or information system error handling must also be addressed expeditiously.
+
+Organization-defined time periods for updating security-relevant software may vary based on a variety of factors including, for example, the security category of the information system or the criticality of the update (i.e., severity of the vulnerability related to the discovered flaw).
+
+This requirement will apply to software patch management solutions that are used to install patches across the enclave and also to applications that are not part of that patch management solution. For example, many browsers provide the capability to install their own patch software. Patch criticality, as well as system criticality, will vary. Therefore, the tactical situations regarding the patch management process will also vary. This means that the time period used must be a configurable parameter. Time frames for application of security-relevant software updates may depend on the Information Assurance Vulnerability Management (IAVM) process.
+
+The application will be configured to check for and install security-relevant software updates within an identified time period from the availability of the update. The specific time period will be defined by an authoritative source (e.g., IAVM, CTOs, DTMs, and STIGs).",Upgrade to a supported version.,"800-171|3.14.1,800-171r3|03.14.01b.,800-53|SI-2c.,800-53r5|SI-2c.,CAT|I,CCI|CCI-002605,CN-L3|8.1.4.4(e),CN-L3|8.1.10.5(a),CN-L3|8.1.10.5(b),CN-L3|8.5.4.1(b),CN-L3|8.5.4.1(d),CN-L3|8.5.4.1(e),CSF|ID.RA-1,CSF|PR.IP-12,CSF2.0|ID.IM-01,CSF2.0|ID.IM-02,CSF2.0|ID.IM-03,CSF2.0|PR.PS-02,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.6.8,ISO-27001-2022|A.8.8,ISO-27001-2022|A.8.32,ITSG-33|SI-2,NESA|T7.6.2,NESA|T7.7.1,NIAv2|AM38,NIAv2|AM39,NIAv2|SS14b,PCI-DSSv3.2.1|6.2,PCI-DSSv4.0|6.3,PCI-DSSv4.0|6.3.3,QCSC-v1|11.2,Rule-ID|SV-284958r1208187_rule,STIG-ID|APPNET0010,SWIFT-CSCv1|2.2,Vuln-ID|V-284958",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,[378389..MAX],POLICY_DWORD,HKLM\Software\Microsoft\NET Framework Setup\NDP\v4\Full,Release,CAN_NOT_BE_NULL,,High,76,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0010 - The version of .NET running on the system must be a supported version.,PASSED,report,group_policy > if > then > if > else,APPNET0010 - The version of .NET running on the system must be a supported version.,"Security flaws with software applications are discovered daily. Vendors are constantly updating and patching their products to address newly discovered security vulnerabilities. Organizations (including any contractor to the organization) are required to promptly install security-relevant software updates (e.g., patches, service packs, and hot fixes). Flaws discovered during security assessments, continuous monitoring, incident response activities, or information system error handling must also be addressed expeditiously.
+
+Organization-defined time periods for updating security-relevant software may vary based on a variety of factors including, for example, the security category of the information system or the criticality of the update (i.e., severity of the vulnerability related to the discovered flaw).
+
+This requirement will apply to software patch management solutions that are used to install patches across the enclave and also to applications that are not part of that patch management solution. For example, many browsers provide the capability to install their own patch software. Patch criticality, as well as system criticality, will vary. Therefore, the tactical situations regarding the patch management process will also vary. This means that the time period used must be a configurable parameter. Time frames for application of security-relevant software updates may depend on the Information Assurance Vulnerability Management (IAVM) process.
+
+The application will be configured to check for and install security-relevant software updates within an identified time period from the availability of the update. The specific time period will be defined by an authoritative source (e.g., IAVM, CTOs, DTMs, and STIGs).",Upgrade to a supported version.,"800-171|3.14.1,800-171r3|03.14.01b.,800-53|SI-2c.,800-53r5|SI-2c.,CAT|I,CCI|CCI-002605,CN-L3|8.1.4.4(e),CN-L3|8.1.10.5(a),CN-L3|8.1.10.5(b),CN-L3|8.5.4.1(b),CN-L3|8.5.4.1(d),CN-L3|8.5.4.1(e),CSF|ID.RA-1,CSF|PR.IP-12,CSF2.0|ID.IM-01,CSF2.0|ID.IM-02,CSF2.0|ID.IM-03,CSF2.0|PR.PS-02,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.6.8,ISO-27001-2022|A.8.8,ISO-27001-2022|A.8.32,ITSG-33|SI-2,NESA|T7.6.2,NESA|T7.7.1,NIAv2|AM38,NIAv2|AM39,NIAv2|SS14b,PCI-DSSv3.2.1|6.2,PCI-DSSv4.0|6.3,PCI-DSSv4.0|6.3.3,QCSC-v1|11.2,Rule-ID|SV-284958r1208187_rule,STIG-ID|APPNET0010,SWIFT-CSCv1|2.2,Vuln-ID|V-284958",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,,,,,,,High,98,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0031 - Digital signatures assigned to strongly named assemblies must be verified.,AUDIT_POWERSHELL,custom_item,group_policy > if > then,APPNET0031 - Digital signatures assigned to strongly named assemblies must be verified.,"A strong name consists of the assembly's identity, simple text name, version number, and culture information (if provided)-plus a public key and a digital signature. Strong names serve to identify the author of the code. If digital signatures used to sign strong name assemblies are not verified, any self signed code can be impersonated. This can lead to a loss of system integrity.","Use regedit to remove the values stored in Windows registry key HKLM\Software\Microsoft\StrongName\Verification. There should be no assemblies or hash values listed under this registry key.
+
+All assemblies must require strong name verification in a production environment.
+
+Strong name assemblies that do not require verification in a development or test environment must have documented approvals from the IAO.","800-171|3.5.2,800-171r3|03.05.12,800-53|IA-5(2)(a),800-53r5|IA-5(2)(b)(1),CAT|II,CCI|CCI-000185,CSF|PR.AC-1,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),ISO-27001-2022|A.5.16,ISO-27001-2022|A.5.17,ITSG-33|IA-5(2)(a),NESA|T5.2.3,QCSC-v1|5.2.2,QCSC-v1|13.2,Rule-ID|SV-225223r961038_rule,STIG-ID|APPNET0031,STIG-Legacy|SV-7438,STIG-Legacy|V-7055,Vuln-ID|V-225223",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,PASS: No assemblies listed.|PASS: Key not present.,POLICY_TEXT,,,,,Medium,114,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0046 - The Trust Providers Software Publishing State must be set to 0x23C00.,REGISTRY_SETTING,custom_item,group_policy > if > then,APPNET0046 - The Trust Providers Software Publishing State must be set to 0x23C00.,"Microsoft Windows operating systems provide a feature called Authenticode. Authenticode technology and its underlying code signing mechanisms serve to provide a structure to identify software publishers and ensure that software applications have not been tampered with. Authenticode technology relies on digital certificates and is based on Public Key Cryptography Standards (PKCS) #7 (encrypted key specification), PKCS #10 (certificate request formats), X.509 (certificate specification), and Secure Hash Algorithm (SHA) and MD5 hash algorithms.
+
+The manner in which the Authenticode technology validates a certificate and determines what is considered a valid certificate can be modified to meet the mission of the Microsoft Windows system. Each facade of certificate validation is controlled through the bits that makeup the hexadecimal value for the Authenticode setting. An improper setting will allow non-valid certificates to be accepted and can put the integrity of the system into jeopardy.
+
+The hexadecimal value of 0x23C00 will implement the following certificate enforcement policy:
+- Trust the Test Root = FALSE
+- Use expiration date on certificates = TRUE
+- Check the revocation list = TRUE
+- Offline revocation server OK (Individual) = TRUE
+- Offline revocation server OK (Commercial) = TRUE
+- Java offline revocation server OK (Individual) = TRUE
+- Java offline revocation server OK (Commercial) = TRUE
+- Invalidate version 1 signed objects = FALSE
+- Check the revocation list on Time Stamp Signer = FALSE
+- Only trust items found in the Trust DB = FALSE","This fix must be performed for each user on the system.
+
+Using regedit, change the hexadecimal value of the 'HKEY_USER\[UNIQUE USER SID VALUE]\Software\Microsoft\Windows\CurrentVersion\WinTrust\Trust Providers\Software Publishing\State' registry key to 0x23C00.","800-171|3.5.2,800-171r3|03.05.12,800-53|IA-5(2)(a),800-53r5|IA-5(2)(b)(1),CAT|II,CCI|CCI-000185,CSF|PR.AC-1,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),ISO-27001-2022|A.5.16,ISO-27001-2022|A.5.17,ITSG-33|IA-5(2)(a),NESA|T5.2.3,QCSC-v1|5.2.2,QCSC-v1|13.2,Rule-ID|SV-225224r961038_rule,STIG-ID|APPNET0046,STIG-Legacy|SV-7444,STIG-Legacy|V-7061,Vuln-ID|V-225224",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,023C00,POLICY_HEXADECIMAL,HKU\Software\Microsoft\Windows\CurrentVersion\WinTrust\Trust Providers\Software Publishing,State,CAN_NOT_BE_NULL,,Medium,131,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,.NET Framework Version for CAS Applicability,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,.NET Framework Version for CAS Applicability,,,,,,,NA: .NET > 4.x installed,POLICY_TEXT,,,,,Medium,164,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0048 - Developer certificates used with the .NET Publisher Membership Condition must be approved by the ISSO.,PASSED,report,group_policy > if > then > if > then,APPNET0048 - Developer certificates used with the .NET Publisher Membership Condition must be approved by the ISSO.,"A .Net assembly will satisfy the Publisher Membership Condition if it is signed with a software publisher's Authenticode X.509v3 digital certificate that can be verified by the Windows operating system as having a chain of trust that leads to a trusted root certificate stored in the user's certificate store. The Publisher Membership Condition can be used to identify an organization, developer, vendor, or other entity as the ultimate source of the assembly, even if the code itself was obtained from a third party, such as a mirror site. Access to system resources, such as file systems or printers, may then be granted to the assembly based on the trust relationship with the identified entity.
+
+Certificates used to sign assemblies so the Publisher Member Condition may be applied must originate from a trusted source. Using a certificate that is not from a trusted source could potentially violate system integrity and confidentiality.",Trust must be established when utilizing Publishers Membership Condition. All publisher's certificates must have documented approvals from the ISSO.,"800-171|3.5.2,800-171r3|03.05.12,800-53|IA-5(2)(a),800-53r5|IA-5(2)(b)(1),CAT|II,CCI|CCI-000185,CSF|PR.AC-1,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),ISO-27001-2022|A.5.16,ISO-27001-2022|A.5.17,ITSG-33|IA-5(2)(a),NESA|T5.2.3,QCSC-v1|5.2.2,QCSC-v1|13.2,Rule-ID|SV-225225r961038_rule,STIG-ID|APPNET0048,STIG-Legacy|SV-7446,STIG-Legacy|V-7063,Vuln-ID|V-225225",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,,,,,,,Medium,175,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0048 - Developer certificates used with the .NET Publisher Membership Condition must be approved by the ISSO.,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > else,APPNET0048 - Developer certificates used with the .NET Publisher Membership Condition must be approved by the ISSO.,"A .Net assembly will satisfy the Publisher Membership Condition if it is signed with a software publisher's Authenticode X.509v3 digital certificate that can be verified by the Windows operating system as having a chain of trust that leads to a trusted root certificate stored in the user's certificate store. The Publisher Membership Condition can be used to identify an organization, developer, vendor, or other entity as the ultimate source of the assembly, even if the code itself was obtained from a third party, such as a mirror site. Access to system resources, such as file systems or printers, may then be granted to the assembly based on the trust relationship with the identified entity.
+
+Certificates used to sign assemblies so the Publisher Member Condition may be applied must originate from a trusted source. Using a certificate that is not from a trusted source could potentially violate system integrity and confidentiality.",Trust must be established when utilizing Publishers Membership Condition. All publisher's certificates must have documented approvals from the ISSO.,"800-171|3.5.2,800-171r3|03.05.12,800-53|IA-5(2)(a),800-53r5|IA-5(2)(b)(1),CAT|II,CCI|CCI-000185,CSF|PR.AC-1,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),ISO-27001-2022|A.5.16,ISO-27001-2022|A.5.17,ITSG-33|IA-5(2)(a),NESA|T5.2.3,QCSC-v1|5.2.2,QCSC-v1|13.2,Rule-ID|SV-225225r961038_rule,STIG-ID|APPNET0048,STIG-Legacy|SV-7446,STIG-Legacy|V-7063,Vuln-ID|V-225225",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,PASS: No publisher membership conditions found,POLICY_TEXT,,,,,Medium,187,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,.NET Framework Version for CAS Applicability,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,.NET Framework Version for CAS Applicability,,,,,,,NA: .NET > 4.x installed,POLICY_TEXT,,,,,Medium,205,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0052 - Encryption keys used for the .NET Strong Name Membership Condition must be protected.,PASSED,report,group_policy > if > then > if > then,APPNET0052 - Encryption keys used for the .NET Strong Name Membership Condition must be protected.,"The Strong Name Membership condition requires that member assemblies be defined with Strong Names. A strong name consists of the assembly's identity, simple text name, version number, and culture information (if provided) - plus a public key and a digital signature. If assemblies do not have a strong name assigned, the assembly cannot be unique and the author of the code cannot be uniquely identified. In order to create the strong name, the developer must use a cryptographic key pair to sign the assembly. If the developer does not protect the key, the key can be stolen and used to sign any application, including malware applications. This could adversely affect application integrity and confidentiality.","Ask the Systems Programmer how the private keys used to sign the assembly are protected.
+
+Private keys are simply values stored as strings of data. Keys can be stored in files on the file system or in a centralized data repository.
+
+Adequate protection methods include, but are not limited to:
+- utilizing centralized key management;
+- using strict file permissions to limit access; and
+- tying strong pass phrases to the key.
+
+The private key(s) used to sign the assembly must be protected. Utilize centralized key management or strict file permissions along with strong pass phrases and/or other well-established industry practices for managing and controlling access to private keys.","800-171|3.5.2,800-171r3|03.05.12,800-53|IA-5(2)(b),800-53r5|IA-5(2)(a)(1),CAT|II,CCI|CCI-000186,CSF|PR.AC-1,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),ISO-27001-2022|A.5.16,ISO-27001-2022|A.5.17,ITSG-33|IA-5(2)(b),NESA|T5.2.3,QCSC-v1|5.2.2,QCSC-v1|13.2,Rule-ID|SV-225226r961041_rule,STIG-ID|APPNET0052,STIG-Legacy|SV-7450,STIG-Legacy|V-7067,Vuln-ID|V-225226",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,,,,,,,Medium,216,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0052 - Encryption keys used for the .NET Strong Name Membership Condition must be protected.,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > else,APPNET0052 - Encryption keys used for the .NET Strong Name Membership Condition must be protected.,"The Strong Name Membership condition requires that member assemblies be defined with Strong Names. A strong name consists of the assembly's identity, simple text name, version number, and culture information (if provided) - plus a public key and a digital signature. If assemblies do not have a strong name assigned, the assembly cannot be unique and the author of the code cannot be uniquely identified. In order to create the strong name, the developer must use a cryptographic key pair to sign the assembly. If the developer does not protect the key, the key can be stolen and used to sign any application, including malware applications. This could adversely affect application integrity and confidentiality.","Ask the Systems Programmer how the private keys used to sign the assembly are protected.
+
+Private keys are simply values stored as strings of data. Keys can be stored in files on the file system or in a centralized data repository.
+
+Adequate protection methods include, but are not limited to:
+- utilizing centralized key management;
+- using strict file permissions to limit access; and
+- tying strong pass phrases to the key.
+
+The private key(s) used to sign the assembly must be protected. Utilize centralized key management or strict file permissions along with strong pass phrases and/or other well-established industry practices for managing and controlling access to private keys.","800-171|3.5.2,800-171r3|03.05.12,800-53|IA-5(2)(b),800-53r5|IA-5(2)(a)(1),CAT|II,CCI|CCI-000186,CSF|PR.AC-1,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),ISO-27001-2022|A.5.16,ISO-27001-2022|A.5.17,ITSG-33|IA-5(2)(b),NESA|T5.2.3,QCSC-v1|5.2.2,QCSC-v1|13.2,Rule-ID|SV-225226r961041_rule,STIG-ID|APPNET0052,STIG-Legacy|SV-7450,STIG-Legacy|V-7067,Vuln-ID|V-225226",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,StrongName .* FullTrust,POLICY_TEXT,,,,,Medium,235,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,.NET Framework Version for CAS Applicability,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,.NET Framework Version for CAS Applicability,,,,,,,NA: .NET > 4.x installed,POLICY_TEXT,,,,,Medium,261,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0055 - CAS and policy configuration files must be backed up.,PASSED,report,group_policy > if > then > if > then,APPNET0055 - CAS and policy configuration files must be backed up.,"A successful disaster recovery plan requires that CAS policy and CAS policy configuration files are identified and included in systems disaster backup and recovery events. Documentation regarding the location of system and application specific CAS policy configuration files and the frequency in which backups occur is required. If these files are not identified and the information is not documented, there is the potential that critical application configuration files may not be included in disaster recovery events which could lead to an availability risk.","All CAS policy and policy configuration files must be included in the system backup.
+
+All CAS policy and policy configuration files must be backed up prior to migration, deployment, and reconfiguration.
+
+CAS policy configuration files must be included in disaster recovery plan documentation.","800-171|3.3.8,800-171r3|03.03.08,800-53|AU-9,800-53r5|AU-9a.,CAT|II,CCI|CCI-000164,CN-L3|7.1.2.3(d),CN-L3|7.1.3.3(f),CN-L3|8.1.3.5(c),CN-L3|8.1.4.3(c),CSF|PR.PT-1,CSF2.0|PR.DS-10,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(b),ISO-27001-2022|A.5.33,ISO-27001-2022|A.8.15,ISO/IEC-27001|A.12.4.2,ITSG-33|AU-9,NESA|M5.2.3,NESA|M5.5.2,NESA|T3.6.4,NESA|T8.2.9,NIAv2|SM5,NIAv2|SM6,PCI-DSSv3.2.1|10.5,PCI-DSSv3.2.1|10.5.2,PCI-DSSv4.0|10.3.2,QCSC-v1|8.2.1,QCSC-v1|13.2,Rule-ID|SV-225227r960936_rule,STIG-ID|APPNET0055,STIG-Legacy|SV-7452,STIG-Legacy|V-7069,Vuln-ID|V-225227",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,,,,,,,Medium,272,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0055 - CAS and policy configuration files must be backed up.,WARNING,report,group_policy > if > then > if > else,APPNET0055 - CAS and policy configuration files must be backed up.,"A successful disaster recovery plan requires that CAS policy and CAS policy configuration files are identified and included in systems disaster backup and recovery events. Documentation regarding the location of system and application specific CAS policy configuration files and the frequency in which backups occur is required. If these files are not identified and the information is not documented, there is the potential that critical application configuration files may not be included in disaster recovery events which could lead to an availability risk.
+
+NOTE: Nessus has not performed this check. Please review the benchmark to ensure target compliance.","All CAS policy and policy configuration files must be included in the system backup.
+
+All CAS policy and policy configuration files must be backed up prior to migration, deployment, and reconfiguration.
+
+CAS policy configuration files must be included in disaster recovery plan documentation.","800-171|3.3.8,800-171r3|03.03.08,800-53|AU-9,800-53r5|AU-9a.,CAT|II,CCI|CCI-000164,CN-L3|7.1.2.3(d),CN-L3|7.1.3.3(f),CN-L3|8.1.3.5(c),CN-L3|8.1.4.3(c),CSF|PR.PT-1,CSF2.0|PR.DS-10,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(b),ISO-27001-2022|A.5.33,ISO-27001-2022|A.8.15,ISO/IEC-27001|A.12.4.2,ITSG-33|AU-9,NESA|M5.2.3,NESA|M5.5.2,NESA|T3.6.4,NESA|T8.2.9,NIAv2|SM5,NIAv2|SM6,PCI-DSSv3.2.1|10.5,PCI-DSSv3.2.1|10.5.2,PCI-DSSv4.0|10.3.2,QCSC-v1|8.2.1,QCSC-v1|13.2,Rule-ID|SV-225227r960936_rule,STIG-ID|APPNET0055,STIG-Legacy|SV-7452,STIG-Legacy|V-7069,Vuln-ID|V-225227",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,,,,,,,Medium,286,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,.NET Remoting HTTP Channel - machine.config,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,.NET Remoting HTTP Channel - machine.config,,,,,,,PASS: No insecure HTTP channels detected in machine.config files,POLICY_TEXT,,,,,Medium,304,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,.NET Remoting HTTP Channel - .exe.config,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,.NET Remoting HTTP Channel - .exe.config,,,,,,,PASS: No insecure HTTP channels detected in .exe.config files,POLICY_TEXT,,,,,Medium,313,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0060 - Remoting Services HTTP channels must utilize authentication and encryption.,PASSED,report,group_policy > if > then > if > then,APPNET0060 - Remoting Services HTTP channels must utilize authentication and encryption.,"Note: Microsoft recommends using the Windows Communication Framework (WCF) rather than using .Net remoting. New development projects should refrain from using .Net remoting capabilities whenever possible.
+
+.NET remoting provides the capability to build widely distributed applications. The application components may reside all on one computer or they may be spread out across the enclave. .NET client applications can make remoting calls to use objects in other processes on the same computer or on any other computer that is reachable over the network. .NET remoting can also be used to communicate with other application domains within the same process. Remoting is achieved via the exposure of endpoints that can be used to establish remote connectivity.
+
+Normally when application code attempts to access a protected resource, a stack walk is performed to ensure that all stack frames have permission to access the resource. However, with .Net 4.0, when a call is made on a remote object, this stack walk is not performed across the remoting boundary. The .Net remoting infrastructure requires FullTrust permission to execute on either the client or the server.
+
+Due to the fact that FullTrust permission is required, Remoting endpoints should be authenticated and encrypted in order to protect the system and the data.
+
+Microsoft provides three different 'channels' that are used for remoting. They are HTTP, TCP, and IPC.
+
+Any unauthorized use of a remoting application provides unauthorized access with FullTrust permissions to the system. This can potentially result in a loss of system integrity or confidentiality.","If .NET remoting with HTTP channel is not used, this fix is Not Applicable.
+
+Ensure encryption and message integrity are used for HTTP remoting channels.
+
+The HTTP channel only supports encryption and message integrity when the remote object is hosted in Internet Information Services (IIS) using TLS.
+
+HTTP channels are protected via TLS (HTTPS).
+<channels>
+   <channel ref='http server' port='443'/>
+</channels>
+
+Change the channel ref parameter to utilize a TLS port and leverage TLS on the remote IIS server.","800-171|3.13.15,800-171r3|03.13.15,800-53|SC-23,800-53r5|SC-23,CAT|II,CCI|CCI-001184,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SC-23,ITSG-33|SC-23a.,NESA|T4.5.1,QCSC-v1|5.2.1,Rule-ID|SV-225228r1043178_rule,STIG-ID|APPNET0060,STIG-Legacy|SV-7453,STIG-Legacy|V-7070,Vuln-ID|V-225228",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,,,,,,,Medium,324,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0061 - .Net Framework versions installed on the system must be supported.,AUDIT_POWERSHELL,custom_item,group_policy > if > then,APPNET0061 - .Net Framework versions installed on the system must be supported.,"Unsupported software introduces risks and violates DOD policy. Applications utilizing unsupported versions of .NET introduce substantial risk to the host, network, and the enclave because they leverage an architecture that is no longer updated by the vendor. This introduces potential application integrity, availability, or confidentiality issues.
+
+NOTE: Nessus has provided the target output to assist in reviewing the benchmark to ensure target compliance.",Remove unsupported versions of the .NET Framework and upgrade legacy applications that utilize unsupported versions of the .NET framework.,"800-171|3.4.2,800-171r3|03.04.02a.,800-53|CM-6b.,800-53r5|CM-6b.,CAT|II,CCI|CCI-000366,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6b.,NESA|T3.2.1,Rule-ID|SV-225229r1188309_rule,STIG-ID|APPNET0061,STIG-Legacy|SV-55642,STIG-Legacy|V-18395,SWIFT-CSCv1|2.3,Vuln-ID|V-225229",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,^Manual Review Required$,POLICY_TEXT,,,,,Medium,356,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0062 - The .NET CLR must be configured to use FIPS approved encryption modules.,AUDIT_POWERSHELL,custom_item,group_policy > if > then,APPNET0062 - The .NET CLR must be configured to use FIPS approved encryption modules.,"FIPS encryption is configured via .NET configuration files. There are numerous configuration files that affect different aspects of .Net behavior. The .NET config files are described below.
+
+Machine Configuration Files:
+The machine configuration file, Machine.config, contains settings that apply to an entire computer. This file is located in the %SYSTEMROOT%\Microsoft.NET\Framework\v4.0.30319\Config directory for 32 bit .NET 4 installations and %SYSTEMROOT%\Microsoft.NET\Framework64\v4.0.30319\Config for 64 bit systems. Machine.config contains configuration settings for machine-wide assembly binding, built-in remoting channels, and ASP.NET.
+
+Application Configuration Files:
+Application configuration files contain settings specific to an application. If checking these files, a .NET review of a specific .NET application is most likely being conducted. These files contain configuration settings that the Common Language Runtime reads (such as assembly binding policy, remoting objects, and so on), and settings that the application can read.
+
+The name and location of the application configuration file depends on the application's host, which can be one of the following:
+
+Executable-hosted application configuration files.
+
+The configuration file for an application hosted by the executable host is in the same directory as the application. The name of the configuration file is the name of the application with a .config extension. For example, an application called myApp.exe can be associated with a configuration file called myApp.exe.config.
+
+Internet Explorer-hosted application configuration files.
+
+If an application hosted in Internet Explorer has a configuration file, the location of this file is specified in a <link> tag with the following syntax.
+
+<link rel='ConfigurationFileName' href='location'>
+
+In this tag, 'location' represents a URL that point to the configuration file. This sets the application base. The configuration file must be located on the same web site as the application.
+
+.NET 4.0 allows the CLR runtime to be configured to ignore FIPS encryption requirements. If the CLR is not configured to use FIPS encryption modules, insecure encryption modules might be employed which could introduce an application confidentiality or integrity issue.","Examine the .NET CLR configuration files to find the runtime element and then the 'enforceFIPSPolicy' element.
+
+Example:
+<configuration>
+  <runtime>
+                <enforceFIPSPolicy enabled='true|false' />
+  </runtime>
+</configuration>
+
+Delete the 'enforceFIPSPolicy' runtime element, change the setting to 'true' or there must be documented IAO approvals for the FIPS setting.","800-171|3.13.11,800-171r3|03.13.11,800-53|SC-13,800-53r5|SC-13b.,CAT|II,CCI|CCI-002450,CSF|PR.DS-5,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO-27001-2022|A.8.24,ISO/IEC-27001|A.10.1.1,ITSG-33|SC-13,ITSG-33|SC-13a.,NESA|M5.2.6,NESA|T7.4.1,NIAv2|CY3,NIAv2|CY4,NIAv2|CY5b,NIAv2|CY5c,NIAv2|CY5d,NIAv2|CY7,NIAv2|NS5e,QCSC-v1|6.2,Rule-ID|SV-225230r1117185_rule,STIG-ID|APPNET0062,STIG-Legacy|SV-40966,STIG-Legacy|V-30926,Vuln-ID|V-225230",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,PASS: No enforceFIPSPolicy=false elements found,POLICY_TEXT,,,,,Medium,371,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,Check for 32 bit on 64 bit.,REG_CHECK,custom_item,group_policy > if > then > if > condition,Check for 32 bit on 64 bit.,,,,,,,HKLM\Software\Wow6432Node,POLICY_TEXT,,,MUST_EXIST,,Medium,417,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,32 bit,REGISTRY_SETTING,custom_item,group_policy > if > then > if > then > if > condition,32 bit,,,,,,,0,POLICY_DWORD,HKLM\Software\Wow6432Node\Microsoft\.Netframework,AllowStrongNameBypass,CAN_NOT_BE_NULL,,Medium,429,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,64 bit,REGISTRY_SETTING,custom_item,group_policy > if > then > if > then > if > condition,64 bit,,,,,,,0,POLICY_DWORD,HKLM\Software\Microsoft\.Netframework,AllowStrongNameBypass,CAN_NOT_BE_NULL,,Medium,439,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0063 - .NET must be configured to validate strong names on full-trust assemblies.,PASSED,report,group_policy > if > then > if > then > if > then,APPNET0063 - .NET must be configured to validate strong names on full-trust assemblies.,"The 'bypassTrustedAppStrongNames' setting specifies whether the bypass feature that avoids validating strong names for full-trust assemblies is enabled. By default the bypass feature is enabled in .Net 4, therefore strong names are not validated for correctness when the assembly/program is loaded. Not validating strong names provides a faster application load time but at the expense of performing certificate validation.
+
+Full trust assemblies are .Net applications launched from the local host. Strong names are digital signatures tied to .Net applications/assemblies. .Net 4 considers applications installed locally to be fully trusted by default and grants these applications full permissions to access host resources.
+
+The bypass feature applies to any assembly signed with a strong name and having the following characteristics:
+
+    Fully trusted without the StrongName evidence (for example, has MyComputer zone evidence).
+
+    Loaded into a fully trusted AppDomain.
+
+    Loaded from a location under the ApplicationBase property of that AppDomain.
+
+    Not delay-signed.
+
+Not validating the certificates used to sign strong name assemblies will provide a faster application load time, but falsely assumes that signatures used to sign the application are to be implicitly trusted. Not validating strong name certificates introduces an integrity risk to the system.","For 32 bit production systems:
+Set 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\AllowStrongNameBypass' to a 'DWORD' value of '0'.
+On 64-bit production systems:
+Set 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\ AllowStrongNameBypass' and 'HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\ AllowStrongNameBypass' to a 'DWORD' value of '0'.
+Or, obtain documented ISSO risk acceptance for each .Net application installed on the system.
+
+Approval documentation will include complete list of all installed .Net applications, application versions, and acknowledgement of ISSO trust of each installed application.","800-171|3.5.2,800-171r3|03.05.12,800-53|IA-5(2)(a),800-53r5|IA-5(2)(b)(1),CAT|II,CCI|CCI-000185,CSF|PR.AC-1,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),ISO-27001-2022|A.5.16,ISO-27001-2022|A.5.17,ITSG-33|IA-5(2)(a),NESA|T5.2.3,QCSC-v1|5.2.2,QCSC-v1|13.2,Rule-ID|SV-225231r961038_rule,STIG-ID|APPNET0063,STIG-Legacy|SV-40977,STIG-Legacy|V-30935,Vuln-ID|V-225231",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,,,,,,,Medium,451,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0063 - .NET must be configured to validate strong names on full-trust assemblies.,REGISTRY_SETTING,custom_item,group_policy > if > then > if > else,APPNET0063 - .NET must be configured to validate strong names on full-trust assemblies.,"The 'bypassTrustedAppStrongNames' setting specifies whether the bypass feature that avoids validating strong names for full-trust assemblies is enabled. By default the bypass feature is enabled in .Net 4, therefore strong names are not validated for correctness when the assembly/program is loaded. Not validating strong names provides a faster application load time but at the expense of performing certificate validation.
+
+Full trust assemblies are .Net applications launched from the local host. Strong names are digital signatures tied to .Net applications/assemblies. .Net 4 considers applications installed locally to be fully trusted by default and grants these applications full permissions to access host resources.
+
+The bypass feature applies to any assembly signed with a strong name and having the following characteristics:
+
+    Fully trusted without the StrongName evidence (for example, has MyComputer zone evidence).
+
+    Loaded into a fully trusted AppDomain.
+
+    Loaded from a location under the ApplicationBase property of that AppDomain.
+
+    Not delay-signed.
+
+Not validating the certificates used to sign strong name assemblies will provide a faster application load time, but falsely assumes that signatures used to sign the application are to be implicitly trusted. Not validating strong name certificates introduces an integrity risk to the system.","For 32 bit production systems:
+Set 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\AllowStrongNameBypass' to a 'DWORD' value of '0'.
+On 64-bit production systems:
+Set 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\ AllowStrongNameBypass' and 'HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\ AllowStrongNameBypass' to a 'DWORD' value of '0'.
+Or, obtain documented ISSO risk acceptance for each .Net application installed on the system.
+
+Approval documentation will include complete list of all installed .Net applications, application versions, and acknowledgement of ISSO trust of each installed application.","800-171|3.5.2,800-171r3|03.05.12,800-53|IA-5(2)(a),800-53r5|IA-5(2)(b)(1),CAT|II,CCI|CCI-000185,CSF|PR.AC-1,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),ISO-27001-2022|A.5.16,ISO-27001-2022|A.5.17,ITSG-33|IA-5(2)(a),NESA|T5.2.3,QCSC-v1|5.2.2,QCSC-v1|13.2,Rule-ID|SV-225231r961038_rule,STIG-ID|APPNET0063,STIG-Legacy|SV-40977,STIG-Legacy|V-30935,Vuln-ID|V-225231",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,0,POLICY_DWORD,HKLM\Software\Microsoft\.Netframework,AllowStrongNameBypass,CAN_NOT_BE_NULL,,Medium,484,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,check .Net Framework version,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,check .Net Framework version,,,,,,,True,POLICY_TEXT,,,,,Medium,522,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0064 - .Net applications that invoke NetFx40_LegacySecurityPolicy must apply previous versions of .NET STIG guidance.,PASSED,report,group_policy > if > then > if > then,APPNET0064 - .Net applications that invoke NetFx40_LegacySecurityPolicy must apply previous versions of .NET STIG guidance.,"CAS policy is .NET runtime version-specific. In .NET Framework version 4, CAS policy is disabled by default however; it can be re-enabled by using the NetFx40_LegacySecurityPolicy setting on a per application basis. Caspol.exe is provided by Microsoft to set security policy on .Net applications prior to version 4.0. This requirement does not apply to the caspol.exe assembly or other assemblies provided with the Windows OS or the Windows Secure Host Baseline (SHB).
+
+When invoking the NetFx40_LegacySecurityPolicy setting in .NET 4, earlier versions of the .NET Framework CAS policy will become active therefore previous .NET STIG guidance that applies to the reactivated versions must also be applied.
+
+Failure to apply applicable versions of STIG guidance can result in the loss of system confidentiality, integrity or availability.","The infrastructure to enable CAS exists only in .NET Framework 2.x - 4.x.
+
+The requirement is Not Applicable (NA) for .NET Framework > 4.x.
+
+(Note: The infrastructure is deprecated and is not receiving servicing or security fixes.)
+
+Apply the .NET Framework Security Checklist for .Net versions 1 through 3.5 when using the NetFx40_LegacySecurityPolicy setting.","800-171|3.4.2,800-171r3|03.04.02a.,800-53|CM-6b.,800-53r5|CM-6b.,CAT|III,CCI|CCI-000366,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6b.,NESA|T3.2.1,Rule-ID|SV-225232r1050651_rule,STIG-ID|APPNET0064,STIG-Legacy|SV-40979,STIG-Legacy|V-30937,SWIFT-CSCv1|2.3,Vuln-ID|V-225232",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,,,,,,,Low,532,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,Check for custom application path from UI variable.,FILE_CHECK,custom_item,group_policy > if > then > if > else > if > condition,Check for custom application path from UI variable.,,,,,,,c:\temp,POLICY_TEXT,,,,,Medium,554,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,applications,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > else > if > then > if > condition,applications,,,,,,,^$,POLICY_TEXT,,,,,Medium,566,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,machine,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > else > if > then > if > condition,machine,,,,,,,^$,POLICY_TEXT,,,,,Medium,577,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0064 - .Net applications that invoke NetFx40_LegacySecurityPolicy must apply previous versions of .NET STIG guidance.,WARNING,report,group_policy > if > then > if > else > if > then > if > then,APPNET0064 - .Net applications that invoke NetFx40_LegacySecurityPolicy must apply previous versions of .NET STIG guidance.,"CAS policy is .NET runtime version-specific. In .NET Framework version 4, CAS policy is disabled by default however; it can be re-enabled by using the NetFx40_LegacySecurityPolicy setting on a per application basis. Caspol.exe is provided by Microsoft to set security policy on .Net applications prior to version 4.0. This requirement does not apply to the caspol.exe assembly or other assemblies provided with the Windows OS or the Windows Secure Host Baseline (SHB).
+
+When invoking the NetFx40_LegacySecurityPolicy setting in .NET 4, earlier versions of the .NET Framework CAS policy will become active therefore previous .NET STIG guidance that applies to the reactivated versions must also be applied.
+
+Failure to apply applicable versions of STIG guidance can result in the loss of system confidentiality, integrity or availability.
+
+NOTE: Nessus has not performed this check. Please review the benchmark to ensure target compliance.
+
+NOTE: Nessus has provided the target output to assist in reviewing the benchmark to ensure target compliance.","The infrastructure to enable CAS exists only in .NET Framework 2.x - 4.x.
+
+The requirement is Not Applicable (NA) for .NET Framework > 4.x.
+
+(Note: The infrastructure is deprecated and is not receiving servicing or security fixes.)
+
+Apply the .NET Framework Security Checklist for .Net versions 1 through 3.5 when using the NetFx40_LegacySecurityPolicy setting.","800-171|3.4.2,800-171r3|03.04.02a.,800-53|CM-6b.,800-53r5|CM-6b.,CAT|III,CCI|CCI-000366,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6b.,NESA|T3.2.1,Rule-ID|SV-225232r1050651_rule,STIG-ID|APPNET0064,STIG-Legacy|SV-40979,STIG-Legacy|V-30937,SWIFT-CSCv1|2.3,Vuln-ID|V-225232",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,,,,,,,Low,590,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0064 - .Net applications that invoke NetFx40_LegacySecurityPolicy must apply previous versions of .NET STIG guidance.,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > else > if > else,APPNET0064 - .Net applications that invoke NetFx40_LegacySecurityPolicy must apply previous versions of .NET STIG guidance.,"CAS policy is .NET runtime version-specific. In .NET Framework version 4, CAS policy is disabled by default however; it can be re-enabled by using the NetFx40_LegacySecurityPolicy setting on a per application basis. Caspol.exe is provided by Microsoft to set security policy on .Net applications prior to version 4.0. This requirement does not apply to the caspol.exe assembly or other assemblies provided with the Windows OS or the Windows Secure Host Baseline (SHB).
+
+When invoking the NetFx40_LegacySecurityPolicy setting in .NET 4, earlier versions of the .NET Framework CAS policy will become active therefore previous .NET STIG guidance that applies to the reactivated versions must also be applied.
+
+Failure to apply applicable versions of STIG guidance can result in the loss of system confidentiality, integrity or availability.
+
+NOTE: Nessus has provided the target output to assist in reviewing the benchmark to ensure target compliance.","The infrastructure to enable CAS exists only in .NET Framework 2.x - 4.x.
+
+The requirement is Not Applicable (NA) for .NET Framework > 4.x.
+
+(Note: The infrastructure is deprecated and is not receiving servicing or security fixes.)
+
+Apply the .NET Framework Security Checklist for .Net versions 1 through 3.5 when using the NetFx40_LegacySecurityPolicy setting.","800-171|3.4.2,800-171r3|03.04.02a.,800-53|CM-6b.,800-53r5|CM-6b.,CAT|III,CCI|CCI-000366,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6b.,NESA|T3.2.1,Rule-ID|SV-225232r1050651_rule,STIG-ID|APPNET0064,STIG-Legacy|SV-40979,STIG-Legacy|V-30937,SWIFT-CSCv1|2.3,Vuln-ID|V-225232",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,^$,POLICY_TEXT,,,,,Medium,617,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0065 - Trust must be established prior to enabling the loading of remote code in .Net 4.,AUDIT_POWERSHELL,custom_item,group_policy > if > then,APPNET0065 - Trust must be established prior to enabling the loading of remote code in .Net 4.,"In the .NET Framework version 3.5 and earlier versions, if an application assembly loaded code/objects from a remote location, that assembly would run partially trusted with a permissions grant set that depended on the zone in which it was loaded. For example, if an assembly was loaded from a web site, it was loaded into the Internet zone and granted the Internet permission set. In other words, it was executed in an Internet sandbox.
+
+If the same program is run in the .NET Framework version 4, an exception is thrown which effectively states; either explicitly create a sandbox for the assembly or run it in full trust.
+
+The <loadFromRemoteSources> element specifies the assemblies that run partially trusted in earlier versions of the .NET Framework will be run fully trusted in the .NET Framework 4.
+
+If loadFromRemoteSources is set to true, the remotely loaded application code is granted full trust. This could create an integrity vulnerability on the system. The required method to address this is to explicitly create a sandboxed environment for the remotely loaded code to run in rather than allowing remotely loaded code to run with full trust.
+
+The appropriate level of trust must be established prior to enabling the loading of remote code in .Net 4 applications and that code must be run in a controlled environment. The following is an example of the use of loadFromRemoteSources.
+
+<configuration>
+<runtime>
+    <loadFromRemoteSources enabled='true' 'https://my.dodorg.gov' />
+    <loadFromRemoteSources enabled='true' 'https://192.168.0.*' />
+    <loadFromRemoteSources enabled='false' '*' />
+</runtime>
+</configuration>",".Net application code loaded from a remote source must be run in a controlled environment.
+
+A controlled environment consists of a sandbox, such as running in an Internet Explorer host environment or employing OS based software access controls, such as AppLocker or Software Security Policies, when application design permits.
+
+Obtain documented IAO approvals for all remotely loaded code.","800-53|SC-39,800-53r5|SC-39,CAT|II,CCI|CCI-002530,CSF2.0|PR.DS-01,CSF2.0|PR.DS-10,CSF2.0|PR.IR-03,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),QCSC-v1|5.2.1,Rule-ID|SV-225233r1117179_rule,STIG-ID|APPNET0065,STIG-Legacy|SV-41010,STIG-Legacy|V-30968,Vuln-ID|V-225233",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,PASS: No loadFromRemoteSources=true elements found,POLICY_TEXT,,,,,Medium,648,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,Verify machine.exe defaultProxy is configured correctly,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,Verify machine.exe defaultProxy is configured correctly,,,,,,,PASS: No defaultProxy misconfigurations found in machine.config,POLICY_TEXT,,,,,Medium,683,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,Verify .exe.config defaultProxy is configured correctly,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,Verify .exe.config defaultProxy is configured correctly,,,,,,,PASS: No defaultProxy misconfigurations found in .exe.config,POLICY_TEXT,,,,,Medium,692,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0066 - .NET default proxy settings must be reviewed and approved.,PASSED,report,group_policy > if > then > if > then,APPNET0066 - .NET default proxy settings must be reviewed and approved.,"The .Net framework can be configured to utilize a different proxy or altogether bypass the default proxy settings in the client's browser. This may lead to the framework using a proxy that is not approved for use. If the proxy is malicious, this could lead to a loss of application integrity and confidentiality.","Open Windows explorer and search for all '*.exe.config' and 'machine.config' files.
+
+Search each file for the 'defaultProxy' element.
+
+Clear the values contained in the 'defaultProxy' element, and the 'bypasslist', 'module', and 'proxy' child elements.
+
+The IAO must provide documented approvals of any non-default proxy servers.","800-171|3.4.2,800-171r3|03.04.02a.,800-53|CM-6b.,800-53r5|CM-6b.,CAT|III,CCI|CCI-000366,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6b.,NESA|T3.2.1,Rule-ID|SV-225234r1188289_rule,STIG-ID|APPNET0066,STIG-Legacy|SV-41014,STIG-Legacy|V-30972,SWIFT-CSCv1|2.3,Vuln-ID|V-225234",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,,,,,,,Low,703,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,Verify machine.exe ETW is configured correctly,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,Verify machine.exe ETW is configured correctly,,,,,,,PASS: No etwEnable=false elements found in machine.config,POLICY_TEXT,,,,,Medium,722,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,Verify .exe.config ETW is configured correctly,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,Verify .exe.config ETW is configured correctly,,,,,,,PASS: No etwEnable=false elements found in .exe.config,POLICY_TEXT,,,,,Medium,731,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0067 - Event tracing for Windows (ETW) for Common Language Runtime events must be enabled.,PASSED,report,group_policy > if > then > if > then,APPNET0067 - Event tracing for Windows (ETW) for Common Language Runtime events must be enabled.,"Event tracing captures information about applications utilizing the .NET CLR and the .NET CLR itself. This includes security oriented information, such as Strong Name and Authenticode verification.
+
+Beginning with Windows Vista, ETW is enabled by default however, the .Net CLR and .Net applications can be configured to not utilize Event Tracing. If ETW event tracing is disabled, critical events that occurred within the runtime will not be captured in event logs.","Open Windows explorer and search for all .NET config files including application config files (*.exe.config).
+
+Examine the configuration settings for
+<etwEnable enabled='false' />.
+
+Enable ETW Tracing by setting the etwEnable flag to 'true' or obtain documented IAO approvals.","800-171|3.3.1,800-171|3.3.2,800-171r3|03.03.02a.,800-53|AU-3,800-53r5|AU-3a.,CAT|II,CCI|CCI-000130,CN-L3|7.1.2.3(a),CN-L3|7.1.2.3(b),CN-L3|7.1.3.3(a),CN-L3|8.1.4.3(b),CSF|PR.PT-1,CSF2.0|PR.PS-04,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(b),ISO-27001-2022|A.5.28,ISO-27001-2022|A.8.15,ITSG-33|AU-3,NESA|T3.6.2,NIAv2|AM34a,NIAv2|AM34b,NIAv2|AM34c,NIAv2|AM34d,NIAv2|AM34e,NIAv2|AM34f,NIAv2|AM34g,PCI-DSSv3.2.1|10.3,PCI-DSSv3.2.1|10.3.1,PCI-DSSv3.2.1|10.3.2,PCI-DSSv3.2.1|10.3.3,PCI-DSSv3.2.1|10.3.4,PCI-DSSv3.2.1|10.3.5,PCI-DSSv3.2.1|10.3.6,PCI-DSSv4.0|10.2.2,QCSC-v1|8.2.1,QCSC-v1|13.2,Rule-ID|SV-225235r960891_rule,STIG-ID|APPNET0067,STIG-Legacy|SV-41075,STIG-Legacy|V-31026,SWIFT-CSCv1|6.4,Vuln-ID|V-225235",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,,,,,,,Medium,742,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0070 - Software utilizing .Net 4.0 must be identified and relevant access controls configured.,WARNING,report,group_policy > if > then,APPNET0070 - Software utilizing .Net 4.0 must be identified and relevant access controls configured.,"With the advent of .Net 4.0, the .Net framework no longer directly configures or enforces security policy for .Net applications. This task is now relegated to the operating system layer and the security protections built-in to .Net application \'runtime hosts\' that run on the O.S.
+
+Examples of these .Net \'runtime hosts\' include; Internet Explorer, Windows Shell, ASP.NET, Database Engines or any other \'runtime hosts\' that utilize .Net and load the .Net CLR.
+
+Security protections include utilizing runtime host security controls such as sandboxing to restrict or control application behavior as designed or required.
+
+To compensate for these design changes, Windows provides native solutions such as Software Security Policies (SSP) and Application Locker (AL) which are technologies that can be implemented via Group Policy (GPO). SSP, AL and similar third party solutions serve to restrict execution of applications, scripts and libraries based upon cryptographic hash, security zones, path and certificate values that are associated with the application files. Additionally, application developers will utilize \'sandboxing\' techniques within their code in order to isolate 3rd party code libraries from critical system resources.
+
+In order to assign protections to .Net 4.0 applications, the applications must first be identified and the appropriate hosting security mechanisms configured to accomplish that task.
+
+.Net STIG guidance cannot be applied if .Net applications are not identified and documented. The lack of an application inventory introduces confidentiality, availability and integrity vulnerabilities to the system.
+
+NOTE: Nessus has not performed this check. Please review the benchmark to ensure target compliance.","Document the existence of all .Net 4.0 applications that are not provided by the host Windows OS or the Windows Secure Host Baseline (SHB).
+
+Document the corresponding runtime hosts that are used to invoke the applications.
+
+Document the applications security control requirements (restricting application access to resources or user access to the application).","800-53|SC-39,800-53r5|SC-39,CAT|II,CCI|CCI-002530,CSF2.0|PR.DS-01,CSF2.0|PR.DS-10,CSF2.0|PR.IR-03,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),QCSC-v1|5.2.1,Rule-ID|SV-225236r1117179_rule,STIG-ID|APPNET0070,STIG-Legacy|SV-41030,STIG-Legacy|V-30986,Vuln-ID|V-225236",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,,,,,,,Medium,760,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,.NET Remoting TCP Channel Secure Flag - machine.config,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,.NET Remoting TCP Channel Secure Flag - machine.config,,,,,,,PASS: No insecure TCP channels found in machine.config,POLICY_TEXT,,,,,Medium,786,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,.NET Remoting TCP Channel Secure Flag - .exe.config,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,.NET Remoting TCP Channel Secure Flag - .exe.config,,,,,,,PASS: No insecure TCP channels found in .exe.config,POLICY_TEXT,,,,,Medium,795,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0071 - Remoting Services TCP channels must utilize authentication and encryption.,PASSED,report,group_policy > if > then > if > then,APPNET0071 - Remoting Services TCP channels must utilize authentication and encryption.,"Note: Microsoft recommends using the Windows Communication Framework (WCF) rather than .Net remoting. New development projects should refrain from using .Net remoting capabilities whenever possible.
+
+.NET remoting provides the capability to build widely distributed applications. The application components may reside all on one computer or they may be spread out across the enclave. .NET client applications can make remoting calls to use objects in other processes on the same computer or on any other computer that is reachable over the network. .NET remoting can also be used to communicate with other application domains within the same process. Remoting is achieved via the exposure of endpoints that can be used to establish remote connectivity.
+
+Normally when application code attempts to access a protected resource, a stack walk is performed to ensure that all stack frames have permission to access the resource. However, with .Net 4.0, when a call is made on a remote object, this stack walk is not performed across the remoting boundary. The .Net remoting infrastructure requires FullTrust permission to execute on either the client or the server.
+
+Due to the fact that FullTrust permission is required, Remoting endpoints should be authenticated and encrypted in order to protect the system and the data.
+
+Microsoft provides three different 'channels' that are used for remoting. They are HTTP, TCP, and IPC.
+
+Any unauthorized use of a remoting application provides unauthorized access with FullTrust permissions to the system. This can potentially result in a loss of system integrity or confidentiality.","If .NET remoting with TCP channel is not used, this fix is Not Applicable.
+
+Ensure encryption and message integrity are used for TCP remoting channels.
+
+TCP remoting connections are protected via the secure=true configuration parameter.
+<channels>
+   <channel ref='tcp' secure='true' />
+</channels>
+
+Include the secure='true' flag in the channel ref parameter of the machine.config and [application name].exe.config file if the [application name].exe.config file exists on the system.","800-171|3.13.15,800-171r3|03.13.15,800-53|SC-23,800-53r5|SC-23,CAT|II,CCI|CCI-001184,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SC-23,ITSG-33|SC-23a.,NESA|T4.5.1,QCSC-v1|5.2.1,Rule-ID|SV-225237r1043178_rule,STIG-ID|APPNET0071,STIG-Legacy|SV-42341,STIG-Legacy|V-32025,Vuln-ID|V-225237",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,,,,,,,Medium,806,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,Check for 32 bit on 64 bit.,REG_CHECK,custom_item,group_policy > if > then > if > condition,Check for 32 bit on 64 bit.,,,,,,,HKLM\Software\Wow6432Node,POLICY_TEXT,,,MUST_EXIST,,Medium,838,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,check .Net Framework version,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > then > if > condition,check .Net Framework version,,,,,,,True,POLICY_TEXT,,,,,Medium,850,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,64 bit - SchUseStrongCrypto,REGISTRY_SETTING,custom_item,group_policy > if > then > if > then > if > then > if > condition,64 bit - SchUseStrongCrypto,,,,,,,1,POLICY_DWORD,HKLM\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319,SchUseStrongCrypto,CAN_NOT_BE_NULL,,Medium,862,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,32/64 bit - SchUseStrongCrypto,REGISTRY_SETTING,custom_item,group_policy > if > then > if > then > if > then > if > condition,32/64 bit - SchUseStrongCrypto,,,,,,,1,POLICY_DWORD,HKLM\SOFTWARE\Microsoft\.NETFramework\v4.0.30319,SchUseStrongCrypto,CAN_NOT_BE_NULL,,Medium,872,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,64 bit - SystemDefaultTlsVersions,REGISTRY_SETTING,custom_item,group_policy > if > then > if > then > if > then > if > condition,64 bit - SystemDefaultTlsVersions,,,,,,,1,POLICY_DWORD,HKLM\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319,SystemDefaultTlsVersions,CAN_NOT_BE_NULL,,Medium,882,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,32/64 bit - SystemDefaultTlsVersions,REGISTRY_SETTING,custom_item,group_policy > if > then > if > then > if > then > if > condition,32/64 bit - SystemDefaultTlsVersions,,,,,,,1,POLICY_DWORD,HKLM\SOFTWARE\Microsoft\.NETFramework\v4.0.30319,SystemDefaultTlsVersions,CAN_NOT_BE_NULL,,Medium,892,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0075 - Update and configure the .NET Framework to support TLS.,PASSED,report,group_policy > if > then > if > then > if > then > if > then,APPNET0075 - Update and configure the .NET Framework to support TLS.,"Use of the RC4 cipher in TLS could allow an attacker to perform man-in-the-middle attacks and recover plaintext from encrypted sessions. Applications that target .Net version 4.x running on multiple Windows versions could be vulnerable to these types of attacks. The registry settings in this requirement will prevent .Net applications that target the 4.x framework from selecting and utilizing the Schannel.dll RC4 cipher for TLS connections. Applications that use TLS when connecting to remote systems will perform a handshake and negotiate the TLS version and cipher that is to be used between the client and the server. This is standard protocol for all TLS connections. If the server and client are not configured to use the same TLS version and cipher, the TLS connection may fail. Applications should be tested with these registry settings prior to production implementation of the fix in order to avoid application outages.","1. SchUseStrongCrypto enabled:
+
+Use regedit to access the following registry key.
+
+For 32-bit systems:
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\v4.0.30319\
+
+For 64-bit systems:
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\v4.0.30319\
+HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319\
+
+Modify or create the following Windows registry value: SchUseStrongCrypto.
+
+Set SchUseStrongCrypto to a REG_DWORD value of '1'.
+
+2. SystemDefaultTlsVersions enabled (.NET Framework >4.6):
+For 64-bit Windows, create a .reg file with the following content and apply it:
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\v4.0.30319]
+'SystemDefaultTlsVersions'=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319]
+'SystemDefaultTlsVersions'=dword:00000001
+
+3. Restart the system for changes to take effect.","800-171|3.4.7,800-171r3|03.04.06d.,800-53|CM-7(1)(b),800-53r5|CM-7(1)(b),CAT|II,CCI|CCI-001762,CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|PR.PS-01,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-7(1),NIAv2|SS15a,PCI-DSSv3.2.1|2.2.2,QCSC-v1|3.2,Rule-ID|SV-225238r1069480_rule,STIG-ID|APPNET0075,STIG-Legacy|SV-96209,STIG-Legacy|V-81495,SWIFT-CSCv1|2.3,Vuln-ID|V-225238",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,,,,,,,Medium,904,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,64 bit - SchUseStrongCrypto,REGISTRY_SETTING,custom_item,group_policy > if > then > if > then > if > else > if > condition,64 bit - SchUseStrongCrypto,,,,,,,1,POLICY_DWORD,HKLM\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319,SchUseStrongCrypto,CAN_NOT_BE_NULL,,Medium,944,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,32/64 bit - SchUseStrongCrypto,REGISTRY_SETTING,custom_item,group_policy > if > then > if > then > if > else > if > condition,32/64 bit - SchUseStrongCrypto,,,,,,,1,POLICY_DWORD,HKLM\SOFTWARE\Microsoft\.NETFramework\v4.0.30319,SchUseStrongCrypto,CAN_NOT_BE_NULL,,Medium,954,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0075 - Update and configure the .NET Framework to support TLS.,PASSED,report,group_policy > if > then > if > then > if > else > if > then,APPNET0075 - Update and configure the .NET Framework to support TLS.,"Use of the RC4 cipher in TLS could allow an attacker to perform man-in-the-middle attacks and recover plaintext from encrypted sessions. Applications that target .Net version 4.x running on multiple Windows versions could be vulnerable to these types of attacks. The registry settings in this requirement will prevent .Net applications that target the 4.x framework from selecting and utilizing the Schannel.dll RC4 cipher for TLS connections. Applications that use TLS when connecting to remote systems will perform a handshake and negotiate the TLS version and cipher that is to be used between the client and the server. This is standard protocol for all TLS connections. If the server and client are not configured to use the same TLS version and cipher, the TLS connection may fail. Applications should be tested with these registry settings prior to production implementation of the fix in order to avoid application outages.","1. SchUseStrongCrypto enabled:
+
+Use regedit to access the following registry key.
+
+For 32-bit systems:
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\v4.0.30319\
+
+For 64-bit systems:
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\v4.0.30319\
+HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319\
+
+Modify or create the following Windows registry value: SchUseStrongCrypto.
+
+Set SchUseStrongCrypto to a REG_DWORD value of '1'.
+
+2. SystemDefaultTlsVersions enabled (.NET Framework >4.6):
+For 64-bit Windows, create a .reg file with the following content and apply it:
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\v4.0.30319]
+'SystemDefaultTlsVersions'=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319]
+'SystemDefaultTlsVersions'=dword:00000001
+
+3. Restart the system for changes to take effect.","800-171|3.4.7,800-171r3|03.04.06d.,800-53|CM-7(1)(b),800-53r5|CM-7(1)(b),CAT|II,CCI|CCI-001762,CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|PR.PS-01,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-7(1),NIAv2|SS15a,PCI-DSSv3.2.1|2.2.2,QCSC-v1|3.2,Rule-ID|SV-225238r1069480_rule,STIG-ID|APPNET0075,STIG-Legacy|SV-96209,STIG-Legacy|V-81495,SWIFT-CSCv1|2.3,Vuln-ID|V-225238",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,,,,,,,Medium,966,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,check .Net Framework version,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > else > if > condition,check .Net Framework version,,,,,,,True,POLICY_TEXT,,,,,Medium,1008,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,32/64 bit - SchUseStrongCrypto,REGISTRY_SETTING,custom_item,group_policy > if > then > if > else > if > then > if > condition,32/64 bit - SchUseStrongCrypto,,,,,,,1,POLICY_DWORD,HKLM\SOFTWARE\Microsoft\.NETFramework\v4.0.30319,SchUseStrongCrypto,CAN_NOT_BE_NULL,,Medium,1020,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,32/64 bit - SystemDefaultTlsVersions,REGISTRY_SETTING,custom_item,group_policy > if > then > if > else > if > then > if > condition,32/64 bit - SystemDefaultTlsVersions,,,,,,,1,POLICY_DWORD,HKLM\SOFTWARE\Microsoft\.NETFramework\v4.0.30319,SystemDefaultTlsVersions,CAN_NOT_BE_NULL,,Medium,1030,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0075 - Update and configure the .NET Framework to support TLS.,PASSED,report,group_policy > if > then > if > else > if > then > if > then,APPNET0075 - Update and configure the .NET Framework to support TLS.,"Use of the RC4 cipher in TLS could allow an attacker to perform man-in-the-middle attacks and recover plaintext from encrypted sessions. Applications that target .Net version 4.x running on multiple Windows versions could be vulnerable to these types of attacks. The registry settings in this requirement will prevent .Net applications that target the 4.x framework from selecting and utilizing the Schannel.dll RC4 cipher for TLS connections. Applications that use TLS when connecting to remote systems will perform a handshake and negotiate the TLS version and cipher that is to be used between the client and the server. This is standard protocol for all TLS connections. If the server and client are not configured to use the same TLS version and cipher, the TLS connection may fail. Applications should be tested with these registry settings prior to production implementation of the fix in order to avoid application outages.","1. SchUseStrongCrypto enabled:
+
+Use regedit to access the following registry key.
+
+For 32-bit systems:
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\v4.0.30319\
+
+For 64-bit systems:
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\v4.0.30319\
+HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319\
+
+Modify or create the following Windows registry value: SchUseStrongCrypto.
+
+Set SchUseStrongCrypto to a REG_DWORD value of '1'.
+
+2. SystemDefaultTlsVersions enabled (.NET Framework >4.6):
+For 64-bit Windows, create a .reg file with the following content and apply it:
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\v4.0.30319]
+'SystemDefaultTlsVersions'=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319]
+'SystemDefaultTlsVersions'=dword:00000001
+
+3. Restart the system for changes to take effect.","800-171|3.4.7,800-171r3|03.04.06d.,800-53|CM-7(1)(b),800-53r5|CM-7(1)(b),CAT|II,CCI|CCI-001762,CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|PR.PS-01,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-7(1),NIAv2|SS15a,PCI-DSSv3.2.1|2.2.2,QCSC-v1|3.2,Rule-ID|SV-225238r1069480_rule,STIG-ID|APPNET0075,STIG-Legacy|SV-96209,STIG-Legacy|V-81495,SWIFT-CSCv1|2.3,Vuln-ID|V-225238",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,,,,,,,Medium,1042,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,APPNET0075 - Update and configure the .NET Framework to support TLS.,REGISTRY_SETTING,custom_item,group_policy > if > then > if > else > if > else,APPNET0075 - Update and configure the .NET Framework to support TLS.,"Use of the RC4 cipher in TLS could allow an attacker to perform man-in-the-middle attacks and recover plaintext from encrypted sessions. Applications that target .Net version 4.x running on multiple Windows versions could be vulnerable to these types of attacks. The registry settings in this requirement will prevent .Net applications that target the 4.x framework from selecting and utilizing the Schannel.dll RC4 cipher for TLS connections. Applications that use TLS when connecting to remote systems will perform a handshake and negotiate the TLS version and cipher that is to be used between the client and the server. This is standard protocol for all TLS connections. If the server and client are not configured to use the same TLS version and cipher, the TLS connection may fail. Applications should be tested with these registry settings prior to production implementation of the fix in order to avoid application outages.","1. SchUseStrongCrypto enabled:
+
+Use regedit to access the following registry key.
+
+For 32-bit systems:
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\v4.0.30319\
+
+For 64-bit systems:
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\v4.0.30319\
+HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319\
+
+Modify or create the following Windows registry value: SchUseStrongCrypto.
+
+Set SchUseStrongCrypto to a REG_DWORD value of '1'.
+
+2. SystemDefaultTlsVersions enabled (.NET Framework >4.6):
+For 64-bit Windows, create a .reg file with the following content and apply it:
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\v4.0.30319]
+'SystemDefaultTlsVersions'=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319]
+'SystemDefaultTlsVersions'=dword:00000001
+
+3. Restart the system for changes to take effect.","800-171|3.4.7,800-171r3|03.04.06d.,800-53|CM-7(1)(b),800-53r5|CM-7(1)(b),CAT|II,CCI|CCI-001762,CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|PR.PS-01,DISA_Benchmark|MS_Dot_Net_Framework,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-7(1),NIAv2|SS15a,PCI-DSSv3.2.1|2.2.2,QCSC-v1|3.2,Rule-ID|SV-225238r1069480_rule,STIG-ID|APPNET0075,STIG-Legacy|SV-96209,STIG-Legacy|V-81495,SWIFT-CSCv1|2.3,Vuln-ID|V-225238",https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,1,POLICY_DWORD,HKLM\SOFTWARE\Microsoft\.NETFramework\v4.0.30319,SchUseStrongCrypto,CAN_NOT_BE_NULL,,Medium,1080,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit
+,,,DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit from DISA Microsoft DotNet Framework 4.0 STIG v2r9,WARNING,report,group_policy > if > else,DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit from DISA Microsoft DotNet Framework 4.0 STIG v2r9,NOTE: Nessus has not identified that the chosen audit applies to the target device.,,,https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_DotNet_Framework_4-0_V2R9_STIG.zip,,,,,,,,,Medium,1125,audits\portal_audits\Windows\DISA_STIG_Microsoft_DotNet_Framework_4.0_v2r9.audit

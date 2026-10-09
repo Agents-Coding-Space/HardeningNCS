@@ -1,0 +1,34 @@
+﻿CID,Profile,Scored,Title,Type,Tag,Conditional Path,Description,Info / Rationale,Solution / Remediation,Reference,See Also,Cmd / Request,Expect,Value Data,Value Type,Reg Key,Reg Item,Reg Option,File,Severity,Line,Source File
+,,,Platform check - Mailbox Server,AUDIT_EXCHANGE,custom_item,group_policy > if > condition,Platform check - Mailbox Server,,,,,,,[\s]+15\.2[\s]+.*[\s]+True,POLICY_TEXT,,,,,Medium,47,audits\portal_audits\Windows\CIS_Microsoft_Exchange_2019_Mailbox_Server_STIG_v1.0.0_CAT_I.audit
+,,,CIS_Microsoft_Exchange_2019_Mailbox_Server_STIG_v1.0.0_CAT_I.audit from CIS Microsoft Exchange 2019 Mailbox Server STIG v1.0.0,PASSED,report,group_policy > if > then,CIS_Microsoft_Exchange_2019_Mailbox_Server_STIG_v1.0.0_CAT_I.audit from CIS Microsoft Exchange 2019 Mailbox Server STIG v1.0.0,,,,https://workbench.cisecurity.org/benchmarks/23653,,,,,,,,,Medium,59,audits\portal_audits\Windows\CIS_Microsoft_Exchange_2019_Mailbox_Server_STIG_v1.0.0_CAT_I.audit
+1.42,,,EX19-MB-000134,WARNING,report,group_policy > if > then,1.42 EX19-MB-000134,"Exchange servers must have an approved DOD email-aware virus protection software installed.
+
+GROUP ID: V-259686
+RULE ID: SV-259686r961161
+
+With the proliferation of trojans, viruses, and spam attaching themselves to email messages (or attachments), it is necessary to have capable email-aware antivirus (AV) products to scan messages and identify any resident malware. Because email messages and their attachments are formatted to the MIME standard, a flat-file AV scanning engine is not suitable for scanning email message stores.
+
+Email-aware antivirus engines must be Exchange 2019 compliant. Competent email scanners will have the ability to scan mail stores, attachments (including zip or other archive files) and mail queues and to issue warnings or alerts if malware is detected. As with other AV products, a necessary feature to include is the ability for automatic updates.
+
+NOTE: Nessus has not performed this check. Please review the benchmark to ensure target compliance.","Update the EDSP to specify the organization's antivirus strategy.
+
+Install and configure a DOD-approved compatible Exchange 2019 email-aware antivirus scanner product.","800-53|SI-8(2),800-53r5|SI-8(2),CAT|I,CCI|CCI-001308,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SI-8(2),LEVEL|1M,QCSC-v1|3.2,QCSC-v1|8.2.1,Rule-ID|SV-259686r961161_rule,STIG-ID|EX19-MB-000134,Vuln-ID|V-259686",https://workbench.cisecurity.org/benchmarks/23653,,,,,,,,,High,65,audits\portal_audits\Windows\CIS_Microsoft_Exchange_2019_Mailbox_Server_STIG_v1.0.0_CAT_I.audit
+1.65,,,EX19-MB-000236,AUDIT_EXCHANGE,custom_item,group_policy > if > then,1.65 EX19-MB-000236,"The application must protect the confidentiality and integrity of transmitted information.
+
+GROUP ID: V-259710
+RULE ID: SV-259710r961632
+
+Without protection of the transmitted information, confidentiality and integrity may be compromised since unprotected communications can be intercepted and either read or altered.
+
+This requirement applies only to those applications that are either distributed or can allow access to data nonlocally. Use of this requirement will be limited to situations where the data owner has a strict requirement for ensuring data integrity and confidentiality is maintained at every step of the data transfer and handling process. When transmitting data, applications need to leverage transmission protection mechanisms, such as TLS, TLS VPNs, or IPsec.
+
+Communication paths outside the physical protection of a controlled boundary are exposed to the possibility of interception and modification. Protecting the confidentiality and integrity of organizational information can be accomplished by physical means (e.g., employing physical distribution systems) or by logical means (e.g., employing cryptographic techniques). If physical means of protection are employed, then logical means (cryptography) do not have to be employed, and vice versa.
+
+Satisfies: SRG-APP-000219","Open the Exchange Management Shell and enter the following command:
+
+Set-ReceiveConnector -Identity <'IdentityName'> -AuthMechanism 'Tls'
+
+Note: The <IdentityName> value must be in quotes.
+
+Repeat the procedures for each Receive connector.","800-171|3.13.8,800-171|3.13.15,800-171r3|03.13.08,800-171r3|03.13.15,800-53|SC-8,800-53|SC-23,800-53r5|SC-8,800-53r5|SC-23,CAT|I,CCI|CCI-001184,CCI|CCI-002418,CN-L3|8.1.2.2(a),CN-L3|8.1.2.2(b),CN-L3|8.1.4.7(a),CN-L3|8.1.4.8(a),CN-L3|8.2.4.5(c),CN-L3|8.2.4.5(d),CN-L3|8.5.2.2,CSF|PR.DS-2,CSF|PR.DS-5,CSF2.0|PR.DS-02,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(e)(1),HIPAA|164.312(e)(2)(i),ISO-27001-2022|A.5.10,ISO-27001-2022|A.5.14,ISO-27001-2022|A.5.33,ISO-27001-2022|A.8.20,ITSG-33|SC-8,ITSG-33|SC-8a.,ITSG-33|SC-23,ITSG-33|SC-23a.,LEVEL|1M,NESA|T4.3.1,NESA|T4.3.2,NESA|T4.5.1,NESA|T4.5.2,NESA|T7.3.3,NESA|T7.4.1,NIAv2|IE8,NIAv2|IE9,NIAv2|IE12,NIAv2|NS29,NIAv2|SS24,PCI-DSSv3.2.1|2.3,PCI-DSSv3.2.1|4.1,PCI-DSSv4.0|2.2.7,PCI-DSSv4.0|4.2.1,QCSC-v1|5.2.1,QCSC-v1|5.2.2,QCSC-v1|6.2,Rule-ID|SV-259710r961632_rule,STIG-ID|EX19-MB-000236,Vuln-ID|V-259710",https://workbench.cisecurity.org/benchmarks/23653,,,All policies compliant,POLICY_TEXT,,,,,High,84,audits\portal_audits\Windows\CIS_Microsoft_Exchange_2019_Mailbox_Server_STIG_v1.0.0_CAT_I.audit
+,,,CIS_Microsoft_Exchange_2019_Mailbox_Server_STIG_v1.0.0_CAT_I.audit from CIS Microsoft Exchange 2019 Mailbox Server STIG v1.0.0,WARNING,report,group_policy > if > else,CIS_Microsoft_Exchange_2019_Mailbox_Server_STIG_v1.0.0_CAT_I.audit from CIS Microsoft Exchange 2019 Mailbox Server STIG v1.0.0,NOTE: Nessus has not identified that the chosen audit applies to the target device.,,,https://workbench.cisecurity.org/benchmarks/23653,,,,,,,,,Medium,117,audits\portal_audits\Windows\CIS_Microsoft_Exchange_2019_Mailbox_Server_STIG_v1.0.0_CAT_I.audit

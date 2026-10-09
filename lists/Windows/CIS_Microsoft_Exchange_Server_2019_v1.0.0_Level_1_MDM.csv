@@ -1,0 +1,300 @@
+﻿CID,Profile,Scored,Title,Type,Tag,Conditional Path,Description,Info / Rationale,Solution / Remediation,Reference,See Also,Cmd / Request,Expect,Value Data,Value Type,Reg Key,Reg Item,Reg Option,File,Severity,Line,Source File
+,,,Test secure string,AUDIT_EXCHANGE,custom_item,group_policy > if > condition,Test secure string,,,,,,,.*,POLICY_TEXT,,,,,Medium,48,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2019_v1.0.0_Level_1_MDM.audit
+,,,CIS_Microsoft_Exchange_Server_2019_v1.0.0_Level_1_MDM.audit from CIS Microsoft Exchange Server 2019 Benchmark v1.0.0,AUDIT_EXCHANGE,custom_item,group_policy > if > then,CIS_Microsoft_Exchange_Server_2019_v1.0.0_Level_1_MDM.audit from CIS Microsoft Exchange Server 2019 Benchmark v1.0.0,NOTE: Nessus has provided the target output to assist in reviewing the benchmark to ensure target compliance.,,"800-171|3.14.1,800-53|SI-2c.,800-53r5|SI-2c.,CN-L3|8.1.4.4(e),CN-L3|8.1.10.5(a),CN-L3|8.1.10.5(b),CN-L3|8.5.4.1(b),CN-L3|8.5.4.1(d),CN-L3|8.5.4.1(e),CSF|ID.RA-1,CSF|PR.IP-12,CSF2.0|ID.IM-01,CSF2.0|ID.IM-02,CSF2.0|ID.IM-03,CSF2.0|PR.PS-02,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SI-2,NESA|T7.6.2,NESA|T7.7.1,NIAv2|AM38,NIAv2|AM39,NIAv2|SS14b,PCI-DSSv3.2.1|6.2,PCI-DSSv4.0|6.3,PCI-DSSv4.0|6.3.3,QCSC-v1|11.2,SWIFT-CSCv1|2.2",,,,[\s]+15\.2[\s]+.*[\s]+True,POLICY_TEXT,,,,,Medium,60,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2019_v1.0.0_Level_1_MDM.audit
+,,,Platform check,AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > condition,Platform check,,,,,,,[\s]+15\.2[\s]+.*[\s]+True,POLICY_TEXT,,,,,Medium,75,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2019_v1.0.0_Level_1_MDM.audit
+3.1,,,Ensure 'Allow simple passwords' is set to 'False',AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,3.1 Ensure 'Allow simple passwords' is set to 'False',"This policy setting configures the use of strong passwords to unlock mobile devices before they can connect via ActiveSync to an Exchange server.
+
+Rationale:
+
+Allowing simple passwords can make it easier for an attacker to correctly guess them.
+
+Impact:
+
+Users will be forced to use strong passwords.
+
+Note: This is a mobile device management setting. Use caution when applying these settings as they could have adverse effects depending on the environment, and internal policies around bring your own device (BYOD). These policies could affect a user's BYOD.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+Set-MobileDeviceMailboxPolicy 'Profile' -AllowSimplePassword $false
+
+OR
+
+Perform the following actions:
+
+Launch the EAC (Exchange Administrative Center).
+
+Go to 'Mobile' on the left and click on the 'Mobile device mailbox policies' tab.
+
+Double-click the policy you wish to modify and go to the 'Security' settings.
+
+Ensure the Allow simple passwords box is not checked and click Save.
+
+Default Value:
+
+True","800-171|3.5.2,800-53|IA-5(1),800-53r5|IA-5(1),CSCv7|4.4,CSCv8|5.2,CSF|PR.AC-1,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),ITSG-33|IA-5(1),LEVEL|1A,NESA|T5.2.3,QCSC-v1|5.2.2,QCSC-v1|13.2,SWIFT-CSCv1|4.1",https://workbench.cisecurity.org/benchmarks/12442,,,All policies compliant,POLICY_TEXT,,,,,Medium,87,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2019_v1.0.0_Level_1_MDM.audit
+3.2,,,Ensure 'Allow unmanaged devices' is set to 'False',AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,3.2 Ensure 'Allow unmanaged devices' is set to 'False',"This policy setting determines whether Exchange will allow devices that do not accept security policy updates from the Exchange server to use ActiveSync.
+
+Rationale:
+
+Unmanaged devices are more likely to not comply with an organization's security policies and to be infected by malicious software.
+
+Impact:
+
+Users who configure their devices to block security policy or have devices that cannot receive security policy will be unable to use ActiveSync to connect to the server.
+
+Note: This is a mobile device management setting. Use caution when applying these settings as they could have adverse effects depending on the environment, and internal policies around bring your own device (BYOD). These policies could affect a user's BYOD.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+Set-MobileDeviceMailboxPolicy 'Profile' -AllowNonProvisionableDevices $false
+
+OR
+
+Perform the following actions:
+
+Launch the EAC (Exchange Administrative Center).
+
+Go to 'Mobile' on the left and click on the 'Mobile device mailbox policies' tab.
+
+Double-click the policy you wish to modify and go to the 'General' settings.
+
+Ensure the Allow mobile devices that don't fully support these policies to synchronize box is not checked and click Save.
+
+Default Value:
+
+False","800-171|3.1.1,800-171|3.1.2,800-171|3.1.12,800-171|3.13.1,800-171|3.13.5,800-171|3.14.6,800-171|3.14.7,800-53|AC-17,800-53|AC-17(1),800-53|SC-7,800-53|SI-4,800-53r5|AC-17,800-53r5|AC-17(1),800-53r5|SC-7,800-53r5|SI-4,CN-L3|7.1.3.5(a),CN-L3|8.1.4.4(c),CN-L3|8.1.10.5(b),CN-L3|8.1.10.6(f),CN-L3|8.1.10.6(i),CN-L3|8.1.10.6(j),CSCv7|12.12,CSCv8|13.5,CSF|DE.AE-1,CSF|DE.AE-2,CSF|DE.AE-3,CSF|DE.AE-4,CSF|DE.CM-1,CSF|DE.CM-5,CSF|DE.CM-6,CSF|DE.CM-7,CSF|DE.DP-2,CSF|DE.DP-3,CSF|DE.DP-4,CSF|DE.DP-5,CSF|ID.RA-1,CSF|PR.AC-3,CSF|PR.AC-5,CSF|PR.DS-5,CSF|PR.IP-8,CSF|PR.PT-4,CSF|RS.AN-1,CSF|RS.CO-3,CSF2.0|DE.AE-02,CSF2.0|DE.AE-03,CSF2.0|DE.CM-01,CSF2.0|DE.CM-06,CSF2.0|DE.CM-09,CSF2.0|ID.IM-01,CSF2.0|ID.IM-02,CSF2.0|ID.IM-03,CSF2.0|ID.RA-01,CSF2.0|PR.AA-05,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,CSF2.0|PR.IR-01,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(1),HIPAA|164.312(b),ISO/IEC-27001|A.6.2.2,ISO/IEC-27001|A.13.1.3,ITSG-33|AC-17,ITSG-33|AC-17(1),ITSG-33|SC-7,ITSG-33|SI-4,LEVEL|1A,NESA|M1.2.2,NESA|T4.5.4,NESA|T5.4.4,NESA|T5.4.5,NIAv2|GS1,NIAv2|GS2a,NIAv2|GS2b,PCI-DSSv3.2.1|1.1,PCI-DSSv3.2.1|1.2,PCI-DSSv3.2.1|1.2.1,PCI-DSSv3.2.1|1.3,PCI-DSSv4.0|1.2.1,PCI-DSSv4.0|1.4.1,QCSC-v1|3.2,QCSC-v1|5.2.1,QCSC-v1|5.2.2,QCSC-v1|5.2.3,QCSC-v1|6.2,QCSC-v1|8.2.1,QCSC-v1|10.2.1,QCSC-v1|11.2,SWIFT-CSCv1|2.6,TBA-FIISB|43.1",https://workbench.cisecurity.org/benchmarks/12442,,,All policies compliant,POLICY_TEXT,,,,,Medium,129,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2019_v1.0.0_Level_1_MDM.audit
+3.3,,,Ensure 'Enforce password history' is set to '4' or greater,AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,3.3 Ensure 'Enforce password history' is set to '4' or greater,"This policy setting configures the device password history.
+
+Rationale:
+
+The longer a user uses the same password, the greater the chance that an attacker can determine the password through a brute force attack. Also, any accounts that may have been compromised will remain exploitable for as long as the password is left unchanged. If password changes are required but password reuse is not prevented, or if users continually reuse a small number of passwords, the effectiveness of a good password policy is greatly reduced. If you specify a low number for this setting, users will be able to use the same small number of passwords repeatedly.
+
+Impact:
+
+Users will be required to create a new unique password every time it needs to be changed.
+
+Note: This is a mobile device management setting. Use caution when applying these settings as they could have adverse effects depending on the environment, and internal policies around bring your own device (BYOD). These policies could affect a user's BYOD.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+Set-MobileDeviceMailboxPolicy 'Profile' -PasswordHistory 4
+
+OR
+
+Perform the following actions:
+
+Launch the EAC (Exchange Administrative Center).
+
+Go to 'Mobile' on the left and click on the 'Mobile device mailbox policies' tab.
+
+Double-click the policy you wish to modify and go to the 'Security' settings.
+
+Change the Password recycle count to 4 and click Save.
+
+Default Value:
+
+0","800-171|3.5.2,800-53|IA-5(1),800-53r5|IA-5(1),CSCv7|4.4,CSCv8|5.2,CSF|PR.AC-1,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),ITSG-33|IA-5(1),LEVEL|1A,NESA|T5.2.3,QCSC-v1|5.2.2,QCSC-v1|13.2,SWIFT-CSCv1|4.1",https://workbench.cisecurity.org/benchmarks/12442,,,All policies compliant,POLICY_TEXT,,,,,Medium,171,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2019_v1.0.0_Level_1_MDM.audit
+3.4,,,Ensure 'Minimum password length' is set to '4' or more,AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,3.4 Ensure 'Minimum password length' is set to '4' or more,"This policy setting is used to specify a minimum password length for the device.
+
+Rationale:
+
+Types of password attacks include dictionary attacks that use common words and phrases, and brute force attacks that use character combinations. Attackers also sometimes try to obtain an account database so they can use tools to discover accounts and passwords.
+
+Impact:
+
+None - This is the default behavior.
+
+Note: This is a mobile device management setting. Use caution when applying these settings as they could have adverse effects depending on the environment, and internal policies around bring your own device (BYOD). These policies could affect a user's BYOD.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+Set-MobileDeviceMailboxPolicy 'Profile' -MinPasswordLength 4
+
+OR
+
+Perform the following actions:
+
+Launch the EAC (Exchange Administrative Center).
+
+Go to 'Mobile' on the left and click on the 'Mobile device mailbox policies' tab.
+
+Double-click the policy you wish to modify and go to the 'Security' settings.
+
+Ensure the Minimum password length box is checked and change the value to 4 and click Save
+
+Default Value:
+
+4","800-171|3.5.2,800-53|IA-5(1),800-53r5|IA-5(1),CSCv7|4.4,CSCv8|5.2,CSF|PR.AC-1,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),ITSG-33|IA-5(1),LEVEL|1A,NESA|T5.2.3,QCSC-v1|5.2.2,QCSC-v1|13.2,SWIFT-CSCv1|4.1",https://workbench.cisecurity.org/benchmarks/12442,,,All policies compliant,POLICY_TEXT,,,,,Medium,213,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2019_v1.0.0_Level_1_MDM.audit
+3.5,,,Ensure 'Number of attempts allowed' is set to '10',AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,3.5 Ensure 'Number of attempts allowed' is set to '10',"This policy setting is used to restrict the number of failed logon attempts a user can make before an account is locked out.
+
+Rationale:
+
+This setting can reduce the likelihood that an unauthorized user can guess the password of a device to access data stored on it.
+
+Impact:
+
+A locked-out account cannot be used again until an administrator either resets it or the account lockout duration expires.
+
+Note: This is a mobile device management setting. Use caution when applying these settings as they could have adverse effects depending on the environment, and internal policies around bring your own device (BYOD). These policies could affect a user's BYOD.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+Set-MobileDeviceMailboxPolicy 'Profile' -MaxPasswordFailedAttempts 10
+
+Default Value:
+
+6","800-171|3.1.8,800-171|3.1.18,800-53|AC-7,800-53|AC-19,800-53r5|AC-7,800-53r5|AC-19,CN-L3|8.1.4.1(b),CSCv8|4.10,CSF|PR.AC-3,CSF2.0|PR.AA-03,CSF2.0|PR.AA-05,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO/IEC-27001|A.6.2.1,ITSG-33|AC-7,ITSG-33|AC-19,LEVEL|1A,NIAv2|AM24,QCSC-v1|3.2,QCSC-v1|5.2.2,QCSC-v1|13.2,TBA-FIISB|36.2.4,TBA-FIISB|45.1.2",https://workbench.cisecurity.org/benchmarks/12442,,,All policies compliant,POLICY_TEXT,,,,,Medium,255,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2019_v1.0.0_Level_1_MDM.audit
+3.6,,,Ensure 'Password expiration' is set to '365' or less,AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,3.6 Ensure 'Password expiration' is set to '365' or less,"This policy setting is used to specify how long before a password expires.
+
+Rationale:
+
+The longer a password exists the higher the likelihood that it will be compromised by a brute force attack, by an attacker gaining general knowledge about the user, or by the user sharing the password. Configuring this setting to 0 so that users are never required to change their passwords is a major security risk because doing so allows a compromised password to be used by a malicious user for as long as the valid user has authorized access to the system.
+
+Impact:
+
+Configuring the value of this setting too low requires users to change their passwords very often. This can reduce security in the organization, because users might write their passwords in an unsecured location or lose them. Configuring the value of this setting too high also reduces the level of security in an organization, because it allows potential attackers more time to discover user passwords or to use compromised accounts.
+
+Note: This is a mobile device management setting. Use caution when applying these settings as they could have adverse effects depending on the environment, and internal policies around bring your own device (BYOD). These policies could affect a user's BYOD.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+Set-MobileDeviceMailboxPolicy 'Profile' -PasswordExpiration 90
+
+OR
+
+Perform the following actions:
+
+Launch the EAC (Exchange Administrative Center).
+
+Go to 'Mobile' on the left and click on the 'Mobile device mailbox policies' tab.
+
+Double-click the policy you wish to modify and go to the 'Security' settings.
+
+Ensure the Enforce password lifetime (days) box is checked change the value to 365 and click Save
+
+Default Value:
+
+Unlimited","800-171|3.5.2,800-53|IA-5(1),800-53r5|IA-5(1),CSCv7|4.4,CSCv8|5.2,CSF|PR.AC-1,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),ITSG-33|IA-5(1),LEVEL|1A,NESA|T5.2.3,QCSC-v1|5.2.2,QCSC-v1|13.2,SWIFT-CSCv1|4.1",https://workbench.cisecurity.org/benchmarks/12442,,,All policies compliant,POLICY_TEXT,,,,,Medium,285,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2019_v1.0.0_Level_1_MDM.audit
+3.7,,,Ensure 'Refresh interval' is set to '1',AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,3.7 Ensure 'Refresh interval' is set to '1',"This policy setting specifies how often in hours, that policy settings are refreshed.
+
+Rationale:
+
+Organizational requirements change, and new vulnerabilities may be discovered, so it is likely that ActiveSync policy settings will change. For these reasons, it is important to configure a refresh interval to ensure that the latest policy settings are applied to the devices in your organization.
+
+Impact:
+
+Clients will attempt to acquire the latest policy at a shorter interval impacting server and client bandwidth.
+
+Note: This is a mobile device management setting. Use caution when applying these settings as they could have adverse effects depending on the environment, and internal policies around bring your own device (BYOD). These policies could affect a user's BYOD.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+Set-MobileDeviceMailboxPolicy 'Profile' -DevicePolicyRefreshInterval '1:00:00'
+
+Default Value:
+
+24 hours","800-171|3.1.18,800-53|AC-19,800-53r5|AC-19,CSF|PR.AC-3,CSF2.0|PR.AA-05,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO/IEC-27001|A.6.2.1,ITSG-33|AC-19,LEVEL|1A,QCSC-v1|3.2,QCSC-v1|5.2.2,QCSC-v1|13.2",https://workbench.cisecurity.org/benchmarks/12442,,,All policies compliant,POLICY_TEXT,,,,,Medium,327,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2019_v1.0.0_Level_1_MDM.audit
+3.8,,,Ensure 'Require alphanumeric password' is set to 'True',AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,3.8 Ensure 'Require alphanumeric password' is set to 'True',"This policy setting ensures passwords meet the basic requirements for strong passwords.
+
+Rationale:
+
+Passwords that contain only alpha characters are extremely easy to discover with several publicly available tools.
+
+Impact:
+
+Users will be forced to use alphanumeric passwords.
+
+Note: This is a mobile device management setting. Use caution when applying these settings as they could have adverse effects depending on the environment, and internal policies around bring your own device (BYOD). These policies could affect a user's BYOD.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+Set-MobileDeviceMailboxPolicy 'Profile' -AlphanumericPasswordRequired $true
+
+OR
+
+Perform the following actions:
+
+Launch the EAC (Exchange Administrative Center).
+
+Go to 'Mobile' on the left and click on the 'Mobile device mailbox policies' tab.
+
+Double-click the policy you wish to modify and go to the 'Security' settings.
+
+Ensure the Require an alphanumeric password box is checked and click Save.
+
+Default Value:
+
+False","800-171|3.5.2,800-53|IA-5(1),800-53r5|IA-5(1),CSCv7|4.4,CSCv8|5.2,CSF|PR.AC-1,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),ITSG-33|IA-5(1),LEVEL|1A,NESA|T5.2.3,QCSC-v1|5.2.2,QCSC-v1|13.2,SWIFT-CSCv1|4.1",https://workbench.cisecurity.org/benchmarks/12442,,,All policies compliant,POLICY_TEXT,,,,,Medium,357,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2019_v1.0.0_Level_1_MDM.audit
+3.9,,,Ensure 'Require encryption on device' is set to 'True',AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,3.9 Ensure 'Require encryption on device' is set to 'True',"This policy setting specifies whether encryption is required on the mobile device before it is allowed to connect to the Exchange environment.
+
+Rationale:
+
+Unencrypted data on mobile devices can be vulnerable to attacks. Requiring ActiveSync encryption helps to minimize the risk of information being compromised in case a mobile device is lost.
+
+Impact:
+
+Devices that do not support data encryption will be unable to connect to the Exchange server.
+
+Note: This is a mobile device management setting. Use caution when applying these settings as they could have adverse effects depending on the environment, and internal policies around bring your own device (BYOD). These policies could affect a user's personal device.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+Set-MobileDeviceMailboxPolicy 'Profile' -RequireDeviceEncryption $true
+
+OR
+
+Perform the following actions:
+
+Launch the EAC (Exchange Administrative Center).
+
+Go to 'Mobile' on the left and click on the 'Mobile device mailbox policies' tab.
+
+Double-click the policy you wish to modify and go to the 'Security' settings.
+
+Ensure the Require encryption on device box is checked and click Save
+
+Default Value:
+
+False","800-171|3.1.1,800-171|3.1.2,800-171|3.1.12,800-171|3.13.1,800-171|3.13.5,800-171|3.14.6,800-171|3.14.7,800-53|AC-17,800-53|AC-17(1),800-53|SC-7,800-53|SI-4,800-53r5|AC-17,800-53r5|AC-17(1),800-53r5|SC-7,800-53r5|SI-4,CN-L3|7.1.3.5(a),CN-L3|8.1.4.4(c),CN-L3|8.1.10.5(b),CN-L3|8.1.10.6(f),CN-L3|8.1.10.6(i),CN-L3|8.1.10.6(j),CSCv7|12.12,CSCv8|13.5,CSF|DE.AE-1,CSF|DE.AE-2,CSF|DE.AE-3,CSF|DE.AE-4,CSF|DE.CM-1,CSF|DE.CM-5,CSF|DE.CM-6,CSF|DE.CM-7,CSF|DE.DP-2,CSF|DE.DP-3,CSF|DE.DP-4,CSF|DE.DP-5,CSF|ID.RA-1,CSF|PR.AC-3,CSF|PR.AC-5,CSF|PR.DS-5,CSF|PR.IP-8,CSF|PR.PT-4,CSF|RS.AN-1,CSF|RS.CO-3,CSF2.0|DE.AE-02,CSF2.0|DE.AE-03,CSF2.0|DE.CM-01,CSF2.0|DE.CM-06,CSF2.0|DE.CM-09,CSF2.0|ID.IM-01,CSF2.0|ID.IM-02,CSF2.0|ID.IM-03,CSF2.0|ID.RA-01,CSF2.0|PR.AA-05,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,CSF2.0|PR.IR-01,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(1),HIPAA|164.312(b),ISO/IEC-27001|A.6.2.2,ISO/IEC-27001|A.13.1.3,ITSG-33|AC-17,ITSG-33|AC-17(1),ITSG-33|SC-7,ITSG-33|SI-4,LEVEL|1A,NESA|M1.2.2,NESA|T4.5.4,NESA|T5.4.4,NESA|T5.4.5,NIAv2|GS1,NIAv2|GS2a,NIAv2|GS2b,PCI-DSSv3.2.1|1.1,PCI-DSSv3.2.1|1.2,PCI-DSSv3.2.1|1.2.1,PCI-DSSv3.2.1|1.3,PCI-DSSv4.0|1.2.1,PCI-DSSv4.0|1.4.1,QCSC-v1|3.2,QCSC-v1|5.2.1,QCSC-v1|5.2.2,QCSC-v1|5.2.3,QCSC-v1|6.2,QCSC-v1|8.2.1,QCSC-v1|10.2.1,QCSC-v1|11.2,SWIFT-CSCv1|2.6,TBA-FIISB|43.1",https://workbench.cisecurity.org/benchmarks/12442,,,All policies compliant,POLICY_TEXT,,,,,Medium,399,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2019_v1.0.0_Level_1_MDM.audit
+3.10,,,Ensure 'Require password' is set to 'True',AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,3.10 Ensure 'Require password' is set to 'True',"This policy setting determines if a password is required for the device.
+
+Rationale:
+
+Allowing users to access a device without a password means that anyone with physical access to it can view data on the device.
+
+Impact:
+
+Users will have to re-enter their password each time they want to use their device.
+
+Note: This is a mobile device management setting. Use caution when applying these settings as they could have adverse effects depending on the environment, and internal policies around bring your own device (BYOD). These policies could affect a user's BYOD.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+Set-MobileDeviceMailboxPolicy 'Profile' -PasswordEnabled $true
+
+OR
+Perform the following actions:
+
+Launch the EAC (Exchange Administrative Center).
+
+Go to 'Mobile' on the left and click on the 'Mobile device mailbox policies' tab.
+
+Double-click the policy you wish to modify and go to the 'Security' settings.
+
+Ensure the Require a password box is checked and click Save.
+
+Default Value:
+
+False","800-171|3.5.2,800-53|IA-5(1),800-53r5|IA-5(1),CSCv7|4.4,CSCv8|5.2,CSF|PR.AC-1,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),ITSG-33|IA-5(1),LEVEL|1A,NESA|T5.2.3,QCSC-v1|5.2.2,QCSC-v1|13.2,SWIFT-CSCv1|4.1",https://workbench.cisecurity.org/benchmarks/12442,,,All policies compliant,POLICY_TEXT,,,,,Medium,441,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2019_v1.0.0_Level_1_MDM.audit
+3.11,,,Ensure 'Time without user input before password must be re-entered' is set to '15',AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then,3.11 Ensure 'Time without user input before password must be re-entered' is set to '15',"This policy setting prompts users for a password after the device has been inactive for a specified period of time.
+
+Rationale:
+
+Requiring devices to lock after 15 minutes minimizes the window of opportunity for an attacker to tamper with a lost or stolen device.
+
+This is the default behavior.
+
+Impact:
+
+Users must re-enter their passwords each time their devices remain idle for 15 minutes or longer.
+
+Note: This is a mobile device management setting. Use caution when applying these settings as they could have adverse effects depending on the environment, and internal policies around bring your own device (BYOD). These policies could affect a user's BYOD.","To implement the recommended state, execute the following PowerShell cmdlet:
+
+Set-MobileDeviceMailboxPolicy 'Profile' -MaxInactivityTimeLock 00:15:00
+
+OR
+Perform the following actions:
+
+Launch the EAC (Exchange Administrative Center).
+
+Go to 'Mobile' on the left and click on the 'Mobile device mailbox policies' tab.
+
+Double-click the policy you wish to modify and go to the 'Security' settings.
+
+Ensure the Require sign-in after the device has been inactive for (minutes) box is checked and change the value to 15 and click Save.
+
+Default Value:
+
+15","800-171|3.1.1,800-171|3.1.10,800-171|3.1.11,800-53|AC-2(5),800-53|AC-11,800-53|AC-11(1),800-53|AC-12,800-53r5|AC-2(5),800-53r5|AC-11,800-53r5|AC-11(1),800-53r5|AC-12,CN-L3|7.1.2.2(d),CN-L3|7.1.3.2(d),CN-L3|7.1.3.7(b),CN-L3|8.1.4.1(b),CSCv7|16.11,CSCv8|4.3,CSF|PR.AC-1,CSF|PR.AC-4,CSF2.0|DE.CM-01,CSF2.0|DE.CM-03,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,CSF2.0|PR.AA-05,CSF2.0|PR.DS-10,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(1),HIPAA|164.312(a)(2)(iii),ISO/IEC-27001|A.9.2.1,ISO/IEC-27001|A.11.2.8,ITSG-33|AC-2(5),ITSG-33|AC-11,ITSG-33|AC-11(1),ITSG-33|AC-12,LEVEL|1A,NIAv2|AM23c,NIAv2|AM23d,NIAv2|AM28,NIAv2|NS5j,NIAv2|NS49,NIAv2|SS14e,PCI-DSSv3.2.1|8.1.8,PCI-DSSv4.0|8.2.8,QCSC-v1|5.2.2,QCSC-v1|8.2.1,QCSC-v1|13.2,QCSC-v1|15.2,TBA-FIISB|36.2.1,TBA-FIISB|37.1.4",https://workbench.cisecurity.org/benchmarks/12442,,,All policies compliant,POLICY_TEXT,,,,,Medium,482,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2019_v1.0.0_Level_1_MDM.audit
+,,,Authentication Failure,FAILED,report,group_policy > if > else,Authentication Failure,Secure string passed to powershell was invalid or empty.,,,,,,,,,,,,Medium,529,audits\portal_audits\Windows\CIS_Microsoft_Exchange_Server_2019_v1.0.0_Level_1_MDM.audit

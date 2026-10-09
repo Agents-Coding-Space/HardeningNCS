@@ -1,0 +1,100 @@
+﻿CID,Profile,Scored,Title,Type,Tag,Conditional Path,Description,Info / Rationale,Solution / Remediation,Reference,See Also,Cmd / Request,Expect,Value Data,Value Type,Reg Key,Reg Item,Reg Option,File,Severity,Line,Source File
+,,,Platform check - Edge Server,AUDIT_EXCHANGE,custom_item,group_policy > if > condition,Platform check - Edge Server,,,,,,,[\s]+15\.2[\s]+.*[\s]+True,POLICY_TEXT,,,,,Medium,47,audits\portal_audits\Windows\CIS_Microsoft_Exchange_2019_Edge_Server_STIG_v1.0.0_CAT_I.audit
+,,,CIS_Microsoft_Exchange_2019_Edge_Server_STIG_v1.0.0_CAT_I.audit from CIS Microsoft Exchange 2019 Edge Server STIG v1.0.0,PASSED,report,group_policy > if > then,CIS_Microsoft_Exchange_2019_Edge_Server_STIG_v1.0.0_CAT_I.audit from CIS Microsoft Exchange 2019 Edge Server STIG v1.0.0,,,,https://workbench.cisecurity.org/benchmarks/23645,,,,,,,,,Medium,59,audits\portal_audits\Windows\CIS_Microsoft_Exchange_2019_Edge_Server_STIG_v1.0.0_CAT_I.audit
+1.64,,,EX19-ED-000234,AUDIT_EXCHANGE,custom_item,group_policy > if > then,1.64 EX19-ED-000234,"Exchange must provide redundancy.
+
+GROUP ID: V-259640
+RULE ID: SV-259640r961632
+
+Denial of Service (DoS) is a condition when a resource is not available for legitimate users. When this occurs, the organization either cannot accomplish its mission or must operate at degraded capacity.
+
+This requirement addresses the configuration of applications to mitigate the impact of DoS attacks that have occurred or are ongoing on application availability. For each application, known and potential DoS attacks must be identified and solutions for each type implemented. A variety of technologies exist to limit or, in some cases, eliminate the effects of DoS attacks (e.g., limiting processes or restricting the number of sessions the application opens at one time). Employing increased capacity and bandwidth, combined with service redundancy, may reduce the susceptibility to some DoS attacks.","Update the EDSP to reflect the Exchange servers used for redundancy.
+
+Configure and subscribe to two or more Edge servers for load balancing.","800-171|3.13.8,800-171r3|03.13.08,800-53|SC-8,800-53r5|SC-8,CAT|I,CCI|CCI-002418,CN-L3|8.1.2.2(a),CN-L3|8.1.2.2(b),CN-L3|8.1.4.7(a),CN-L3|8.1.4.8(a),CN-L3|8.2.4.5(c),CN-L3|8.2.4.5(d),CN-L3|8.5.2.2,CSF|PR.DS-2,CSF|PR.DS-5,CSF2.0|PR.DS-02,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(e)(1),HIPAA|164.312(e)(2)(i),ISO-27001-2022|A.5.10,ISO-27001-2022|A.5.14,ISO-27001-2022|A.5.33,ISO-27001-2022|A.8.20,ITSG-33|SC-8,ITSG-33|SC-8a.,LEVEL|1M,NESA|T4.3.1,NESA|T4.3.2,NESA|T4.5.1,NESA|T4.5.2,NESA|T7.3.3,NESA|T7.4.1,NIAv2|IE8,NIAv2|IE9,NIAv2|IE12,NIAv2|NS29,NIAv2|SS24,PCI-DSSv3.2.1|2.3,PCI-DSSv3.2.1|4.1,PCI-DSSv4.0|2.2.7,PCI-DSSv4.0|4.2.1,QCSC-v1|5.2.2,QCSC-v1|6.2,Rule-ID|SV-259640r961632_rule,STIG-ID|EX19-ED-000234,Vuln-ID|V-259640",https://workbench.cisecurity.org/benchmarks/23645,,,All policies compliant,POLICY_TEXT,,,,,High,65,audits\portal_audits\Windows\CIS_Microsoft_Exchange_2019_Edge_Server_STIG_v1.0.0_CAT_I.audit
+1.65,,,EX19-ED-000235,AUDIT_EXCHANGE,custom_item,group_policy > if > then,1.65 EX19-ED-000235,"Exchange internal Receive connectors must require encryption.
+
+GROUP ID: V-259641
+RULE ID: SV-259641r961632
+
+The Simple Mail Transfer Protocol (SMTP) Receive connector is used by Exchange to send and receive messages from server to server using SMTP protocol. This setting controls the encryption strength used for client connections to the SMTP Receive connector. With this feature enabled, only clients capable of supporting secure communications will be able to send mail using this SMTP server. Where secure channels are required, encryption can also be selected.
+
+The use of secure communication prevents eavesdroppers from reading or modifying communications between mail clients and servers. While sensitive message bodies should be encrypted by the sender at the client, requiring a secure connection from the client to the server adds protection by encrypting the sender and recipient information that cannot be encrypted by the sender.
+
+Individually, channel security and encryption have been compromised by attackers. Used together, email becomes a more difficult target, and security is heightened. Failure to enable this feature gives eavesdroppers an opportunity to read or modify messages between the client and server.","Open the Exchange Management Shell and enter the following command:
+
+Set-ReceiveConnector -Identity <'IdentityName'> -AuthMechanism 'Tls'
+
+Note: The <IdentityName> value must be in quotes.
+
+Repeat the process for each Receive connector.","800-171|3.13.8,800-171r3|03.13.08,800-53|SC-8,800-53r5|SC-8,CAT|I,CCI|CCI-002418,CN-L3|8.1.2.2(a),CN-L3|8.1.2.2(b),CN-L3|8.1.4.7(a),CN-L3|8.1.4.8(a),CN-L3|8.2.4.5(c),CN-L3|8.2.4.5(d),CN-L3|8.5.2.2,CSF|PR.DS-2,CSF|PR.DS-5,CSF2.0|PR.DS-02,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(e)(1),HIPAA|164.312(e)(2)(i),ISO-27001-2022|A.5.10,ISO-27001-2022|A.5.14,ISO-27001-2022|A.5.33,ISO-27001-2022|A.8.20,ITSG-33|SC-8,ITSG-33|SC-8a.,LEVEL|1M,NESA|T4.3.1,NESA|T4.3.2,NESA|T4.5.1,NESA|T4.5.2,NESA|T7.3.3,NESA|T7.4.1,NIAv2|IE8,NIAv2|IE9,NIAv2|IE12,NIAv2|NS29,NIAv2|SS24,PCI-DSSv3.2.1|2.3,PCI-DSSv3.2.1|4.1,PCI-DSSv4.0|2.2.7,PCI-DSSv4.0|4.2.1,QCSC-v1|5.2.2,QCSC-v1|6.2,Rule-ID|SV-259641r961632_rule,STIG-ID|EX19-ED-000235,Vuln-ID|V-259641",https://workbench.cisecurity.org/benchmarks/23645,,,All policies compliant,POLICY_TEXT,,,,,High,88,audits\portal_audits\Windows\CIS_Microsoft_Exchange_2019_Edge_Server_STIG_v1.0.0_CAT_I.audit
+,,,check for DomainValidation,AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > condition,check for DomainValidation,,,,,,,All policies compliant,POLICY_TEXT,,,,,Medium,119,audits\portal_audits\Windows\CIS_Microsoft_Exchange_2019_Edge_Server_STIG_v1.0.0_CAT_I.audit
+,,,DomainSecureEnabled,AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > condition,DomainSecureEnabled,,,,,,,All policies compliant,POLICY_TEXT,,,,,Medium,129,audits\portal_audits\Windows\CIS_Microsoft_Exchange_2019_Edge_Server_STIG_v1.0.0_CAT_I.audit
+,,,DomainSecureEnabled,AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then > if > condition,DomainSecureEnabled,,,,,,,All policies compliant,POLICY_TEXT,,,,,Medium,143,audits\portal_audits\Windows\CIS_Microsoft_Exchange_2019_Edge_Server_STIG_v1.0.0_CAT_I.audit
+1.66,,,EX19-ED-000236,PASSED,report,group_policy > if > then > if > then > if > then,1.66 EX19-ED-000236,"Exchange internal Send connectors must require encryption.
+
+GROUP ID: V-259642
+RULE ID: SV-259642r961632
+
+The Simple Mail Transfer Protocol (SMTP) connector is used by Exchange to send and receive messages from server to server. Several controls work together to provide security between internal servers. This setting controls the encryption method used for communications between servers. With this feature enabled, only servers capable of supporting Transport Layer Security (TLS) will be able to send and receive mail within the domain.
+
+The use of secure communication prevents eavesdroppers from reading or modifying communications between mail clients and servers. While sensitive message bodies should be encrypted by the sender at the client, requiring a secure connection from server to server adds protection by encrypting the sender and recipient information that cannot be encrypted by the sender.
+
+Individually, channel security and encryption can be compromised by attackers. Used together, email becomes a more difficult target, and security is heightened. Failure to enable this feature gives eavesdroppers an opportunity to read or modify messages between servers.","If using 'DomainValidation', open the Exchange Management Shell and enter the following command:
+
+Set-SendConnector -Identity <'Identity'> -TlsDomain <InternalSMTPDomain> -TlsAuthLevel DomainValidation -RequireTLS $true
+
+If using 'DomainSecureEnabled', open the Exchange Management Shell and enter the following command:
+
+Set-SendConnector -Identity <'ReceiveConnector'> -DomainSecureEnabled $true
+
+Note:
+
+ - To use DomainSecureEnabled, DNSRouting must be set to $true.
+ - The same domain must also be defined on the corresponding Receive connector and in the TLSReceiveDomainSecureList attribute of the transport configuration.","800-171|3.13.8,800-171r3|03.13.08,800-53|SC-8,800-53r5|SC-8,CAT|I,CCI|CCI-002418,CN-L3|8.1.2.2(a),CN-L3|8.1.2.2(b),CN-L3|8.1.4.7(a),CN-L3|8.1.4.8(a),CN-L3|8.2.4.5(c),CN-L3|8.2.4.5(d),CN-L3|8.5.2.2,CSF|PR.DS-2,CSF|PR.DS-5,CSF2.0|PR.DS-02,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(e)(1),HIPAA|164.312(e)(2)(i),ISO-27001-2022|A.5.10,ISO-27001-2022|A.5.14,ISO-27001-2022|A.5.33,ISO-27001-2022|A.8.20,ITSG-33|SC-8,ITSG-33|SC-8a.,LEVEL|1M,NESA|T4.3.1,NESA|T4.3.2,NESA|T4.5.1,NESA|T4.5.2,NESA|T7.3.3,NESA|T7.4.1,NIAv2|IE8,NIAv2|IE9,NIAv2|IE12,NIAv2|NS29,NIAv2|SS24,PCI-DSSv3.2.1|2.3,PCI-DSSv3.2.1|4.1,PCI-DSSv4.0|2.2.7,PCI-DSSv4.0|4.2.1,QCSC-v1|5.2.2,QCSC-v1|6.2,Rule-ID|SV-259642r961632_rule,STIG-ID|EX19-ED-000236,Vuln-ID|V-259642",https://workbench.cisecurity.org/benchmarks/23645,,,,,,,,,High,155,audits\portal_audits\Windows\CIS_Microsoft_Exchange_2019_Edge_Server_STIG_v1.0.0_CAT_I.audit
+,,,check for DomainValidation,AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then > if > else > if > condition,check for DomainValidation,,,,,,,All policies compliant,POLICY_TEXT,,,,,Medium,188,audits\portal_audits\Windows\CIS_Microsoft_Exchange_2019_Edge_Server_STIG_v1.0.0_CAT_I.audit
+,,,check for TlsDomain,AUDIT_EXCHANGE,custom_item,group_policy > if > then > if > then > if > else > if > condition,check for TlsDomain,,,,,,,^Manual Review Required$,POLICY_TEXT,,,,,Medium,198,audits\portal_audits\Windows\CIS_Microsoft_Exchange_2019_Edge_Server_STIG_v1.0.0_CAT_I.audit
+1.66,,,EX19-ED-000236,PASSED,report,group_policy > if > then > if > then > if > else > if > then,1.66 EX19-ED-000236,"Exchange internal Send connectors must require encryption.
+
+GROUP ID: V-259642
+RULE ID: SV-259642r961632
+
+The Simple Mail Transfer Protocol (SMTP) connector is used by Exchange to send and receive messages from server to server. Several controls work together to provide security between internal servers. This setting controls the encryption method used for communications between servers. With this feature enabled, only servers capable of supporting Transport Layer Security (TLS) will be able to send and receive mail within the domain.
+
+The use of secure communication prevents eavesdroppers from reading or modifying communications between mail clients and servers. While sensitive message bodies should be encrypted by the sender at the client, requiring a secure connection from server to server adds protection by encrypting the sender and recipient information that cannot be encrypted by the sender.
+
+Individually, channel security and encryption can be compromised by attackers. Used together, email becomes a more difficult target, and security is heightened. Failure to enable this feature gives eavesdroppers an opportunity to read or modify messages between servers.
+
+NOTE: Nessus has provided the target output to assist in reviewing the benchmark to ensure target compliance.","If using 'DomainValidation', open the Exchange Management Shell and enter the following command:
+
+Set-SendConnector -Identity <'Identity'> -TlsDomain <InternalSMTPDomain> -TlsAuthLevel DomainValidation -RequireTLS $true
+
+If using 'DomainSecureEnabled', open the Exchange Management Shell and enter the following command:
+
+Set-SendConnector -Identity <'ReceiveConnector'> -DomainSecureEnabled $true
+
+Note:
+
+ - To use DomainSecureEnabled, DNSRouting must be set to $true.
+ - The same domain must also be defined on the corresponding Receive connector and in the TLSReceiveDomainSecureList attribute of the transport configuration.","800-171|3.13.8,800-171r3|03.13.08,800-53|SC-8,800-53r5|SC-8,CAT|I,CCI|CCI-002418,CN-L3|8.1.2.2(a),CN-L3|8.1.2.2(b),CN-L3|8.1.4.7(a),CN-L3|8.1.4.8(a),CN-L3|8.2.4.5(c),CN-L3|8.2.4.5(d),CN-L3|8.5.2.2,CSF|PR.DS-2,CSF|PR.DS-5,CSF2.0|PR.DS-02,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(e)(1),HIPAA|164.312(e)(2)(i),ISO-27001-2022|A.5.10,ISO-27001-2022|A.5.14,ISO-27001-2022|A.5.33,ISO-27001-2022|A.8.20,ITSG-33|SC-8,ITSG-33|SC-8a.,LEVEL|1M,NESA|T4.3.1,NESA|T4.3.2,NESA|T4.5.1,NESA|T4.5.2,NESA|T7.3.3,NESA|T7.4.1,NIAv2|IE8,NIAv2|IE9,NIAv2|IE12,NIAv2|NS29,NIAv2|SS24,PCI-DSSv3.2.1|2.3,PCI-DSSv3.2.1|4.1,PCI-DSSv4.0|2.2.7,PCI-DSSv4.0|4.2.1,QCSC-v1|5.2.2,QCSC-v1|6.2,Rule-ID|SV-259642r961632_rule,STIG-ID|EX19-ED-000236,Vuln-ID|V-259642",https://workbench.cisecurity.org/benchmarks/23645,,,,,,,,,High,210,audits\portal_audits\Windows\CIS_Microsoft_Exchange_2019_Edge_Server_STIG_v1.0.0_CAT_I.audit
+1.66,,,EX19-ED-000236,FAILED,report,group_policy > if > then > if > else,1.66 EX19-ED-000236,"Exchange internal Send connectors must require encryption.
+
+GROUP ID: V-259642
+RULE ID: SV-259642r961632
+
+The Simple Mail Transfer Protocol (SMTP) connector is used by Exchange to send and receive messages from server to server. Several controls work together to provide security between internal servers. This setting controls the encryption method used for communications between servers. With this feature enabled, only servers capable of supporting Transport Layer Security (TLS) will be able to send and receive mail within the domain.
+
+The use of secure communication prevents eavesdroppers from reading or modifying communications between mail clients and servers. While sensitive message bodies should be encrypted by the sender at the client, requiring a secure connection from server to server adds protection by encrypting the sender and recipient information that cannot be encrypted by the sender.
+
+Individually, channel security and encryption can be compromised by attackers. Used together, email becomes a more difficult target, and security is heightened. Failure to enable this feature gives eavesdroppers an opportunity to read or modify messages between servers.","If using 'DomainValidation', open the Exchange Management Shell and enter the following command:
+
+Set-SendConnector -Identity <'Identity'> -TlsDomain <InternalSMTPDomain> -TlsAuthLevel DomainValidation -RequireTLS $true
+
+If using 'DomainSecureEnabled', open the Exchange Management Shell and enter the following command:
+
+Set-SendConnector -Identity <'ReceiveConnector'> -DomainSecureEnabled $true
+
+Note:
+
+ - To use DomainSecureEnabled, DNSRouting must be set to $true.
+ - The same domain must also be defined on the corresponding Receive connector and in the TLSReceiveDomainSecureList attribute of the transport configuration.","800-171|3.13.8,800-171r3|03.13.08,800-53|SC-8,800-53r5|SC-8,CAT|I,CCI|CCI-002418,CN-L3|8.1.2.2(a),CN-L3|8.1.2.2(b),CN-L3|8.1.4.7(a),CN-L3|8.1.4.8(a),CN-L3|8.2.4.5(c),CN-L3|8.2.4.5(d),CN-L3|8.5.2.2,CSF|PR.DS-2,CSF|PR.DS-5,CSF2.0|PR.DS-02,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(e)(1),HIPAA|164.312(e)(2)(i),ISO-27001-2022|A.5.10,ISO-27001-2022|A.5.14,ISO-27001-2022|A.5.33,ISO-27001-2022|A.8.20,ITSG-33|SC-8,ITSG-33|SC-8a.,LEVEL|1M,NESA|T4.3.1,NESA|T4.3.2,NESA|T4.5.1,NESA|T4.5.2,NESA|T7.3.3,NESA|T7.4.1,NIAv2|IE8,NIAv2|IE9,NIAv2|IE12,NIAv2|NS29,NIAv2|SS24,PCI-DSSv3.2.1|2.3,PCI-DSSv3.2.1|4.1,PCI-DSSv4.0|2.2.7,PCI-DSSv4.0|4.2.1,QCSC-v1|5.2.2,QCSC-v1|6.2,Rule-ID|SV-259642r961632_rule,STIG-ID|EX19-ED-000236,Vuln-ID|V-259642",https://workbench.cisecurity.org/benchmarks/23645,,,,,,,,,High,247,audits\portal_audits\Windows\CIS_Microsoft_Exchange_2019_Edge_Server_STIG_v1.0.0_CAT_I.audit
+,,,CIS_Microsoft_Exchange_2019_Edge_Server_STIG_v1.0.0_CAT_I.audit from CIS Microsoft Exchange 2019 Edge Server STIG v1.0.0,WARNING,report,group_policy > if > else,CIS_Microsoft_Exchange_2019_Edge_Server_STIG_v1.0.0_CAT_I.audit from CIS Microsoft Exchange 2019 Edge Server STIG v1.0.0,NOTE: Nessus has not identified that the chosen audit applies to the target device.,,,https://workbench.cisecurity.org/benchmarks/23645,,,,,,,,,Medium,280,audits\portal_audits\Windows\CIS_Microsoft_Exchange_2019_Edge_Server_STIG_v1.0.0_CAT_I.audit

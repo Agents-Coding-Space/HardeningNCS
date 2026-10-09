@@ -1,0 +1,524 @@
+﻿CID,Profile,Scored,Title,Type,Tag,Conditional Path,Description,Info / Rationale,Solution / Remediation,Reference,See Also,Cmd / Request,Expect,Value Data,Value Type,Reg Key,Reg Item,Reg Option,File,Severity,Line,Source File
+,,,Check if Chrome is installed - ApplicationName,REG_CHECK,custom_item,group_policy > if > condition,Check if Chrome is installed - ApplicationName,,,,,,,HKLM\Software\Clients\Startmenuinternet\Google Chrome\Capabilities,POLICY_TEXT,,,MUST_EXIST,,Medium,38,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+,,,Check if Chrome is installed - DisplayName,REG_CHECK,custom_item,group_policy > if > condition,Check if Chrome is installed - DisplayName,,,,,,,HKLM\Software\Microsoft\Windows\Currentversion\Uninstall\Google Chrome,POLICY_TEXT,,,MUST_EXIST,,Medium,47,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+,,,CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit from CIS Google Chrome Group Policy v1.1.0,PASSED,report,group_policy > if > then,CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit from CIS Google Chrome Group Policy v1.1.0,,,,https://workbench.cisecurity.org/benchmarks/23110,,,,,,,,,Medium,58,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.10.1,L2,,Ensure 'Configure native messaging blocklist' is set to 'Enabled: *',REGISTRY_SETTING,custom_item,group_policy > if > then,2.10.1 (L2) Ensure 'Configure native messaging blocklist' is set to 'Enabled: *',"Allows you to specify which native messaging hosts that should not be loaded.
+
+Disabled (0): Google Chrome will load all installed native messaging hosts.
+
+The recommended state for this setting is: Enabled with a value of *
+
+NOTE: This needs to be handled carefully. If an extension is enabled, yet can't communicate with its backend code, it could behave in strange ways which results in helpdesk tickets + support load.
+
+For consistency with Plugin and Extension policies, native messaging should be blocklisted by default, requiring explicit administrative approval of applications for allowlisting. An example of an application that uses native messaging is the 1Password password manager.","To establish the recommended configuration via Group Policy, set the following UI path to Enabled and a value of * to block all native messaging hosts.
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Native Messaging\Configure native messaging blocklist
+
+Impact:
+
+A blocklist value of '*' means all native messaging hosts are blocklisted unless they are explicitly listed in the allowlist.","800-171|3.4.9,800-171|3.13.13,800-171r3|03.13.13,800-53|CM-10,800-53|CM-11,800-53|SC-18,800-53r5|CM-10,800-53r5|CM-11,800-53r5|SC-18,CSCv7|7.2,CSCv8|9.4,CSF|DE.CM-3,CSF|DE.CM-5,CSF2.0|DE.CM-03,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,CSF2.0|PR.PS-02,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.5.32,ISO-27001-2022|A.8.19,ISO/IEC-27001|A.12.6.2,ITSG-33|SC-18,LEVEL|2A,NIAv2|SU3,QCSC-v1|3.2,QCSC-v1|8.2.1,SWIFT-CSCv1|5.1",https://workbench.cisecurity.org/benchmarks/23110,,,^[*]$,POLICY_TEXT,HKLM\Software\Policies\Google\Chrome\NativeMessagingBlocklist,1,CAN_NOT_BE_NULL,,High,64,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.1.1,L2,,Ensure 'Enable Translate' is set to 'Disabled',REGISTRY_SETTING,custom_item,group_policy > if > then,2.1.1 (L2) Ensure 'Enable Translate' is set to 'Disabled',"This setting enables Google translation services on Google Chrome.
+
+The recommended state for this setting is: Disabled (0)
+
+Content of internal web pages may be leaked to Google's translation service.","To establish the recommended configuration via Group Policy, set the following UI path to Disabled :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Accessibility\Enable Translate
+
+Impact:
+
+After disabling this feature, the contents of a web page are no longer sent to Google for translation.","800-53|SI-8,800-53r5|SI-8,CSCv7|4.8,CSCv8|9.2,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SI-8,LEVEL|2A,QCSC-v1|3.2,QCSC-v1|8.2.1",https://workbench.cisecurity.org/benchmarks/23110,,,0,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,TranslateEnabled,CAN_NOT_BE_NULL,,High,93,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.18,L2,,Ensure 'Enable additional protections for users enrolled in the Advanced Protection program' Is Set to 'Enabled',REGISTRY_SETTING,custom_item,group_policy > if > then,2.18 (L2) Ensure 'Enable additional protections for users enrolled in the Advanced Protection program' Is Set to 'Enabled',"The Advanced Protection Program is a service offered by Google for users whose accounts contain particularly valuable files or sensitive information. This service requires at least one passkey or FIDO compliant security key. Since this is an additional service, and requires the purchase of additional hardware, this is not a scored recommendation but is recommended for anyone who is already signed up for the Advanced Protection Program service.
+
+Note: At the time this benchmark was published the Advanced Protection Program was available at no charge but to use the program your organization may need to purchase security keys.
+
+If a user (or organization) has already enabled the Advanced Protection Program, those user(s) should use the features offered.","To establish the recommended configuration via Group Policy, set the following UI path to Enabled :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Enable additional protections for users enrolled in the Advanced Protection program
+
+Impact:
+
+There should be no impact on the user.","800-171|3.1.1,800-171r3|03.01.02,800-53|AC-3,800-53r5|AC-3,CN-L3|8.1.4.2(f),CN-L3|8.1.4.11(b),CN-L3|8.1.10.2(c),CN-L3|8.5.3.1,CN-L3|8.5.4.1(a),CSF|PR.AC-4,CSF|PR.PT-3,CSF2.0|PR.AA-05,CSF2.0|PR.DS-10,CSF2.0|PR.IR-01,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(1),ISO-27001-2022|A.5.15,ISO-27001-2022|A.5.33,ISO-27001-2022|A.8.3,ISO-27001-2022|A.8.18,ISO-27001-2022|A.8.20,ISO/IEC-27001|A.9.4.1,ISO/IEC-27001|A.9.4.5,ITSG-33|AC-3,LEVEL|2A,NESA|T4.2.1,NESA|T5.4.4,NESA|T5.4.5,NESA|T5.5.4,NESA|T5.6.1,NESA|T7.5.2,NESA|T7.5.3,NIAv2|AM3,NIAv2|SS29,QCSC-v1|3.2,QCSC-v1|5.2.2,QCSC-v1|13.2,TBA-FIISB|31.1",https://workbench.cisecurity.org/benchmarks/23110,,,1,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,AdvancedProtectionAllowed,CAN_NOT_BE_NULL,,High,117,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.20,L2,,Ensure 'Allow invocation of file selection dialogs' is set to 'Disabled',REGISTRY_SETTING,custom_item,group_policy > if > then,2.20 (L2) Ensure 'Allow invocation of file selection dialogs' is set to 'Disabled',"This setting allows access to local files by allowing file selection dialogs in Google Chrome.
+
+The recommended state for this setting is: Disabled (0)
+
+Allowing users to import favorites, upload files, and save links could pose potential security risks by allowing data to be uploaded to external sites or by downloading malicious files. By not allowing the file selection dialog, the end-user will not be prompted for uploads/downloads, preventing data exfiltration and possible system infection by malware.","To establish the recommended configuration via GP, set the following UI path to Disabled :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Allow invocation of file selection dialogs
+
+Impact:
+
+If you disable this setting, users will no longer be prompted when performing actions which would trigger a file selection dialog. Instead, the file selection dialog box assumes the user clicked 'Cancel'. Being as this is not the default behavior, impact to the user will be noticeable, and the user will not be able to upload and download files.","800-171|3.4.6,800-171|3.4.7,800-171r3|03.04.06,800-53|CM-7,800-53|CM-7(1),800-53|SI-7,800-53|SI-7(1),800-53r5|CM-7,800-53r5|CM-7(1),800-53r5|SI-7,800-53r5|SI-7(1),CN-L3|7.1.3.5(b),CSCv7|2.5,CSCv8|2.7,CSF|PR.DS-6,CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|DE.CM-09,CSF2.0|ID.RA-09,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,CSF2.0|PR.PS-01,CSF2.0|PR.PS-02,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(c)(1),HIPAA|164.312(c)(2),HIPAA|164.312(e)(2)(i),ITSG-33|CM-7,ITSG-33|CM-7(1),ITSG-33|SI-7,ITSG-33|SI-7a.,ITSG-33|SI-7(1),LEVEL|2A,NESA|T3.4.1,NESA|T7.3.2,NESA|T7.3.3,NIAv2|SS15a,PCI-DSSv3.2.1|2.2.2,PCI-DSSv3.2.1|10.5.5,QCSC-v1|3.2,SWIFT-CSCv1|2.3,SWIFT-CSCv1|6.2",https://workbench.cisecurity.org/benchmarks/23110,,,0,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,AllowFileSelectionDialogs,CAN_NOT_BE_NULL,,High,141,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.2.1,L2,,Ensure 'Allow or deny screen capture' is set to 'Disabled',REGISTRY_SETTING,custom_item,group_policy > if > then,2.2.1 (L2) Ensure 'Allow or deny screen capture' is set to 'Disabled',"This setting controls whether Google Chrome can use screen-share APIs including web-based online meetings, video, or screen sharing.
+
+The recommended state for this setting is: Disabled (0)
+
+NOTE: This setting is not considered (and a site will be allowed to use screen-share APIs) if the site matches an origin pattern in any of the following other settings: ScreenCaptureAllowedByOrigins, WindowCaptureAllowedByOrigins, TabCaptureAllowedByOrigins, SameOriginTabCaptureAllowedByOrigins.
+
+Allowing screen-share APIs within Google Chrome could potentially allow for sensitive data to be shared via screen captures.","To establish the recommended configuration via Group Policy, set the following UI path to Disabled :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Allow or deny screen capture\Allow or deny screen capture
+
+Impact:
+
+Users will be unable to utilize APIs which support web-based meetings (video conferencing screen sharing), video, and screen capture. This could potentially cause disruption to users who may have utilized these abilities in the past.","800-171|3.4.6,800-171|3.4.7,800-171r3|03.04.06b.,800-53|CM-7b.,800-53r5|CM-7b.,CN-L3|7.1.3.5(c),CN-L3|7.1.3.7(d),CN-L3|8.1.4.4(b),CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-7a.,LEVEL|2A,NIAv2|SS13b,NIAv2|SS14a,NIAv2|SS14c,PCI-DSSv3.2.1|2.2.2,PCI-DSSv4.0|2.2.4,QCSC-v1|3.2,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/23110,,,0,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,ScreenCaptureAllowed,CAN_NOT_BE_NULL,,High,165,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.23,L2,,Ensure 'Allow or deny audio capture' is set to 'Disabled',REGISTRY_SETTING,custom_item,group_policy > if > then,2.23 (L2) Ensure 'Allow or deny audio capture' is set to 'Disabled',"This setting allows administrators to set whether the end-user is prompted for access to audio capture devices.
+
+ - Disabled (0): Turns off prompts and audio capture will only work for URLs configured in the AudioCaptureAllowedUrls list.
+ - Enabled (1): With the exception of URLs set in the AudioCaptureAllowedUrls list, users get prompted for audio capture access.
+
+NOTE: The setting affects all audio input (not just the built-in microphone).
+
+The recommended state for this setting is: Disabled
+
+The end-user having the ability to allow or deny audio capture for websites in Google Chrome could open an organization up to a malicious site that may capture proprietary information through the browser. By limiting or disallowing audio capture, it removes the end-user's discretion, leaving it up to the organization which sites are allowed to use this ability.","To establish the recommended configuration via Group Policy, set the following UI path to Disabled :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Allow or deny audio capture
+
+Impact:
+
+If you disable this setting, users will not be prompted for audio devices when using websites which may need this access, such as a web-based conferencing system. If there are sites which access will be allowed, configuration of the AudioCaptureAllowedUrls setting will be necessary.","800-53|SI-8,800-53r5|SI-8,CSCv7|4.8,CSCv8|9.2,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SI-8,LEVEL|2A,QCSC-v1|3.2,QCSC-v1|8.2.1",https://workbench.cisecurity.org/benchmarks/23110,,,0,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,AudioCaptureAllowed,CAN_NOT_BE_NULL,,High,191,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.25,L2,,Ensure 'Enable AutoFill for addresses' is set to 'Disabled',REGISTRY_SETTING,custom_item,group_policy > if > then,2.25 (L2) Ensure 'Enable AutoFill for addresses' is set to 'Disabled',"Chrome allows users to auto-complete web forms with saved information such as address or phone number. Disabling this feature will prompt a user to enter all information manually.
+
+The recommended state for this setting is: Disabled (0)
+
+If an attacker gains access to a user's machine where the user has stored address AutoFill data, information could be harvested.","To establish the recommended configuration via Group Policy, set the following UI path to Disabled :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Enable AutoFill for addresses
+
+Impact:
+
+If this setting is disabled, AutoFill will be inaccessible to users.","800-53|SI-8,800-53r5|SI-8,CSCv7|4.8,CSCv8|9.2,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SI-8,LEVEL|2A,QCSC-v1|3.2,QCSC-v1|8.2.1",https://workbench.cisecurity.org/benchmarks/23110,,,0,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,AutofillAddressEnabled,CAN_NOT_BE_NULL,,High,220,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.29,L2,,Ensure 'Enable guest mode in browser' is set to 'Disabled',REGISTRY_SETTING,custom_item,group_policy > if > then,2.29 (L2) Ensure 'Enable guest mode in browser' is set to 'Disabled',"This setting controls whether a user may utilize guest profiles in Google Chrome.
+
+The recommended state for this setting is: Disabled (0)
+
+In a guest profile, the browser doesn't import browsing data from existing profiles, and it deletes browsing data when all guest profiles are closed.
+
+Deleting browser data will delete information that may be important for a computer investigation, and investigators such as Computer Forensics Analysts may not be able to retrieve pertinent information to the investigation.","To establish the recommended configuration via Group Policy, set the following UI path to Disabled :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Enable guest mode in browser
+
+Impact:
+
+Users will not be able to initiate Guest mode for Google Chrome.","800-53|SI-8,800-53r5|SI-8,CSCv7|4.8,CSCv8|9.2,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SI-8,LEVEL|2A,QCSC-v1|3.2,QCSC-v1|8.2.1",https://workbench.cisecurity.org/benchmarks/23110,,,0,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,BrowserGuestModeEnabled,CAN_NOT_BE_NULL,,High,244,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.31,L2,,Ensure 'Browser sign in settings' is set to 'Enabled: Disabled browser sign-in',REGISTRY_SETTING,custom_item,group_policy > if > then,2.31 (L2) Ensure 'Browser sign in settings' is set to 'Enabled: Disabled browser sign-in',"Google Chrome offers to sign in with your Google account and use account-related services like Chrome sync. It is possible to sign in to Google Chrome with a Google account to use services like synchronization, and can also be used for configuration and management of the browser.
+
+ - Disable browser sign-in (0)
+ - Enable browser sign-in (1)
+ - Force users to sign-in to use the browser (2)
+
+The recommended state for this setting is: Enabled with a value of Disable browser sign-in (0)
+
+NOTE: If an organization is a Google Workspace Enterprise customer, they will want to leave this setting enabled so that users can sign in with Google accounts.
+
+Since external accounts are unmanaged and potentially used to access several private computer systems and many different websites, connecting accounts via sign-in poses a security risk for the company. It interferes with the corporate management mechanisms, as well as permits an unwanted leak of corporate information and possible mixture with private, non-company data.","To establish the recommended configuration via Group Policy, set the following UI path to Enabled: Disable browser sign-in
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Browser sign in settings
+
+Impact:
+
+If this setting is configured, the user cannot sign in to the browser and use Google account-based services like Chrome sync.","800-53|SI-8,800-53r5|SI-8,CSCv7|4.8,CSCv8|9.2,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SI-8,LEVEL|2A,QCSC-v1|3.2,QCSC-v1|8.2.1",https://workbench.cisecurity.org/benchmarks/23110,,,0,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,BrowserSignin,CAN_NOT_BE_NULL,,High,270,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.3.10,L2,,Ensure 'Default Sensors Setting' is set to 'Enabled: Do not allow any site to access sensors',REGISTRY_SETTING,custom_item,group_policy > if > then,2.3.10 (L2) Ensure 'Default Sensors Setting' is set to 'Enabled: Do not allow any site to access sensors',"This setting controls website access and use of system sensors such as motion and light.
+
+ - Allow sites to access sensors (1)
+ - Do not allow any site to access sensors (2)
+
+The recommended state for this setting is: Do not allow any site to access sensors (2)
+
+The recommended state for this setting is: Enabled with a value of Do not allow any site to access sensors
+
+NOTE: If more granular control is needed (per website) then this setting can be used in combination with the SensorsAllowedForUrls and SensorsBlockedForUrls settings. For example, SensorsAllowedForUrls can be used to allow sensor access to specific sites. Please see the references below for more information.
+
+Preventing access to system sensors may prevent malicious sites from using these sensors for user profiling (OpSec).","To establish the recommended configuration via Group Policy, set the following UI path to Enabled: Do not allow any site to access sensors :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Content settings\Default sensors setting
+
+Impact:
+
+This setting would also prevent legitimate sites from accessing it as well.","800-171|3.4.2,800-171|3.4.6,800-171|3.4.7,800-171r3|03.04.02,800-171r3|03.04.06,800-53|CM-6,800-53|CM-7,800-53r5|CM-6,800-53r5|CM-7,CSCv7|9.2,CSCv8|4.8,CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6,ITSG-33|CM-7,LEVEL|2A,NIAv2|SS15a,PCI-DSSv3.2.1|2.2.2,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/23110,,,2,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,DefaultSensorsSetting,CAN_NOT_BE_NULL,,High,300,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.3.11,L2,,Ensure 'Control use of the Serial API' is set to 'Enabled: Do not allow any site to request access to serial ports via the Serial API',REGISTRY_SETTING,custom_item,group_policy > if > then,2.3.11 (L2) Ensure 'Control use of the Serial API' is set to 'Enabled: Do not allow any site to request access to serial ports via the Serial API',"This setting controls website access and use of the system serial port.
+
+ - (2): Do not allow any site to request access to serial ports via the Serial API
+ - (3): Allow sites to ask the user to grant access to a serial port
+
+The recommended state for this setting is: Enabled with a value of Do not allow any site to request access to serial ports via the Serial API (2)
+
+NOTE: If more granular control is needed (per website) then this setting can be used in combination with the SerialAllowAllPortsForUrls, SerialAskForUrls and SerialBlockedForUrls settings. For example, SerialAllowAllPortsForUrls can be used to allow serial port access to specific sites. Please see the references below for more information.
+
+Preventing access to system serial ports may prevent malicious sites from using these ports and accessing the devices attached.","To establish the recommended configuration via Group Policy, set the following UI path to Enabled: Do not allow any site to request access to serial ports via the Serial API :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Content settings\Control use of the Serial API
+
+Impact:
+
+This setting would also prevent legitimate sites from accessing it as well.","800-171|3.4.2,800-171|3.4.6,800-171|3.4.7,800-171r3|03.04.02,800-171r3|03.04.06,800-53|CM-6,800-53|CM-7,800-53r5|CM-6,800-53r5|CM-7,CSCv7|9.2,CSCv8|4.8,CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6,ITSG-33|CM-7,LEVEL|2A,NIAv2|SS15a,PCI-DSSv3.2.1|2.2.2,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/23110,,,2,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,DefaultSerialGuardSetting,CAN_NOT_BE_NULL,,High,331,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.3.12,L2,,Ensure 'Control use of the Web Bluetooth API' is set to 'Enabled: Do not allow any site to request access to Bluetooth devices via the Web Bluetooth API',REGISTRY_SETTING,custom_item,group_policy > if > then,2.3.12 (L2) Ensure 'Control use of the Web Bluetooth API' is set to 'Enabled: Do not allow any site to request access to Bluetooth devices via the Web Bluetooth API',"This policy setting controls whether websites can access connected Bluetooth devices.
+
+The recommended state for this setting is: Enabled: Do not allow any site to request access to Bluetooth devices via the Web Bluetooth API.
+
+Web Bluetooth could potentially be used for attacks that may bypass other controls regarding connected Bluetooth hardware including microphones, cameras, and other devices from which information could be gathered or inappropriately utilized.","To establish the recommended configuration via GP, set the following UI path to Enabled: Do not allow any site to request access to Bluetooth devices via the Web Bluetooth API :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Content settings\Control use of the Web Bluetooth API
+
+Impact:
+
+Websites will be unable to utilize connected Bluetooth devices via the API. This includes web cameras, microphones, and other USB devices.","800-171|3.4.9,800-171|3.13.13,800-171r3|03.13.13,800-53|CM-10,800-53|CM-11,800-53|SC-18,800-53r5|CM-10,800-53r5|CM-11,800-53r5|SC-18,CSCv7|7.2,CSCv8|9.4,CSF|DE.CM-3,CSF|DE.CM-5,CSF2.0|DE.CM-03,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,CSF2.0|PR.PS-02,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.5.32,ISO-27001-2022|A.8.19,ISO/IEC-27001|A.12.6.2,ITSG-33|SC-18,LEVEL|2A,NIAv2|SU3,QCSC-v1|3.2,QCSC-v1|8.2.1,SWIFT-CSCv1|5.1",https://workbench.cisecurity.org/benchmarks/23110,,,2,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,DefaultWebBluetoothGuardSetting,CAN_NOT_BE_NULL,,High,360,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.3.13,L2,,Ensure 'Control use of the WebHID API' is set to 'Enabled: Do not allow any site to request access to HID devices via the WebHID API',REGISTRY_SETTING,custom_item,group_policy > if > then,2.3.13 (L2) Ensure 'Control use of the WebHID API' is set to 'Enabled: Do not allow any site to request access to HID devices via the WebHID API',"This policy setting determines whether a website is able to ask for access to use the WebHID API. The WebHID API allows websites to access alternative auxiliary keyboards and exotic gamepads.
+
+The recommended state for this setting is: Enabled: Do not allow any site to request access to HID devices via the WebHID API.
+
+Disabling the WebHID API prevents HID peripherals from exposing powerful functionality that should not be made accessible to the page without explicit consent. For instance, a HID peripheral may have sensors that allow it to collect information about its surroundings. A device may store private information that should not be revealed or overwritten. Operating systems typically do not restrict access to HID devices from applications, and this access can occasionally be abused to damage the device or corrupt the data stored on it.","To establish the recommended configuration via GP, set the following UI path to Enabled: Do not allow any site to request access to HID devices via the WebHID API :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Content settings\Control use of the WebHID API
+
+Impact:
+
+WebHID describes a wide array of devices that could be supported through HID, including virtual reality controls, flight simulators, medical equipment, and more. Disabling WebHID would require additional drivers or modification to enable support for approved devices.","800-171|3.4.9,800-171|3.13.13,800-171r3|03.13.13,800-53|CM-10,800-53|CM-11,800-53|SC-18,800-53r5|CM-10,800-53r5|CM-11,800-53r5|SC-18,CSCv7|7.2,CSCv8|9.4,CSF|DE.CM-3,CSF|DE.CM-5,CSF2.0|DE.CM-03,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,CSF2.0|PR.PS-02,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.5.32,ISO-27001-2022|A.8.19,ISO/IEC-27001|A.12.6.2,ITSG-33|SC-18,LEVEL|2A,NIAv2|SU3,QCSC-v1|3.2,QCSC-v1|8.2.1,SWIFT-CSCv1|5.1",https://workbench.cisecurity.org/benchmarks/23110,,,2,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,DefaultWebHidGuardSetting,CAN_NOT_BE_NULL,,High,384,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.3.14,L2,,Ensure 'Control use of the WebUSB API' is set to 'Enabled: Do not allow any site to request access to USB devices via the WebUSB API',REGISTRY_SETTING,custom_item,group_policy > if > then,2.3.14 (L2) Ensure 'Control use of the WebUSB API' is set to 'Enabled: Do not allow any site to request access to USB devices via the WebUSB API',"Google Chrome has an API which allows access to connected USB devices from the browser
+
+ - Do not allow any site to request access to USB devices via the WebUSB API (2)
+ - Allow sites to ask the user to grant access to a connected USB device (3)
+
+The recommended state for this setting is: Enabled with a value of Do not allow any site to request access to USB devices via the WebUSB API (2)
+
+WebUSB is opening the doors for sophisticated phishing attacks that could bypass hardware-based two-factor authentication devices (e.g. Yubikey devices).","To establish the recommended configuration via Group Policy, set the following UI path to Enabled: Do not allow any site to request access to USB devices via the WebUSB API :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Content Settings\Control use of the WebUSB API
+
+Impact:
+
+If this setting is configured, websites can no longer access connected USB devices via the API (this includes web cameras, headphones, and other USB devices) which could also prevent some two factor authentication (2FA) USB devices from working properly.","800-171|3.4.2,800-171|3.4.6,800-171|3.4.7,800-171r3|03.04.02,800-171r3|03.04.06,800-53|CM-6,800-53|CM-7,800-53r5|CM-6,800-53r5|CM-7,CSCv7|13.7,CSCv8|4.8,CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6,ITSG-33|CM-7,LEVEL|2A,NIAv2|SS15a,PCI-DSSv3.2.1|2.2.2,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/23110,,,2,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,DefaultWebUsbGuardSetting,CAN_NOT_BE_NULL,,High,408,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.3.15,L2,,Ensure 'Default Window Management permissions setting' Is 'Enabled' to 'Deny Permission',REGISTRY_SETTING,custom_item,group_policy > if > then,2.3.15 (L2) Ensure 'Default Window Management permissions setting' Is 'Enabled' to 'Deny Permission',"This setting can automatically deny access to the window management permissions by sites. It can be configured to either:
+
+ - Disabled (2): Does not allow access to the Window Management permission by any site
+ - Enabled (3): A site must ask the user any time it wants to access the Window Management permission.
+
+If the value for DefaultWindowManagementSetting is not changed from the default, it will behave as if it is enabled. WindowManagementAllowedForUrls or WindowManagementBlockedForUrls will override this setting for any site that matches the configured URL patterns.
+
+Denying access to Window Management can block rogue sites from opening additional browser windows. By blocking the additional windows, an organization could stop instances of nefarious sites being opened in locations of which the user is unaware.","To establish the recommended configuration via Group Policy, set the following UI path to Enabled and Denies the Window Management permission on all sites by default :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Content settings\Default Window Management permission setting
+
+Impact:
+
+Disabling this would take away the functionality of the user to decide what sites get access to the Window Management permission and could impact organizational required URLs.","800-171|3.13.1,800-171|3.13.6,800-171r3|03.13.06,800-53|SC-7(5),800-53r5|SC-7(5),CN-L3|7.1.2.2(c),CSF|PR.PT-4,CSF2.0|DE.CM-01,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,CSF2.0|PR.IR-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.5.14,ISO-27001-2022|A.8.16,ISO-27001-2022|A.8.20,ISO/IEC-27001|A.13.1.3,ITSG-33|SC-7(5),LEVEL|2A,NESA|T4.5.4,NIAv2|GS7b,NIAv2|NS25,PCI-DSSv3.2.1|1.1,PCI-DSSv3.2.1|1.2,PCI-DSSv3.2.1|1.2.1,PCI-DSSv3.2.1|1.3,PCI-DSSv4.0|1.2.1,PCI-DSSv4.0|1.4.1,QCSC-v1|5.2.1,QCSC-v1|5.2.2,QCSC-v1|6.2,QCSC-v1|8.2.1,TBA-FIISB|43.1",https://workbench.cisecurity.org/benchmarks/23110,,,2,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,DefaultWindowManagementSetting,CAN_NOT_BE_NULL,,High,435,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.3.16,L2,,Ensure 'Allow read access via the File System API on these sites' is set to 'Disabled',REG_CHECK,custom_item,group_policy > if > then,2.3.16 (L2) Ensure 'Allow read access via the File System API on these sites' is set to 'Disabled',"This policy setting allows organizations to list the URL patterns that specify which sites can ask users to grant them read access to files or directories in the host operating system's file system via the File System API.
+
+Note: Leaving the policy unset means DefaultFileSystemReadGuardSetting (Control use of the File System API for reading) applies for all sites, if it is set. If not, users' personal settings apply.
+
+Note #2: URL patterns can't conflict with FileSystemReadBlockedForUrls (Block read access via the File System API on these sites). Neither policy takes precedence if a URL matches with both.
+
+The recommended state for this setting is: Disabled.
+
+This API allows web apps to read or save changes directly to files and folders on user devices, beyond reading and writing files. The File System Access API provides the ability to open a directory and enumerate its contents. Allowing web apps the ability to enumerate the contents of a directory by reading or saving changes directly to files and folders opens the organization to malicious content to be saved directly onto user devices.","To establish the recommended configuration via Group Policy, set the following UI path to Disabled :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Content settings\Allow read access via the File System API on these sites
+
+Impact:
+
+Users with creative roles that require read access to files and directories via the File System API may need additional permissions granted for said roles.","800-171|3.4.9,800-171|3.13.13,800-171r3|03.13.13,800-53|CM-10,800-53|CM-11,800-53|SC-18,800-53r5|CM-10,800-53r5|CM-11,800-53r5|SC-18,CSCv7|7.2,CSCv8|9.4,CSF|DE.CM-3,CSF|DE.CM-5,CSF2.0|DE.CM-03,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,CSF2.0|PR.PS-02,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.5.32,ISO-27001-2022|A.8.19,ISO/IEC-27001|A.12.6.2,ITSG-33|SC-18,LEVEL|2A,NIAv2|SU3,QCSC-v1|3.2,QCSC-v1|8.2.1,SWIFT-CSCv1|5.1",https://workbench.cisecurity.org/benchmarks/23110,,,HKLM\Software\Policies\Google\Chrome,POLICY_TEXT,,,MUST_NOT_EXIST,,High,462,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.3.18,L2,,Ensure 'Block Window Management permission on these sites' Is Configured,REGISTRY_SETTING,custom_item,group_policy > if > then,2.3.18 (L2) Ensure 'Block Window Management permission on these sites' Is Configured,"This setting can automatically deny access to the window management permissions for specific sites. This policy can be configured with specific urls which can include wildcards ( * ).
+
+Example:
+
+ - line 1 = https://www.example.com
+ - line 2 = [*.]example.edu
+
+If the value for WindowManagementBlockedForUrls is not changed from the default, it will follow the configuration of DefaultWindowManagementSetting.
+
+Specifying URLs that do not have access to the window management permissions limits data for sites that have access to data on the clipboard, and allows for more sites to have access.","To establish the recommended configuration via Group Policy, set the following UI path to Enabled and set Show to the blocked URLs:
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Content settings\Block Window Management permission on these sites
+
+Impact:
+
+Enforcing this recommendation can cause visited sites to not display as intended.","800-171|3.4.6,800-171|3.4.7,800-171r3|03.04.06b.,800-53|CM-7b.,800-53r5|CM-7b.,CN-L3|7.1.3.5(c),CN-L3|7.1.3.7(d),CN-L3|8.1.4.4(b),CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-7a.,LEVEL|2M,NIAv2|SS13b,NIAv2|SS14a,NIAv2|SS14c,PCI-DSSv3.2.1|2.2.2,PCI-DSSv4.0|2.2.4,QCSC-v1|3.2,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/23110,,,^(https?://|\[\*\.\]|[a-zA-Z0-9]).+,POLICY_TEXT,HKLM\Software\Policies\Google\Chrome\WindowManagementBlockedForUrls,1,CAN_NOT_BE_NULL,,High,489,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.3.19,L2,,Ensure 'Allow Window Management permission on these sites' Is Configured,REG_CHECK,custom_item,group_policy > if > then,2.3.19 (L2) Ensure 'Allow Window Management permission on these sites' Is Configured,"This setting can automatically allow access to the window management permissions for specific sites.
+
+If the value for WindowManagementAllowedForUrls is not changed from the default, it will follow the configuration of DefaultWindowManagementSetting.
+
+Allowing only specific sites to have access to Window Management will only allow permitted sites to see information about the device's screens, open additional browser windows specifying location, and size of the window.","To establish the recommended configuration via Group Policy, set the following UI path to Enabled and set Show to the approved URLs:
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Content settings\Allow Window Management permission on these sites
+
+Impact:
+
+Enforcing this recommendation can cause visited sites to not display as intended.","800-171|3.1.1,800-171r3|03.01.02,800-53|AC-3,800-53r5|AC-3,CN-L3|8.1.4.2(f),CN-L3|8.1.4.11(b),CN-L3|8.1.10.2(c),CN-L3|8.5.3.1,CN-L3|8.5.4.1(a),CSF|PR.AC-4,CSF|PR.PT-3,CSF2.0|PR.AA-05,CSF2.0|PR.DS-10,CSF2.0|PR.IR-01,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(1),ISO-27001-2022|A.5.15,ISO-27001-2022|A.5.33,ISO-27001-2022|A.8.3,ISO-27001-2022|A.8.18,ISO-27001-2022|A.8.20,ISO/IEC-27001|A.9.4.1,ISO/IEC-27001|A.9.4.5,ITSG-33|AC-3,LEVEL|2M,NESA|T4.2.1,NESA|T5.4.4,NESA|T5.4.5,NESA|T5.5.4,NESA|T5.6.1,NESA|T7.5.2,NESA|T7.5.3,NIAv2|AM3,NIAv2|SS29,QCSC-v1|3.2,QCSC-v1|5.2.2,QCSC-v1|13.2,TBA-FIISB|31.1",https://workbench.cisecurity.org/benchmarks/23110,,,HKLM\Software\Policies\Google\Chrome\WindowManagementAllowedForUrls,POLICY_TEXT,,,MUST_EXIST,,High,519,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.3.20,L2,,Ensure 'Allow write access via the File System API on these sites' is set to 'Disabled',REG_CHECK,custom_item,group_policy > if > then,2.3.20 (L2) Ensure 'Allow write access via the File System API on these sites' is set to 'Disabled',"This policy setting allows organizations to list the URL patterns that specify which sites can ask users to grant them write access to files or directories in the host operating system's file system via the File System API.
+
+Note: Leaving the policy unset means DefaultFileSystemWriteGuardSetting (Control use of the File System API for writing) applies for all sites, if it is set. If not, users' personal settings apply.
+
+Note #2: URL patterns can't conflict with FileSystemWriteBlockedForUrls (Block read access via the File System API on these sites). Neither policy takes precedence if a URL matches with both.
+
+The recommended state for this setting is: Disabled.
+
+This API allows web apps to save changes directly to files and folders on user devices, beyond writing files. Allowing web apps the ability to save changes directly to files and folders opens the organization to malicious content to be saved directly onto user devices.","To establish the recommended configuration via Group Policy, set the following UI path to Disabled :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Content settings\Allow write access via the File System API on these sites
+
+Impact:
+
+Users with creative roles that require write access to files and directories via the File System API may need additional permissions granted for said roles.","800-171|3.4.2,800-171|3.4.6,800-171|3.4.7,800-171r3|03.04.02,800-171r3|03.04.06,800-53|CM-6,800-53|CM-7,800-53r5|CM-6,800-53r5|CM-7,CSCv7|9.2,CSCv8|4.8,CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6,ITSG-33|CM-7,LEVEL|2A,NIAv2|SS15a,PCI-DSSv3.2.1|2.2.2,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/23110,,,HKLM\Software\Policies\Google\Chrome,POLICY_TEXT,,,MUST_NOT_EXIST,,High,541,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.3.21,L2,,Ensure 'Control use of the File System API for writing' is set to 'Enabled: Do not allow any site to request write access to files and directories via the File System API',REGISTRY_SETTING,custom_item,group_policy > if > then,2.3.21 (L2) Ensure 'Control use of the File System API for writing' is set to 'Enabled: Do not allow any site to request write access to files and directories via the File System API',"This policy setting determines whether websites can ask for write access to the host operating system's file system using the File System API.
+
+Policy options mapping:
+
+BlockFileSystemWrite (2) = Do not allow any site to request write access to files and directories via the File System API
+
+AskFileSystemWrite (3) = Allow sites to ask the user to grant write access to files and directories via the File System API
+
+The recommended state for this setting is: Enabled: Don't allow any site to request write access to files and directories.
+
+This API allows web apps to write or save changes directly to files and folders on user devices. It also allows for the writing files.
+
+Allowing web apps the ability to save changes directly to files and folders opens the organization to the possibility of malicious content being saved directly to user devices.","To establish the recommended configuration via GP, set the following UI path to Enabled: Do not allow any site to request write access to files and directories via the File System API :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Content settings\Control use of the File System API for writing
+
+Impact:
+
+Users with creative roles that require write access to files and directories via the File System API may need additional permissions granted for said roles.","800-171|3.4.2,800-171|3.4.6,800-171|3.4.7,800-171r3|03.04.02,800-171r3|03.04.06,800-53|CM-6,800-53|CM-7,800-53r5|CM-6,800-53r5|CM-7,CSCv7|9.2,CSCv8|4.8,CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6,ITSG-33|CM-7,LEVEL|2A,NIAv2|SS15a,PCI-DSSv3.2.1|2.2.2,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/23110,,,2,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,DefaultFileSystemWriteGuardSetting,CAN_NOT_BE_NULL,,High,568,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.3.4,L2,,Ensure 'Default cookies setting' is set to 'Enabled: Keep cookies for the duration of the session',REGISTRY_SETTING,custom_item,group_policy > if > then,2.3.4 (L2) Ensure 'Default cookies setting' is set to 'Enabled: Keep cookies for the duration of the session',"Leaving the setting _RestoreOnStartup _unset results in the use of _DefaultCookiesSetting _for all sites if it is set. If _DefaultCookiesSetting _is not set, the user's personal setting applies.
+
+ - Disabled (0, user's personal setting applies)
+ - Allow all sites to set local data (1)
+ - Do not allow any site to set local data (2)
+ - Keep cookies for the duration of the session (4)
+
+The recommended state for this setting is: Enabled with a value of Keep cookies for the duration of the session (4)
+
+NOTE: If the RestoreOnStartup setting is set to restore URLs from previous sessions, this setting will not be respected and cookies will be stored permanently for those sites. An example of those URLs are SSO or intranet sites.
+
+Permanently stored cookies may be used for malicious intent.","To establish the recommended configuration via Group Policy, set the following UI path to Enabled: Keep cookies for the duration of the session :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Content Settings\Default cookies setting
+
+Impact:
+
+If this setting is enabled, cookies will be cleared when the session closes.","800-171|3.4.2,800-171r3|03.04.02a.,800-53|CM-6b.,800-53r5|CM-6b.,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6b.,LEVEL|2A,NESA|T3.2.1,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/23110,,,4,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,DefaultCookiesSetting,CAN_NOT_BE_NULL,,High,600,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.3.5,L2,,Ensure 'Control use of the File System API for reading' is set to 'Enabled: Do not allow any site to request read access to files and directories via the File System API',REGISTRY_SETTING,custom_item,group_policy > if > then,2.3.5 (L2) Ensure 'Control use of the File System API for reading' is set to 'Enabled: Do not allow any site to request read access to files and directories via the File System API',"This policy setting determines whether websites can ask for read access to the host operating system's file system using the File System API.
+
+Policy options mapping:
+
+BlockFileSystemRead (2) = Do not allow any site to request read access to files and directories via the File System API
+
+AskFileSystemRead (3) = Allow sites to ask the user to grant read access to files and directories via the File System API
+
+The recommended state for this setting is: Enabled: Don't allow any site to request read access to files and directories.
+
+A large category of attack vectors are opened up by allowing web applications access to files. Setting this policy to Enabled: Do not allow any site to request read access to files and directories via the File System API implements additional protections to safeguard against accidental sharing of sensitive information contained in local files.","To establish the recommended configuration via GP, set the following UI path to Enabled: Do not allow any site to request read access to files and directories via the File System API :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Content settings\Control use of the File System API for reading
+
+Impact:
+
+Users with creative roles that require the File System API access permission to read files for photo, video, and text editors or for creating integrated development environments will need additional permissions granted based on their role.","800-171|3.4.9,800-171|3.13.13,800-171r3|03.13.13,800-53|CM-10,800-53|CM-11,800-53|SC-18,800-53r5|CM-10,800-53r5|CM-11,800-53r5|SC-18,CSCv7|7.2,CSCv8|9.4,CSF|DE.CM-3,CSF|DE.CM-5,CSF2.0|DE.CM-03,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,CSF2.0|PR.PS-02,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.5.32,ISO-27001-2022|A.8.19,ISO/IEC-27001|A.12.6.2,ITSG-33|SC-18,LEVEL|2A,NIAv2|SU3,QCSC-v1|3.2,QCSC-v1|8.2.1,SWIFT-CSCv1|5.1",https://workbench.cisecurity.org/benchmarks/23110,,,2,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,DefaultFileSystemReadGuardSetting,CAN_NOT_BE_NULL,,High,631,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.3.8,L2,,Ensure 'Control use of JavaScript JIT' is set to 'Enabled: Do not allow any site to run JavaScript JIT',REGISTRY_SETTING,custom_item,group_policy > if > then,2.3.8 (L2) Ensure 'Control use of JavaScript JIT' is set to 'Enabled: Do not allow any site to run JavaScript JIT',"This policy setting specifies whether Microsoft Edge will run the v8 JavaScript engine with JIT (Just In Time) compiler. JIT is a complex pipeline of processes used to optimize JavaScript code for performance.
+
+Note: This policy can be overridden for specific URL patterns using the JavaScriptJitAllowedForSites (Allow JavaScript to use JIT on these sites) and JavaScriptJitBlockedForSites (Block JavaScript from using JIT on these sites) policies.
+
+The recommended state for this setting is: Enabled: Do not allow any site to run JavaScript JIT.
+
+Microsoft's research has revealed that attackers usually target the JavaScript engine called 'Just-In-Time (JIT) compilation' to hack web browsers. Disabling the JavaScript just-in-time (JIT) compiler prevents attackers from hacking into systems that Microsoft Edge uses.","To establish the recommended configuration via Group Policy, set the following UI path to Enabled: Do not allow any site to run JavaScript JIT :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Content settings\Control use of JavaScript JIT
+
+Impact:
+
+Disabling the JavaScript JIT will mean that Microsoft Edge may render web content more slowly, and may also disable parts of JavaScript including WebAssembly. Users may experience slower rendering of web content.","800-171|3.4.9,800-171|3.13.13,800-171r3|03.13.13,800-53|CM-10,800-53|CM-11,800-53|SC-18,800-53r5|CM-10,800-53r5|CM-11,800-53r5|SC-18,CSCv7|7.2,CSCv8|9.4,CSF|DE.CM-3,CSF|DE.CM-5,CSF2.0|DE.CM-03,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,CSF2.0|PR.PS-02,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.5.32,ISO-27001-2022|A.8.19,ISO/IEC-27001|A.12.6.2,ITSG-33|SC-18,LEVEL|2A,NIAv2|SU3,QCSC-v1|3.2,QCSC-v1|8.2.1,SWIFT-CSCv1|5.1",https://workbench.cisecurity.org/benchmarks/23110,,,2,POLICY_DWORD,HKLM\SOFTWARE\Policies\Google\Chrome,DefaultJavaScriptJitSetting,CAN_NOT_BE_NULL,,High,661,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.3.9,L2,,Ensure 'Default notification setting' is set to 'Enabled: Do not allow any site to show desktop notifications',REGISTRY_SETTING,custom_item,group_policy > if > then,2.3.9 (L2) Ensure 'Default notification setting' is set to 'Enabled: Do not allow any site to show desktop notifications',"Google Chrome offers websites the ability to display desktop notifications. These are push messages which are sent from the website operator through Google infrastructure to Chrome.
+
+ - Allow sites to show desktop notifications (1)
+ - Do not allow any site to show desktop notifications (2)
+ - Ask every time a site wants to show desktop notifications (3)
+
+The recommended state for this setting is: Enabled with a value of Do not allow any site to show desktop notifications (2)
+
+If the website operator decides to send messages unencrypted, Google's servers may process it as plain text. Furthermore, potentially compromised or faked notifications might trick users into clicking on a malicious link.","To establish the recommended configuration via Group Policy, set the following UI path to Enabled: Do not allow any site to show desktop notifications :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Content Settings\Default notification setting
+
+Impact:
+
+If this setting is enabled and set to Do not allow any site to show desktop notifications, notifications will not be displayed for any sites and the user will not be asked.","800-171|3.4.6,800-171|3.4.7,800-171r3|03.04.06a.,800-53|CM-7a.,800-53r5|CM-7a.,CN-L3|7.1.3.5(c),CN-L3|8.1.4.4(a),CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-7a.,LEVEL|2A,NIAv2|SS15a,PCI-DSSv3.2.1|2.2.1,PCI-DSSv4.0|2.2.3,QCSC-v1|3.2,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/23110,,,2,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,DefaultNotificationsSetting,CAN_NOT_BE_NULL,,High,687,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.40,L2,,Ensure 'Controls the mode of DNS-over-HTTPS' is set to 'Enabled: DNS-over-HTTPS without insecure fallback',REGISTRY_SETTING,custom_item,group_policy > if > then,2.40 (L2) Ensure 'Controls the mode of DNS-over-HTTPS' is set to 'Enabled: DNS-over-HTTPS without insecure fallback',"This controls the mode of the DNS-over-HTTPS resolver. Please note that this setting will only set the default mode for each query. The mode may be overridden for special types of queries, such as requests to resolve a DNS-over-HTTPS server hostname.
+
+ - Disable DNS-over-HTTPS (off)
+ - Enable DNS-over-HTTPS with insecure fallback (automatic) - Enable DNS-over-HTTPS queries first if a DNS-over-HTTPS server is available and may fallback to sending insecure queries on error.
+ - Enable DNS-over-HTTPS without insecure fallback (secure) - Only send DNS-over-HTTPS queries and will fail to resolve on error.
+
+The recommended state for this setting is: Enabled with a value of Enable DNS-over-HTTPS without insecure fallback (secure)
+
+Note: When enabling this policy, it is recommended to also configure the DnsOverHttpsTemplates policy so that the URI templates are set. You can find out more information on the DnsOverHttpsTemplates enterprise policy site https://chromeenterprise.google/policies/#DnsOverHttpsTemplates.
+
+DNS over HTTPS (DOH) has a couple primary benefits:
+
+ -
+
+Encrypting DNS name resolution traffic helps to hide your online activities, since DoH hides the name resolution requests from the ISP and from anyone listening on intermediary networks.
+
+ -
+
+DoH also helps to prevent DNS spoofing and man-in-the-middle (MitM) attacks.","To establish the recommended configuration via Group Policy, set the following UI path to Enabled: Enable DNS-over-HTTPS without insecure fallback :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Controls the mode of DNS-over-HTTPS
+
+Impact:
+
+Not all DNS providers support DOH, so choice is limited. Also, Enterprises sometimes monitor DNS requests to block access to malicious or inappropriate sites. DNS monitoring can also sometimes be used to detect malware attempting to 'phone home.' Because DoH encrypts name resolution requests, it can create a security monitoring blind spot.","800-171|3.1.13,800-171|3.2.1,800-171|3.2.2,800-171|3.5.2,800-171|3.13.8,800-171r3|03.02.01,800-171r3|03.05.07,800-171r3|03.05.12,800-171r3|03.13.08,800-53|AC-17(2),800-53|AT-2,800-53|IA-5,800-53|IA-5(1),800-53|SC-8,800-53|SC-8(1),800-53r5|AC-17(2),800-53r5|AT-2,800-53r5|IA-5,800-53r5|IA-5(1),800-53r5|SC-8,800-53r5|SC-8(1),CN-L3|7.1.2.7(g),CN-L3|7.1.3.1(d),CN-L3|8.1.2.2(a),CN-L3|8.1.2.2(b),CN-L3|8.1.4.1(c),CN-L3|8.1.4.7(a),CN-L3|8.1.4.8(a),CN-L3|8.2.4.5(c),CN-L3|8.2.4.5(d),CN-L3|8.5.2.2,CSCv8|3.10,CSCv8|14.4,CSF|PR.AC-1,CSF|PR.AC-3,CSF|PR.AT-1,CSF|PR.DS-2,CSF|PR.DS-5,CSF|PR.PT-4,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,CSF2.0|PR.AA-05,CSF2.0|PR.AT-01,CSF2.0|PR.DS-02,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),HIPAA|164.312(e)(1),HIPAA|164.312(e)(2)(i),ISO-27001-2022|A.5.10,ISO-27001-2022|A.5.14,ISO-27001-2022|A.5.16,ISO-27001-2022|A.5.17,ISO-27001-2022|A.5.33,ISO-27001-2022|A.6.3,ISO-27001-2022|A.6.7,ISO-27001-2022|A.8.7,ISO-27001-2022|A.8.20,ISO-27001-2022|7.3,ISO/IEC-27001|A.6.2.2,ISO/IEC-27001|A.10.1.1,ISO/IEC-27001|A.13.2.3,ITSG-33|AC-17(2),ITSG-33|AT-2,ITSG-33|IA-5,ITSG-33|IA-5(1),ITSG-33|SC-8,ITSG-33|SC-8a.,ITSG-33|SC-8(1),LEVEL|2A,NESA|M1.3.6,NESA|M3.4.1,NESA|T3.4.1,NESA|T4.3.1,NESA|T4.3.2,NESA|T4.5.1,NESA|T4.5.2,NESA|T5.2.3,NESA|T5.4.2,NESA|T7.3.3,NESA|T7.4.1,NIAv2|AM13,NIAv2|AM37,NIAv2|IE8,NIAv2|IE9,NIAv2|IE12,NIAv2|NS5d,NIAv2|NS6b,NIAv2|NS29,NIAv2|SS24,PCI-DSSv3.2.1|2.3,PCI-DSSv3.2.1|4.1,PCI-DSSv4.0|2.2.7,PCI-DSSv4.0|4.2.1,QCSC-v1|3.2,QCSC-v1|5.2.1,QCSC-v1|5.2.2,QCSC-v1|6.2,QCSC-v1|13.2,SWIFT-CSCv1|2.1,SWIFT-CSCv1|2.6,SWIFT-CSCv1|4.1,SWIFT-CSCv1|7.2,TBA-FIISB|29.1",https://workbench.cisecurity.org/benchmarks/23110,,,secure,POLICY_TEXT,HKLM\Software\Policies\Google\Chrome,DnsOverHttpsMode,CAN_NOT_BE_NULL,,High,715,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.4.4,L2,,Ensure 'Extension management settings' is set to 'Enabled: { '*': {'installation_mode': 'blocked' }}',REGISTRY_SETTING,custom_item,group_policy > if > then,2.4.4 (L2) Ensure 'Extension management settings' is set to 'Enabled: { '*': {'installation_mode': 'blocked' }}',"This policy setting controls extension management settings for Google Chrome, including any controlled by existing extension-related policies. This policy supersedes any legacy policies that might be set.
+
+NOTE: This policy maps an extension ID or an update URL to its specific setting only. A default configuration can be set for the special ID '*', which applies to all extensions without a custom configuration in this policy. With an update URL, configuration applies to extensions with the exact update URL stated in the extension manifest. If the override_update_url flag is set to true, the extension is installed and updated using the update URL specified in the ExtensionInstallForcelist (Control which extensions are installed silently) policy or in update_url field in this policy. The flag override_update_url is ignored if the update_url is the Chrome Add-ons website update URL.
+
+Note #2: For more granular control the ExtensionInstallForcelist and ExtensionInstallAllowlist (Allow specific extensions to be installed) will allow or force install of specific extensions even if the store is blocked using the JSON in the example. {'update_url:https://clients2.google.com/service/update2/crx':{'installation_mode':'blocked'}}
+
+For more details, check out the detailed guide to ExtensionSettings policy available from Microsoft at Detailed guide to the ExtensionSettings policy | Microsoft Learn https://go.microsoft.com/fwlink/?linkid=2161555.
+
+The recommended state for this setting is: Enabled: { '*': {'installation_mode': 'blocked' }}.
+
+Blocking extensions that could potentially allow remote control of the system through the browser is a good security practice. If extensions are needed for securing the browser, or for enterprise use, these can be enabled by configuring the setting Allow specific extensions to be installed.","To establish the recommended configuration via Group Policy, set the following UI path to Enabled: { '*': {'installation_mode': 'blocked' }} :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Extensions\Extension management settings
+
+Impact:
+
+Any installed extension will be removed unless it is specified on the extension allowlist. If an organization is using any approved password managers, ensure that the extension is added to the allowlist.","800-171|3.4.9,800-171|3.13.13,800-171r3|03.13.13,800-53|CM-10,800-53|CM-11,800-53|SC-18,800-53r5|CM-10,800-53r5|CM-11,800-53r5|SC-18,CSCv7|7.2,CSCv8|9.4,CSF|DE.CM-3,CSF|DE.CM-5,CSF2.0|DE.CM-03,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,CSF2.0|PR.PS-02,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.5.32,ISO-27001-2022|A.8.19,ISO/IEC-27001|A.12.6.2,ITSG-33|SC-18,LEVEL|2A,NIAv2|SU3,QCSC-v1|3.2,QCSC-v1|8.2.1,SWIFT-CSCv1|5.1",https://workbench.cisecurity.org/benchmarks/23110,,,^.*[*].*installation_mode.*blocked[^_a-zA-Z0-9].*$,POLICY_TEXT,HKLM\Software\Policies\Google\Chrome,ExtensionSettings,CAN_NOT_BE_NULL,,High,753,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.47,L2,,Ensure 'Show an 'Always open' checkbox in external protocol dialog' is set to 'Disabled',REGISTRY_SETTING,custom_item,group_policy > if > then,2.47 (L2) Ensure 'Show an 'Always open' checkbox in external protocol dialog' is set to 'Disabled',"This policy setting controls if the user is prompted with an 'Always open' check box when an external protocol prompt is shown.
+
+The recommended state for this setting is: Disabled.
+
+Allowing a protocol to automatically 'always open for webpages' could allow a malicious website to open programs on a device leaving it open to attacks.","To establish the recommended configuration via Group Policy, set the following UI path to Disabled :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Show an 'Always open' checkbox in external protocol dialog.
+
+Impact:
+
+The end user will be prompted each time they click a link that opens an external protocol, even if they have utilized it before.","800-171|3.4.2,800-171|3.4.6,800-171|3.4.7,800-171r3|03.04.02,800-171r3|03.04.06,800-53|CM-6,800-53|CM-7,800-53r5|CM-6,800-53r5|CM-7,CSCv7|9.2,CSCv8|4.8,CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6,ITSG-33|CM-7,LEVEL|2A,NIAv2|SS15a,PCI-DSSv3.2.1|2.2.2,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/23110,,,0,POLICY_DWORD,HKLM\SOFTWARE\Policies\Google\Chrome,ExternalProtocolDialogShowAlwaysOpenCheckbox,CAN_NOT_BE_NULL,,High,784,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.50,L2,,Ensure 'Force Google SafeSearch' is set to 'Enabled',REGISTRY_SETTING,custom_item,group_policy > if > then,2.50 (L2) Ensure 'Force Google SafeSearch' is set to 'Enabled',"This setting ensures that web search results with Google are performed with SafeSearch set to always active. Disabled means SafeSearch in Google Search is not enforced.
+
+The recommended state for this setting is: Enabled (1)
+
+Allowing search results to present sites that may have malicious content should be prohibited to help ensure users do not accidentally visit sites that are more prone to malicious content including spyware, adware, and viruses.","To establish the recommended configuration via GP, set the following UI path to Enabled :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Force Google SafeSearch
+
+Impact:
+
+Users search results will be filtered and content such as adult text, videos and images will not be shown.","800-171|3.13.1,800-171r3|03.13.01,800-53|SC-7(3),800-53|SC-7(4),800-53r5|SC-7(3),800-53r5|SC-7(4),CN-L3|8.1.10.6(j),CSCv7|7.4,CSCv8|9.3,CSF|PR.AC-5,CSF|PR.PT-4,CSF2.0|DE.CM-01,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,CSF2.0|PR.IR-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.5.14,ISO-27001-2022|A.8.16,ISO-27001-2022|A.8.20,ISO/IEC-27001|A.13.1.3,ITSG-33|SC-7(3),ITSG-33|SC-7(4),LEVEL|2A,NESA|T4.5.4,NIAv2|GS1,NIAv2|GS2a,NIAv2|GS2b,PCI-DSSv3.2.1|1.1,PCI-DSSv3.2.1|1.2,PCI-DSSv3.2.1|1.2.1,PCI-DSSv3.2.1|1.3,PCI-DSSv4.0|1.2.1,PCI-DSSv4.0|1.4.1,QCSC-v1|5.2.1,QCSC-v1|5.2.2,QCSC-v1|6.2,QCSC-v1|8.2.1,SWIFT-CSCv1|1.1,TBA-FIISB|43.1,TBA-FIISB|44.1.2",https://workbench.cisecurity.org/benchmarks/23110,,,1,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,ForceGoogleSafeSearch,CAN_NOT_BE_NULL,,High,808,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.71,L2,,Ensure 'Require online OCSP/CRL checks for local trust anchors' is set to 'Enabled',REGISTRY_SETTING,custom_item,group_policy > if > then,2.71 (L2) Ensure 'Require online OCSP/CRL checks for local trust anchors' is set to 'Enabled',"Google Chrome performs revocation checking for server certificates that successfully validate and are signed by locally-installed CA certificates. If Google Chrome is unable to obtain revocation status information, such certificates will be treated as revoked ('hard-fail').
+
+Disabled : Google Chrome uses existing online revocation-checking settings.
+
+The recommended state for this setting is: Enabled (1)
+
+Certificates shall always be validated.","To establish the recommended configuration via Group Policy, set the
+following UI path to Enabled :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Require online OCSP/CRL checks for local trust anchors
+
+Impact:
+
+A revocation check will be performed for server certificates that successfully validate and are signed by locally-installed CA certificates. if the OCSP server goes down, then this will hard-fail and prevent browsing to those sites.","800-171|3.13.15,800-171r3|03.13.15,800-53|SC-23(5),800-53r5|SC-23(5),GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SC-23,ITSG-33|SC-23a.,LEVEL|2A,NESA|T4.5.1,QCSC-v1|5.2.1",https://workbench.cisecurity.org/benchmarks/23110,,,1,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,RequireOnlineRevocationChecksForLocalAnchors,CAN_NOT_BE_NULL,,High,832,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.72,L2,,Ensure 'Allow proceeding from the SSL warning page' is set to 'Disabled',REGISTRY_SETTING,custom_item,group_policy > if > then,2.72 (L2) Ensure 'Allow proceeding from the SSL warning page' is set to 'Disabled',"This setting controls whether a user is able to proceed to a webpage when an invalid SSL certificate warning has occurred.
+
+The recommended state for this setting is: Disabled (0)
+
+Sites protected by SSL should always be recognized as valid in the web browser. Allowing a user to make the decision as to whether there appears to be an invalid certificate could open an organization up to users visiting a site that is otherwise not secure and/or malicious in nature.","To establish the recommended configuration via Group Policy, set the following UI path to Disabled :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Allow proceeding from the SSL warning page
+
+Impact:
+
+Users will not be able to click past the invalid certificate error to view the website.","800-171|3.13.1,800-171r3|03.13.01,800-53|SC-7(3),800-53|SC-7(4),800-53r5|SC-7(3),800-53r5|SC-7(4),CN-L3|8.1.10.6(j),CSCv7|7.4,CSCv8|9.3,CSF|PR.AC-5,CSF|PR.PT-4,CSF2.0|DE.CM-01,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,CSF2.0|PR.IR-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.5.14,ISO-27001-2022|A.8.16,ISO-27001-2022|A.8.20,ISO/IEC-27001|A.13.1.3,ITSG-33|SC-7(3),ITSG-33|SC-7(4),LEVEL|2A,NESA|T4.5.4,NIAv2|GS1,NIAv2|GS2a,NIAv2|GS2b,PCI-DSSv3.2.1|1.1,PCI-DSSv3.2.1|1.2,PCI-DSSv3.2.1|1.2.1,PCI-DSSv3.2.1|1.3,PCI-DSSv4.0|1.2.1,PCI-DSSv4.0|1.4.1,QCSC-v1|5.2.1,QCSC-v1|5.2.2,QCSC-v1|6.2,QCSC-v1|8.2.1,SWIFT-CSCv1|1.1,TBA-FIISB|43.1,TBA-FIISB|44.1.2",https://workbench.cisecurity.org/benchmarks/23110,,,0,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,SSLErrorOverrideAllowed,CAN_NOT_BE_NULL,,High,859,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.7.3,L2,,"Ensure 'Supported authentication schemes' is set to 'Enabled: ntlm, negotiate'",REGISTRY_SETTING,custom_item,group_policy > if > then,"2.7.3 (L2) Ensure 'Supported authentication schemes' is set to 'Enabled: ntlm, negotiate'","Specifies which HTTP authentication schemes are supported by Google Chrome.
+
+Disabled (0): Allows all supported authentication schemes.
+
+The recommended state for this setting is: Enabled with the value of ntlm, negotiate
+
+Possible values are 'basic', 'digest', 'ntlm' and 'negotiate'. Basic and Digest authentication do not provide sufficient security and can lead to submission of user passwords in plaintext or minimal protection (Integrated Authentication is supported for negotiate and ntlm challenges only).","To establish the recommended configuration via Group Policy, set the following UI path to Enabled: ntlm, negotiate :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\HTTP Authentication\Supported authentication schemes
+
+Impact:
+
+If some legacy application(s) or website(s) required insecure authentication mechanisms they will not work correctly.","800-171|3.1.13,800-171|3.5.2,800-171|3.13.8,800-171r3|03.05.07,800-171r3|03.05.12,800-171r3|03.13.08,800-53|AC-17(2),800-53|IA-5,800-53|IA-5(1),800-53|SC-8,800-53|SC-8(1),800-53r5|AC-17(2),800-53r5|IA-5,800-53r5|IA-5(1),800-53r5|SC-8,800-53r5|SC-8(1),CN-L3|7.1.2.7(g),CN-L3|7.1.3.1(d),CN-L3|8.1.2.2(a),CN-L3|8.1.2.2(b),CN-L3|8.1.4.1(c),CN-L3|8.1.4.7(a),CN-L3|8.1.4.8(a),CN-L3|8.2.4.5(c),CN-L3|8.2.4.5(d),CN-L3|8.5.2.2,CSCv7|16.5,CSCv8|3.10,CSF|PR.AC-1,CSF|PR.AC-3,CSF|PR.DS-2,CSF|PR.DS-5,CSF|PR.PT-4,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,CSF2.0|PR.AA-05,CSF2.0|PR.DS-02,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),HIPAA|164.312(e)(1),HIPAA|164.312(e)(2)(i),ISO-27001-2022|A.5.10,ISO-27001-2022|A.5.14,ISO-27001-2022|A.5.16,ISO-27001-2022|A.5.17,ISO-27001-2022|A.5.33,ISO-27001-2022|A.6.7,ISO-27001-2022|A.8.20,ISO/IEC-27001|A.6.2.2,ISO/IEC-27001|A.10.1.1,ISO/IEC-27001|A.13.2.3,ITSG-33|AC-17(2),ITSG-33|IA-5,ITSG-33|IA-5(1),ITSG-33|SC-8,ITSG-33|SC-8a.,ITSG-33|SC-8(1),LEVEL|2A,NESA|T4.3.1,NESA|T4.3.2,NESA|T4.5.1,NESA|T4.5.2,NESA|T5.2.3,NESA|T5.4.2,NESA|T7.3.3,NESA|T7.4.1,NIAv2|AM37,NIAv2|IE8,NIAv2|IE9,NIAv2|IE12,NIAv2|NS5d,NIAv2|NS6b,NIAv2|NS29,NIAv2|SS24,PCI-DSSv3.2.1|2.3,PCI-DSSv3.2.1|4.1,PCI-DSSv4.0|2.2.7,PCI-DSSv4.0|4.2.1,QCSC-v1|3.2,QCSC-v1|5.2.1,QCSC-v1|5.2.2,QCSC-v1|6.2,QCSC-v1|13.2,SWIFT-CSCv1|2.1,SWIFT-CSCv1|2.6,SWIFT-CSCv1|4.1,TBA-FIISB|29.1",https://workbench.cisecurity.org/benchmarks/23110,,,"ntlm, negotiate",POLICY_TEXT,HKLM\Software\Policies\Google\Chrome,AuthSchemes,CAN_NOT_BE_NULL,,High,883,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.74,L2,,Ensure 'Control SafeSites adult content filtering' is set to 'Enabled: Filter top level sites (but not embedded iframes) for adult content',REGISTRY_SETTING,custom_item,group_policy > if > then,2.74 (L2) Ensure 'Control SafeSites adult content filtering' is set to 'Enabled: Filter top level sites (but not embedded iframes) for adult content',"Google Chrome can use the Google Safe Search API to classify URLs as pornographic or not.
+
+The recommended state for this setting is: Enabled with a value of Filter top level sites (but not embedded iframes) for adult content (1)
+
+Allowing search results to present sites that may have malicious content should be prohibited to help ensure users do not accidentally visit sites that are more prone to malicious content including spyware, adware, and viruses.","To establish the recommended configuration via Group Policy, set the following UI path to Enabled: Filter top level sites (but not embedded iframes) for adult content :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Control SafeSites adult content filtering.
+
+Impact:
+
+Users' search results will be filtered and content such as adult text, videos, and images will not be shown.
+
+NOTE: Using Googles Safe Search API may leak information which is typed/pasted by mistake into the omnibox, e.g. passwords, internal webservices, folder structures, etc.","800-171|3.13.1,800-171r3|03.13.01,800-53|SC-7(3),800-53|SC-7(4),800-53r5|SC-7(3),800-53r5|SC-7(4),CN-L3|8.1.10.6(j),CSCv7|7.4,CSCv8|9.3,CSF|PR.AC-5,CSF|PR.PT-4,CSF2.0|DE.CM-01,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,CSF2.0|PR.IR-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.5.14,ISO-27001-2022|A.8.16,ISO-27001-2022|A.8.20,ISO/IEC-27001|A.13.1.3,ITSG-33|SC-7(3),ITSG-33|SC-7(4),LEVEL|2A,NESA|T4.5.4,NIAv2|GS1,NIAv2|GS2a,NIAv2|GS2b,PCI-DSSv3.2.1|1.1,PCI-DSSv3.2.1|1.2,PCI-DSSv3.2.1|1.2.1,PCI-DSSv3.2.1|1.3,PCI-DSSv4.0|1.2.1,PCI-DSSv4.0|1.4.1,QCSC-v1|5.2.1,QCSC-v1|5.2.2,QCSC-v1|6.2,QCSC-v1|8.2.1,SWIFT-CSCv1|1.1,TBA-FIISB|43.1,TBA-FIISB|44.1.2",https://workbench.cisecurity.org/benchmarks/23110,,,1,POLICY_DWORD,HKLM\SOFTWARE\Policies\Google\Chrome,SafeSitesFilterBehavior,CAN_NOT_BE_NULL,,High,909,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.76,L2,,Ensure 'Enable search suggestions' is set to 'Disabled',REGISTRY_SETTING,custom_item,group_policy > if > then,2.76 (L2) Ensure 'Enable search suggestions' is set to 'Disabled',"Google Chrome offers suggestions in Google Chrome's omnibox while a user is typing.
+
+The recommended state for this setting is: Disabled (0)
+
+Using search suggestions may leak information as soon as it is typed/pasted into the omnibox, e.g. passwords, internal webservices, folder structures, etc.","To establish the recommended configuration via Group Policy, set the following UI path to Disabled :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Enable search suggestions
+
+Impact:
+
+The user has to send the search request actively by using the search button or hitting 'Enter'.","800-53|SI-8,800-53r5|SI-8,CSCv7|4.8,CSCv8|9.2,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SI-8,LEVEL|2A,QCSC-v1|3.2,QCSC-v1|8.2.1",https://workbench.cisecurity.org/benchmarks/23110,,,0,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,SearchSuggestEnabled,CAN_NOT_BE_NULL,,High,935,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.8.1,,,L2 - Ensure 'Allow Local Network Access (LNA) requests in subframes without explicit delegation' is set to 'Disabled',REGISTRY_SETTING,custom_item,group_policy > if > then,2.8.1 L2 - Ensure 'Allow Local Network Access (LNA) requests in subframes without explicit delegation' is set to 'Disabled',"This setting controls whether nested cross-origin subframes (iframes) automatically inherit permissions to access the local network. Disabling this policy enforces a security perimeter. It also blocks embedded scripts from connecting to private IP addresses, loopback interfaces ( localhost ), or .local domains unless the parent webpage explicitly delegates that permission via the allow='local-network-access' code attribute.
+
+Chrome's Local Network Access framework is built to stop public websites from acting as a bridge to scan or attack internal networks. Leaving this policy enabled lets nested, third-party iframes automatically inherit local network permissions from the parent site without explicit authorization. This creates a possible attack vector that could allow an untrusted or compromised embedded script to bypass firewall boundaries, map private subnets, or execute cross-site request forgery (CSRF) attempts against local corporate assets. Disabling this setting maintains a strict data boundary by ensuring subframes cannot communicate with local IP addresses or loopback services unless a developer explicitly allows it in the code.","To establish the recommended configuration via Group Policy, set the following UI path to Disabled :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Local Network Access settings\Allow Local Network Access (LNA) requests in subframes without explicit delegation
+
+Impact:
+
+Enabling this policy restriction may cause connection failures or broken functionalities in complex, multi-tenant enterprise web solutions. For those edge cases, organizations must update the underlying web application code to explicitly pass the allow='local-network-access' permission attribute down to the target subframe rather than relying on a global browser-level override.","800-171|3.4.1,800-171r3|03.04.10,800-171r3|03.04.10c.,800-53|CM-8,800-53|CM-8(1),800-53|SI-8,800-53r5|CM-8,800-53r5|CM-8(1),800-53r5|SI-8,CN-L3|8.1.10.2(a),CN-L3|8.1.10.2(b),CSCv7|7.1,CSCv7|12.1,CSCv7|12.4,CSCv8|9.2,CSCv8|12.1,CSF|DE.CM-7,CSF|ID.AM-1,CSF|ID.AM-2,CSF|PR.DS-3,CSF2.0|ID.AM-01,CSF2.0|ID.AM-02,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.5.9,ISO-27001-2022|A.8.9,ITSG-33|CM-8,ITSG-33|CM-8(1),ITSG-33|SI-8,LEVEL|2A,NESA|T1.2.1,NESA|T1.2.2,QCSC-v1|3.2,QCSC-v1|5.2.2,QCSC-v1|5.2.3,QCSC-v1|6.2,QCSC-v1|8.2.1",https://workbench.cisecurity.org/benchmarks/23110,,,0,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,LocalNetworkAccessPermissionsPolicyDefaultEnabled,CAN_NOT_BE_NULL,,High,959,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.86,L2,,Ensure 'Allow or deny video capture' is set to 'Disabled',REGISTRY_SETTING,custom_item,group_policy > if > then,2.86 (L2) Ensure 'Allow or deny video capture' is set to 'Disabled',"This setting allows administrators to set whether the end-user is prompted for access to video capture devices.
+
+ - Disabled (0): Turns off prompts and video capture, and will only work for URLs configured in the VideoCaptureAllowedUrls list.
+ - Enabled (1): With the exception of URLs set in the VideoCaptureAllowedUrls list, users get prompted for video capture access.
+
+NOTE: The setting affects all video input (not just the built-in camera).
+
+The recommended state for this setting is: Disabled (0)
+
+The end-user having the ability to allow or deny video capture for websites in Google Chrome could open an organization up to a malicious site that may capture proprietary information through the browser. By limiting or disallowing video capture, it removes the end-user's discretion, leaving it up to the organization which sites are allowed to use this ability.","To establish the recommended configuration via Group Policy, set the following UI path to Disabled :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Allow or deny video capture
+
+Impact:
+
+If you disable this setting, users will not be prompted for video devices when using websites which may need this access, such as a web-based conferencing system. If there are sites which access will be allowed, configuration of the VideoCaptureAllowedUrls setting will be necessary.","800-53|SI-8,800-53r5|SI-8,CSCv7|4.8,CSCv8|9.2,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SI-8,LEVEL|2A,QCSC-v1|3.2,QCSC-v1|8.2.1",https://workbench.cisecurity.org/benchmarks/23110,,,0,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,VideoCaptureAllowed,CAN_NOT_BE_NULL,,High,981,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.89,L2,,Ensure 'Dynamic Code Settings' Is Enabled,REGISTRY_SETTING,custom_item,group_policy > if > then,2.89 (L2) Ensure 'Dynamic Code Settings' Is Enabled,"Setting this policy to '1' switches on Arbitrary Code Guard (ACG) for the browser process. ACG prevents dynamic code being generated from within the browser process, which can help prevent potentially hostile code making unauthorized changes to the behavior of the browser process.
+
+Memory corruption vulnerabilities that allow an attacker to write arbitrary code into executable memory space remain one of the most severe exploitation vectors against web browsers. Enforcing this policy applies strict Arbitrary Code Guard mitigation rules to the root browser process structure, fundamentally blocking code injection techniques and the execution of unverified payloads. By neutralizing the browser's ability to create dynamic or unsigned code paths on the fly, you drastically minimize the software attack surface and break weaponized exploitation chains attempting to gain system-level execution via browser context exploitation.","To establish the recommended configuration via Group Policy, set the following UI path to Enabled: Prevent the browser process from creating dynamic code :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Dynamic Code Settings
+
+Impact:
+
+Switching on ACG might cause compatibility issues with third-party software (ex. specialized virtual desktop infrastructure (VDI) plugins, smart-card drivers, or locally deployed legacy PDF tools) that must run inside the browser process.","800-53|SI-16,800-53r5|SI-16,CSCv7|8.3,CSCv8|10.5,CSF2.0|PR.DS-10,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SI-16,LEVEL|2A",https://workbench.cisecurity.org/benchmarks/23110,,,1,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,DynamicCodeSettings,CAN_NOT_BE_NULL,,High,1010,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.90,L2,,Ensure 'Enable Live Translate' Is Disabled,REGISTRY_SETTING,custom_item,group_policy > if > then,2.90 (L2) Ensure 'Enable Live Translate' Is Disabled,"This setting controls the automated Live Translate feature within Google Chrome. Live Translate detects foreign audio during media playback and automatically generates captions in the applicable language. Disabling this setting stops the browser from continuously capturing and processing audio streams for real-time transcription.
+
+Enabling real-time translation features creates data privacy and exposure risks in enterprise environments where sensitive, regulated, or proprietary audio is played within the browser context (e.g., internal video calls, customer recordings, or training materials). While processing can occur on-device, allowing the browser to actively hook into and transcribe ambient or media audio streams increases the local data attack surface and risks unexpected telemetry transmissions to third-party endpoints.","To establish the recommended configuration via Group Policy, set the following UI path to Enabled: Disable Live Translate :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Enable Live Translate
+
+Impact:
+
+Users will be unable to use Google Chrome's built-in live transcription and audio translation capabilities. Manual copy-and-paste translation or approved local alternative captioning methods will be required.","800-171|3.4.6,800-171|3.4.7,800-171r3|03.04.06b.,800-53|CM-7b.,800-53r5|CM-7b.,CN-L3|7.1.3.5(c),CN-L3|7.1.3.7(d),CN-L3|8.1.4.4(b),CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-7a.,LEVEL|2A,NIAv2|SS13b,NIAv2|SS14a,NIAv2|SS14c,PCI-DSSv3.2.1|2.2.2,PCI-DSSv4.0|2.2.4,QCSC-v1|3.2,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/23110,,,0,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,LiveTranslateEnabled,CAN_NOT_BE_NULL,,High,1032,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+2.92,L2,,Ensure 'Allow pages to use the built-in AI APIs' Is Disabled,REGISTRY_SETTING,custom_item,group_policy > if > then,2.92 (L2) Ensure 'Allow pages to use the built-in AI APIs' Is Disabled,"This setting controls access to Chrome's built-in large language models (LLMs) and foundational client-side artificial intelligence APIs. Setting this policy to disabled prevents web applications and background scripts from using on-device machine learning models for tasks like text generation, summarization, or data extraction.
+
+Enabling unmanaged client-side AI capabilities could introduce challenges with data privacy, integrity, and security in the browser. When the built-in AI APIs are left accessible, scripts could feed possibly sensitive local data blocks, proprietary source code, or regulated text strings into the model. This increases the possible attack surface and runs the risk of local data scraping via malicious extensions or pages. Restricting the AI APIs could prevent intellectual property being exposed in the AI model(s).","To establish the recommended configuration via Group Policy, set the following UI path to Disabled :
+
+Computer Configuration\Policies\Administrative Templates\Google\Google Chrome\Enables Built-in AI API
+
+Impact:
+
+Web applications and extension scripts will be blocked from calling Chrome's internal client-side AI APIs to run on-device language models or generation routines. Developers and users would need to use your organization's AI solutions or AI APIs for tasks.","800-171|3.4.2,800-171|3.4.6,800-171|3.4.7,800-171r3|03.04.02,800-171r3|03.04.06,800-53|CM-6,800-53|CM-7,800-53r5|CM-6,800-53r5|CM-7,CSCv7|9.2,CSCv8|4.8,CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6,ITSG-33|CM-7,LEVEL|2A,NIAv2|SS15a,PCI-DSSv3.2.1|2.2.2,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/benchmarks/23110,,,0,POLICY_DWORD,HKLM\Software\Policies\Google\Chrome,BuiltInAIAPIsEnabled,CAN_NOT_BE_NULL,,High,1054,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit
+,,,CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit from CIS Google Chrome Group Policy v1.1.0,WARNING,report,group_policy > if > else,CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit from CIS Google Chrome Group Policy v1.1.0,NOTE: Nessus has not identified that the chosen audit applies to the target device.,,,https://workbench.cisecurity.org/benchmarks/23110,,,,,,,,,Medium,1078,audits\portal_audits\Windows\CIS_Google_Chrome_Group_Policy_v1.1.0_L2.audit

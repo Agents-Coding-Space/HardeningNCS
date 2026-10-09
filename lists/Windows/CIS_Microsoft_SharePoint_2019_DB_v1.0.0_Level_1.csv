@@ -1,0 +1,146 @@
+﻿CID,Profile,Scored,Title,Type,Tag,Conditional Path,Description,Info / Rationale,Solution / Remediation,Reference,See Also,Cmd / Request,Expect,Value Data,Value Type,Reg Key,Reg Item,Reg Option,File,Severity,Line,Source File
+,,,Check for only 2 roles defined,SQL_POLICY,custom_item,group_policy > if > condition,Check for only 2 roles defined,,,,,,,,,,,,,Medium,50,audits\portal_audits\Windows\CIS_Microsoft_SharePoint_2019_DB_v1.0.0_Level_1.audit
+,,,Check for dbcreator role,SQL_POLICY,custom_item,group_policy > if > condition,Check for dbcreator role,,,,,,,,,,,,,Medium,58,audits\portal_audits\Windows\CIS_Microsoft_SharePoint_2019_DB_v1.0.0_Level_1.audit
+,,,Check for securityadmin role,SQL_POLICY,custom_item,group_policy > if > condition,Check for securityadmin role,,,,,,,,,,,,,Medium,66,audits\portal_audits\Windows\CIS_Microsoft_SharePoint_2019_DB_v1.0.0_Level_1.audit
+2.4,,,Ensure the SharePoint setup account is configured with the minimum privileges on the SQL server.,SQL_POLICY,custom_item,group_policy > if > then,2.4 Ensure the SharePoint setup account is configured with the minimum privileges on the SQL server.,"The SharePoint setup account must be configured with the minimum privileges on the SQL
+    server.
+
+    Rationale:
+
+    Having the SharePoint setup account be configured with the minimum necessary privileges
+    on the SQL server would help reduce the risks related to account misuse. When excessive
+    roles are given to any SQL server accounts, the potential impact of actions performed
+    through the account increases. Malicious action performed by compromised accounts in
+    the control of an attacker, or even honest mistakes and gaffes performed by valid users can
+    have vast devastating consequences, depending on the roles and privileges given.","1. Launch SQL Server Management Console and navigate to Security > Logins.
+    2. Select the SharePoint Setup User account.
+    3. Click on Server Roles and check only dbcreator and securityadmin.","CSCv6|5.1,LEVEL|1A",https://workbench.cisecurity.org/files/2395,,,,,,,,,Medium,76,audits\portal_audits\Windows\CIS_Microsoft_SharePoint_2019_DB_v1.0.0_Level_1.audit
+2.4,,,Ensure the SharePoint setup account is configured with the minimum privileges on the SQL server.,SQL_POLICY,custom_item,group_policy > if > else,2.4 Ensure the SharePoint setup account is configured with the minimum privileges on the SQL server.,"The SharePoint setup account must be configured with the minimum privileges on the SQL
+    server.
+
+    Rationale:
+
+    Having the SharePoint setup account be configured with the minimum necessary privileges
+    on the SQL server would help reduce the risks related to account misuse. When excessive
+    roles are given to any SQL server accounts, the potential impact of actions performed
+    through the account increases. Malicious action performed by compromised accounts in
+    the control of an attacker, or even honest mistakes and gaffes performed by valid users can
+    have vast devastating consequences, depending on the roles and privileges given.","1. Launch SQL Server Management Console and navigate to Security > Logins.
+    2. Select the SharePoint Setup User account.
+    3. Click on Server Roles and check only dbcreator and securityadmin.","CSCv6|5.1,LEVEL|1A",https://workbench.cisecurity.org/files/2395,,,,,,,,,Medium,102,audits\portal_audits\Windows\CIS_Microsoft_SharePoint_2019_DB_v1.0.0_Level_1.audit
+,,,Check for only 2 roles defined,SQL_POLICY,custom_item,group_policy > if > condition,Check for only 2 roles defined,,,,,,,,,,,,,Medium,130,audits\portal_audits\Windows\CIS_Microsoft_SharePoint_2019_DB_v1.0.0_Level_1.audit
+,,,Check for dbcreator role,SQL_POLICY,custom_item,group_policy > if > condition,Check for dbcreator role,,,,,,,,,,,,,Medium,138,audits\portal_audits\Windows\CIS_Microsoft_SharePoint_2019_DB_v1.0.0_Level_1.audit
+,,,Check for securityadmin role,SQL_POLICY,custom_item,group_policy > if > condition,Check for securityadmin role,,,,,,,,,,,,,Medium,146,audits\portal_audits\Windows\CIS_Microsoft_SharePoint_2019_DB_v1.0.0_Level_1.audit
+2.5,,,Ensure the SharePoint farm service account (database access account) is configured with the minimum privileges on the SQL server.,SQL_POLICY,custom_item,group_policy > if > then,2.5 Ensure the SharePoint farm service account (database access account) is configured with the minimum privileges on the SQL server.,"The SharePoint farm service account (database access account) must be configured with
+    the minimum privileges on the SQL server
+
+    Rationale:
+
+    Separation of duties is a prevalent Information Technology control implemented at
+    different layers of the information system including the operating system and in
+    applications. It serves to eliminate or reduce the possibility that a single user may carry out
+    a prohibited action. Separation of duties requires the person accountable for approving an
+    action not be the same person who is tasked with implementing the action.
+
+    This requirement is intended to limit exposure due to user accounts being used to operate
+    from within a privileged account or role. Limiting the access and permissions of privileged
+    accounts to the minimum required, reduces exposure if the account is compromised and
+    provides forensic history of activity when operating from these accounts.
+
+    This policy limits the Farm Account privileges in AD. However, default permissions for this
+    account are configured by the SharePoint Products Configuration Wizard during product
+    installation. This account is referred to during the installation as the Database Access
+    account. By default, the account is used as the service account for the SharePoint Timer
+    Service and the SharePoint Central Administration Web Site Application Pool. These
+    settings should not be changed. Furthermore, this account should not be used as the service
+    account for non-privileged services, applications, or application pools.","1. Launch the SQL Server Management Console and navigate to Security > Logins.
+    2. Select the SharePoint farm service account.
+    3. Click on Server Roles and check ONLY dbcreator and securityadmin.","CSCv6|5.1,LEVEL|1A",https://workbench.cisecurity.org/files/2395,,,,,,,,,Medium,156,audits\portal_audits\Windows\CIS_Microsoft_SharePoint_2019_DB_v1.0.0_Level_1.audit
+2.5,,,Ensure the SharePoint farm service account (database access account) is configured with the minimum privileges on the SQL server.,SQL_POLICY,custom_item,group_policy > if > else,2.5 Ensure the SharePoint farm service account (database access account) is configured with the minimum privileges on the SQL server.,"The SharePoint farm service account (database access account) must be configured with
+    the minimum privileges on the SQL server
+
+    Rationale:
+
+    Separation of duties is a prevalent Information Technology control implemented at
+    different layers of the information system including the operating system and in
+    applications. It serves to eliminate or reduce the possibility that a single user may carry out
+    a prohibited action. Separation of duties requires the person accountable for approving an
+    action not be the same person who is tasked with implementing the action.
+
+    This requirement is intended to limit exposure due to user accounts being used to operate
+    from within a privileged account or role. Limiting the access and permissions of privileged
+    accounts to the minimum required, reduces exposure if the account is compromised and
+    provides forensic history of activity when operating from these accounts.
+
+    This policy limits the Farm Account privileges in AD. However, default permissions for this
+    account are configured by the SharePoint Products Configuration Wizard during product
+    installation. This account is referred to during the installation as the Database Access
+    account. By default, the account is used as the service account for the SharePoint Timer
+    Service and the SharePoint Central Administration Web Site Application Pool. These
+    settings should not be changed. Furthermore, this account should not be used as the service
+    account for non-privileged services, applications, or application pools.","1. Launch the SQL Server Management Console and navigate to Security > Logins.
+    2. Select the SharePoint farm service account.
+    3. Click on Server Roles and check ONLY dbcreator and securityadmin.","CSCv6|5.1,LEVEL|1A",https://workbench.cisecurity.org/files/2395,,,,,,,,,Medium,194,audits\portal_audits\Windows\CIS_Microsoft_SharePoint_2019_DB_v1.0.0_Level_1.audit
+2.8,,,Ensure Dbcreator and Securityadmin roles are only used as needed,SQL_POLICY,custom_item,group_policy,2.8 Ensure Dbcreator and Securityadmin roles are only used as needed,"In certain situations, database administrators (DBAs) may want to operate independently
+from SharePoint 2016 administrators and create and manage all the databases. This is
+typical in IT environments where security requirements and company policies require a
+separation of administrator roles. The farm administrator provides SharePoint 2016
+database requirements to the DBA, who then creates the necessary databases and sets up
+the logins that are required for the farm.
+
+Rationale:
+
+The ability to grant access to the database engine and to configure user permissions allows
+the securityadmin to assign most server permissions. You should treat the securityadmin
+role as equal to the sysadmin role.
+
+NOTE: Nessus has provided the target output to assist in reviewing the benchmark to ensure target compliance.","Using SQL Server Management Studio access Object Explorer.
+
+1. Expand the server in which you want to view a fixed server role.
+2. Expand the Security folder.
+3. Expand the Server Roles folder.
+4. Right-click the dbcreator or securityadmin role and select Properties.
+5. In the dbcreator or securityadmin dialog box, on the Members page click the list of
+members.
+6. Remove the members from the list.","800-171|3.1.5,800-53|AC-6(1),800-53r5|AC-6(1),CN-L3|7.1.3.2(b),CN-L3|7.1.3.2(g),CN-L3|8.1.4.2(d),CN-L3|8.1.10.6(a),CSCv6|5.1,CSF|PR.AC-4,CSF2.0|PR.AA-05,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(1),ISO/IEC-27001|A.9.4.4,ITSG-33|AC-6(1),LEVEL|1M,NESA|T5.1.1,NESA|T5.4.4,NESA|T5.5.4,NESA|T5.6.1,NESA|T7.5.3,NIAv2|AM31,NIAv2|GS3,NIAv2|GS4,NIAv2|GS8c,NIAv2|VL3b,PCI-DSSv3.2.1|7.1.2,PCI-DSSv4.0|7.2.1,PCI-DSSv4.0|7.2.2,QCSC-v1|5.2.2,QCSC-v1|6.2,SWIFT-CSCv1|5.1,TBA-FIISB|31.4.2,TBA-FIISB|31.4.3",https://workbench.cisecurity.org/files/2395,,,,,,,,,Medium,232,audits\portal_audits\Windows\CIS_Microsoft_SharePoint_2019_DB_v1.0.0_Level_1.audit
+6.1,,,"Ensure that the SQL Server component to SharePoint is set to listen on non-default ports, with the defaults (UDP 1434 and TCP 1433) disabled",SQL_POLICY,custom_item,group_policy,"6.1 Ensure that the SQL Server component to SharePoint is set to listen on non-default ports, with the defaults (UDP 1434 and TCP 1433) disabled","The default instance of SQL Server listens for client requests on TCP 1433. By default, client
+computers that connect to SQL Server first connect by using TCP 1433. If this
+communication is unsuccessful, the client computers query the SQL Server Resolution
+Service that is listening on UDP 1434 to determine the port on which the database instance
+is listening.
+
+Rationale:
+
+The default port-communication behavior of SQL Server introduces several issues that
+affect server hardening. First, the ports used by SQL Server are well-publicized ports and
+the SQL Server Resolution Service has been the target of buffer overrun attacks and denial-
+of-service attacks, including the 'Slammer' worm virus. Even if SQL Server is updated to
+mitigate security issues in the SQL Server Resolution Service, the well-publicized ports
+remain a target. Second, if databases are installed on a named instance of SQL Server, the
+corresponding communication port is randomly assigned and can change. This behavior
+can potentially prevent server-to-server communication in a hardened environment.","1. Verify that the User account that is performing this procedure is a member of
+either the sysadmin or the serveradmin fixed server role.
+2. Navigate to SQL Server Configuration Manager on the computer that is running
+SQL Server.
+3. Expand SQL Server Network Configuration in the navigation pane.
+4. Click the corresponding entry for the instance that you are examining. The default
+instance is listed as Protocols for MSSQLSERVER. Named instances will appear as
+Protocols for named_instance.
+5. Right-click TCP/IP in the main window in the Protocol Name column,
+6. Click on Properties.
+7. Click on the IP Addresses tab.
+For every IP address that is assigned to the computer that is running SQL Server,
+there is a corresponding entry on this tab. By default, SQL Server listens on all IP
+addresses that are assigned to the computer.
+
+To globally examine the port that the default instance is listening on, follow these
+steps:
+
+1. For each IP address except IPAll, examine all values for both TCP dynamic ports
+and TCP Port and confirm UDP 1434 and TCP 1433 are blocked.
+2. For IPAll, examine the value for TCP dynamic ports and confirm UDP 1434 and
+TCP 1433 are blocked.
+
+Default Value:
+
+No ports are blocked.","800-171|3.4.6,800-171|3.4.7,800-53|CM-7b.,800-53r5|CM-7b.,CN-L3|7.1.3.5(c),CN-L3|7.1.3.7(d),CN-L3|8.1.4.4(b),CSCv6|9,CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-7a.,LEVEL|1M,NIAv2|SS13b,NIAv2|SS14a,NIAv2|SS14c,PCI-DSSv3.2.1|2.2.2,PCI-DSSv4.0|2.2.4,QCSC-v1|3.2,SWIFT-CSCv1|2.3",https://workbench.cisecurity.org/files/2395,,,,,,,,,Medium,266,audits\portal_audits\Windows\CIS_Microsoft_SharePoint_2019_DB_v1.0.0_Level_1.audit

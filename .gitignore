@@ -1,11 +1,11 @@
 # HardeningLegacyWin .gitignore
 
-# Outputs - generated audit reports, backup policies and exports
+# Outputs - generated backup policies and exports
 outputs/*.reg
 outputs/*.inf
-outputs/*.csv
 outputs/backup_*
 !outputs/.gitkeep
+!outputs/*.csv
 
 # Environment and sensitive data
 .env

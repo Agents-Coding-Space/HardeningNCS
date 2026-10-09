@@ -1,0 +1,359 @@
+﻿CID,Profile,Scored,Title,Type,Tag,Conditional Path,Description,Info / Rationale,Solution / Remediation,Reference,See Also,Cmd / Request,Expect,Value Data,Value Type,Reg Key,Reg Item,Reg Option,File,Severity,Line,Source File
+,,,Windows 11 is installed,REGISTRY_SETTING,custom_item,group_policy > if > condition,Windows 11 is installed,,,,,,,2[26][0-9]{3},POLICY_TEXT,HKLM\Software\Microsoft\Windows Nt\Currentversion,CurrentBuild,,,Medium,47,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+,,,Windows 11 installation type,REGISTRY_SETTING,custom_item,group_policy > if > condition,Windows 11 installation type,,,,,,,Client,POLICY_TEXT,HKLM\Software\Microsoft\Windows Nt\Currentversion,InstallationType,,,Medium,57,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+,,,CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit from CIS Microsoft Windows 11 STIG v1.2.0,PASSED,report,group_policy > if > then,CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit from CIS Microsoft Windows 11 STIG v1.2.0,,,,https://workbench.cisecurity.org/benchmarks/27756,,,,,,,,,Medium,68,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+,,,Windows 11 LTSC\B,REGISTRY_SETTING,custom_item,group_policy > if > then > if > condition,Windows 11 LTSC\B,,,,,,,^Windows 11.*LTS[CB]$,POLICY_TEXT,HKLM\Software\Microsoft\Windows Nt\Currentversion,ProductName,,,Medium,76,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.10,,,WN11-00-000040,REGISTRY_SETTING,custom_item,group_policy > if > then > if > then,1.10 WN11-00-000040,"Windows 11 systems must be maintained at a supported servicing level.
+
+GROUP ID: V-253263
+RULE ID: SV-253263r1016364
+
+Windows 11 is maintained by Microsoft at servicing levels for specific periods of time to support Windows as a Service. Systems at unsupported servicing levels or releases will not receive security updates for new vulnerabilities which leaves them subject to exploitation.
+
+New versions with feature updates are planned to be released on a semi-annual basis with an estimated support timeframe of 18 to 30 months depending on the release. Support for previously released versions has been extended for Enterprise editions.
+
+A separate servicing branch intended for special purpose systems is the Long-Term Servicing Channel (LTSC, formerly Branch - LTSB) which will receive security updates for 10 years but excludes feature updates.",Update systems on the Semi-Annual Channel to 'Microsoft Windows 11 Version 22H2 (OS Build 22621.380)' or greater.,"800-171|3.4.2,800-171r3|03.04.02a.,800-53|CM-6b.,800-53r5|CM-6b.,CCI|CCI-000366,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6b.,LEVEL|1M,NESA|T3.2.1,Rule-ID|SV-253263r1016364_rule,STIG-ID|WN11-00-000040,SWIFT-CSCv1|2.3,Vuln-ID|V-253263",https://workbench.cisecurity.org/benchmarks/27756,,,"^26\d{3,}$",POLICY_TEXT,HKLM\Software\Microsoft\Windows Nt\Currentversion,CurrentBuildNumber,,,Medium,88,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.10,,,WN11-00-000040,REGISTRY_SETTING,custom_item,group_policy > if > then > if > else,1.10 WN11-00-000040,"Windows 11 systems must be maintained at a supported servicing level.
+
+GROUP ID: V-253263
+RULE ID: SV-253263r1016364
+
+Windows 11 is maintained by Microsoft at servicing levels for specific periods of time to support Windows as a Service. Systems at unsupported servicing levels or releases will not receive security updates for new vulnerabilities which leaves them subject to exploitation.
+
+New versions with feature updates are planned to be released on a semi-annual basis with an estimated support timeframe of 18 to 30 months depending on the release. Support for previously released versions has been extended for Enterprise editions.
+
+A separate servicing branch intended for special purpose systems is the Long-Term Servicing Channel (LTSC, formerly Branch - LTSB) which will receive security updates for 10 years but excludes feature updates.",Update systems on the Semi-Annual Channel to 'Microsoft Windows 11 Version 22H2 (OS Build 22621.380)' or greater.,"800-171|3.4.2,800-171r3|03.04.02a.,800-53|CM-6b.,800-53r5|CM-6b.,CCI|CCI-000366,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6b.,LEVEL|1M,NESA|T3.2.1,Rule-ID|SV-253263r1016364_rule,STIG-ID|WN11-00-000040,SWIFT-CSCv1|2.3,Vuln-ID|V-253263",https://workbench.cisecurity.org/benchmarks/27756,,,"^(2262[1-9]|226[3-9][0-9]{0,2}|2[3-9][0-9]{3,4})$",POLICY_TEXT,HKLM\Software\Microsoft\Windows Nt\Currentversion,CurrentBuildNumber,,,Medium,113,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+,,,Microsoft Defender Antivirus is installed,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,Microsoft Defender Antivirus is installed,,,,,,,^PASS$,POLICY_TEXT,,,,,Medium,140,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+,,,Symantec Antivirus is installed,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,Symantec Antivirus is installed,,,,,,,^PASS$,POLICY_TEXT,,,,,Medium,149,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+,,,McAfee Antivirus is installed,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,McAfee Antivirus is installed,,,,,,,^PASS$,POLICY_TEXT,,,,,Medium,158,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.11,,,WN11-00-000045,PASSED,report,group_policy > if > then > if > then,1.11 WN11-00-000045,"The Windows 11 system must use an antivirus program.
+
+GROUP ID: V-253264
+RULE ID: SV-253264r991589
+
+Malicious software can establish a base on individual desktops and servers. Employing an automated mechanism to detect this type of software will aid in elimination of the software from the operating system.",Install Microsoft Defender Antivirus or a third-party antivirus solution.,"800-171|3.4.2,800-171r3|03.04.02a.,800-53|CM-6b.,800-53r5|CM-6b.,CCI|CCI-000366,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6b.,LEVEL|1M,NESA|T3.2.1,Rule-ID|SV-253264r991589_rule,STIG-ID|WN11-00-000045,SWIFT-CSCv1|2.3,Vuln-ID|V-253264",https://workbench.cisecurity.org/benchmarks/27756,,,,,,,,,Medium,169,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.12,,,WN11-00-000050,AUDIT_POWERSHELL,custom_item,group_policy > if > then,1.12 WN11-00-000050,"Local volumes must be formatted using NTFS.
+
+GROUP ID: V-253265
+RULE ID: SV-253265r1137691
+
+The ability to set access permissions and auditing is critical to maintaining the security and proper access controls of a system. To support this, volumes must be formatted using the NTFS file system.",Format all local volumes to use NTFS.,"800-171|3.1.1,800-171r3|03.01.02,800-53|AC-3,800-53r5|AC-3,CCI|CCI-000213,CN-L3|8.1.4.2(f),CN-L3|8.1.4.11(b),CN-L3|8.1.10.2(c),CN-L3|8.5.3.1,CN-L3|8.5.4.1(a),CSF|PR.AC-4,CSF|PR.PT-3,CSF2.0|PR.AA-05,CSF2.0|PR.DS-10,CSF2.0|PR.IR-01,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(1),ISO-27001-2022|A.5.15,ISO-27001-2022|A.5.33,ISO-27001-2022|A.8.3,ISO-27001-2022|A.8.18,ISO-27001-2022|A.8.20,ISO/IEC-27001|A.9.4.1,ISO/IEC-27001|A.9.4.5,ITSG-33|AC-3,LEVEL|1M,NESA|T4.2.1,NESA|T5.4.4,NESA|T5.4.5,NESA|T5.5.4,NESA|T5.6.1,NESA|T7.5.2,NESA|T7.5.3,NIAv2|AM3,NIAv2|SS29,QCSC-v1|3.2,QCSC-v1|5.2.2,QCSC-v1|13.2,Rule-ID|SV-253265r1137691_rule,STIG-ID|WN11-00-000050,TBA-FIISB|31.1,Vuln-ID|V-253265",https://workbench.cisecurity.org/benchmarks/27756,,,None,POLICY_TEXT,,,,,Medium,185,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+,,,System is a member of a domain,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,System is a member of a domain,,,,,,,True,POLICY_TEXT,,,,,Medium,204,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.127,,,WN11-CC-000075,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > then,1.127 WN11-CC-000075,"Credential Guard must be running on Windows 11 domain-joined systems.
+
+GROUP ID: V-253370
+RULE ID: SV-253370r991589
+
+Credential Guard uses virtualization-based security to protect information that could be used in credential theft attacks if compromised. This authentication information, which was stored in the Local Security Authority (LSA) in previous versions of Windows, is isolated from the rest of operating system and can only be accessed by privileged system software.","Virtualization-based security, including Credential Guard, currently cannot be implemented in virtual desktop implementations (VDI) due to specific supporting requirements including a TPM, UEFI with Secure Boot, and the capability to run the Hyper-V feature within the virtual desktop.
+
+For VDIs where the virtual desktop instance is deleted or refreshed upon logoff, this is NA.
+
+For VDIs with persistent desktops, this may be downgraded to a CAT II only where administrators have specific tokens for the VDI. Administrator accounts on virtual desktops must only be used on systems in the VDI; they may not have administrative privileges on any other systems such as servers and physical workstations.
+
+Configure the policy value for
+
+Computer Configuration >> Administrative Templates >> System >> Device Guard >> 'Turn On virtualization-based Security'
+
+to 'Enabled' with 'Enabled with UEFI lock' selected for 'Credential Guard Configuration:'.
+
+A Microsoft TechNet article on Credential Guard, including system requirement details, can be found at the following link:
+
+https://docs.microsoft.com/en-us/windows/access-protection/credential-guard/credential-guard","800-171|3.4.2,800-171r3|03.04.02a.,800-53|CM-6b.,800-53r5|CM-6b.,CCI|CCI-000366,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6b.,LEVEL|1A,NESA|T3.2.1,Rule-ID|SV-253370r991589_rule,STIG-ID|WN11-CC-000075,SWIFT-CSCv1|2.3,Vuln-ID|V-253370",https://workbench.cisecurity.org/benchmarks/27756,,,1,POLICY_TEXT,,,,,Medium,214,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.127,,,WN11-CC-000075,PASSED,report,group_policy > if > then > if > else,1.127 WN11-CC-000075,"Credential Guard must be running on Windows 11 domain-joined systems.
+
+GROUP ID: V-253370
+RULE ID: SV-253370r991589
+
+Credential Guard uses virtualization-based security to protect information that could be used in credential theft attacks if compromised. This authentication information, which was stored in the Local Security Authority (LSA) in previous versions of Windows, is isolated from the rest of operating system and can only be accessed by privileged system software.","Virtualization-based security, including Credential Guard, currently cannot be implemented in virtual desktop implementations (VDI) due to specific supporting requirements including a TPM, UEFI with Secure Boot, and the capability to run the Hyper-V feature within the virtual desktop.
+
+For VDIs where the virtual desktop instance is deleted or refreshed upon logoff, this is NA.
+
+For VDIs with persistent desktops, this may be downgraded to a CAT II only where administrators have specific tokens for the VDI. Administrator accounts on virtual desktops must only be used on systems in the VDI; they may not have administrative privileges on any other systems such as servers and physical workstations.
+
+Configure the policy value for
+
+Computer Configuration >> Administrative Templates >> System >> Device Guard >> 'Turn On virtualization-based Security'
+
+to 'Enabled' with 'Enabled with UEFI lock' selected for 'Credential Guard Configuration:'.
+
+A Microsoft TechNet article on Credential Guard, including system requirement details, can be found at the following link:
+
+https://docs.microsoft.com/en-us/windows/access-protection/credential-guard/credential-guard","800-171|3.4.2,800-171r3|03.04.02a.,800-53|CM-6b.,800-53r5|CM-6b.,CCI|CCI-000366,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6b.,LEVEL|1A,NESA|T3.2.1,Rule-ID|SV-253370r991589_rule,STIG-ID|WN11-CC-000075,SWIFT-CSCv1|2.3,Vuln-ID|V-253370",https://workbench.cisecurity.org/benchmarks/27756,,,,,,,,,Medium,248,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.139,,,WN11-CC-000155,REGISTRY_SETTING,custom_item,group_policy > if > then,1.139 WN11-CC-000155,"Solicited Remote Assistance must not be allowed.
+
+GROUP ID: V-253382
+RULE ID: SV-253382r1137695
+
+Remote assistance allows another user to view or take control of the local session of a user. Solicited assistance is help that is specifically requested by the local user. This may allow unauthorized parties access to the resources on the computer.","Configure the policy value for
+
+Computer Configuration >> Administrative Templates >> System >> Remote Assistance >> 'Configure Solicited Remote Assistance'
+
+to 'Disabled'.","800-171|3.13.4,800-171r3|03.13.04,800-53|SC-4,800-53r5|SC-4,CCI|CCI-001090,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,CSF2.0|PR.IR-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SC-4,ITSG-33|SC-4a.,LEVEL|1A,Rule-ID|SV-253382r1137695_rule,STIG-ID|WN11-CC-000155,Vuln-ID|V-253382",https://workbench.cisecurity.org/benchmarks/27756,,,0,POLICY_DWORD,HKLM\Software\Policies\Microsoft\Windows Nt\Terminal Services,fAllowToGetHelp,CAN_NOT_BE_NULL,,Medium,277,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.143,,,WN11-CC-000180,REGISTRY_SETTING,custom_item,group_policy > if > then,1.143 WN11-CC-000180,"Autoplay must be turned off for non-volume devices.
+
+GROUP ID: V-253386
+RULE ID: SV-253386r958804
+
+Allowing autoplay to execute may introduce malicious code to a system. Autoplay begins reading from a drive as soon as media is inserted in the drive. As a result, the setup file of programs or music on audio media may start. This setting will disable autoplay for non-volume devices (such as Media Transfer Protocol (MTP) devices).","Configure the policy value for
+
+Computer Configuration >> Administrative Templates >> Windows Components >> AutoPlay Policies >> 'Disallow Autoplay for non-volume devices'
+
+to 'Enabled'.","800-171|3.4.7,800-171r3|03.04.06,800-53|CM-7(2),800-53r5|CM-7(2),CCI|CCI-001764,CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-7(2),LEVEL|1A,NIAv2|SS15a,PCI-DSSv3.2.1|2.2.2,QCSC-v1|3.2,Rule-ID|SV-253386r958804_rule,STIG-ID|WN11-CC-000180,SWIFT-CSCv1|2.3,Vuln-ID|V-253386",https://workbench.cisecurity.org/benchmarks/27756,,,1,POLICY_DWORD,HKLM\Software\Policies\Microsoft\Windows\Explorer,NoAutoplayfornonVolume,CAN_NOT_BE_NULL,,Medium,300,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.144,,,WN11-CC-000185,REGISTRY_SETTING,custom_item,group_policy > if > then,1.144 WN11-CC-000185,"The default autorun behavior must be configured to prevent autorun commands.
+
+GROUP ID: V-253387
+RULE ID: SV-253387r958804
+
+Allowing autorun commands to execute may introduce malicious code to a system. Configuring this setting prevents autorun commands from executing.","Configure the policy value for
+
+Computer Configuration >> Administrative Templates >> Windows Components >> AutoPlay Policies >> 'Set the default behavior for AutoRun'
+
+to 'Enabled:Do not execute any autorun commands'.","800-171|3.4.7,800-171r3|03.04.06,800-53|CM-7(2),800-53r5|CM-7(2),CCI|CCI-001764,CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-7(2),LEVEL|1A,NIAv2|SS15a,PCI-DSSv3.2.1|2.2.2,QCSC-v1|3.2,Rule-ID|SV-253387r958804_rule,STIG-ID|WN11-CC-000185,SWIFT-CSCv1|2.3,Vuln-ID|V-253387",https://workbench.cisecurity.org/benchmarks/27756,,,1,POLICY_DWORD,HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer,NoAutorun,CAN_NOT_BE_NULL,,Medium,323,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.145,,,WN11-CC-000190,REGISTRY_SETTING,custom_item,group_policy > if > then,1.145 WN11-CC-000190,"Autoplay must be disabled for all drives.
+
+GROUP ID: V-253388
+RULE ID: SV-253388r958804
+
+Allowing autoplay to execute may introduce malicious code to a system. Autoplay begins reading from a drive as soon as media is inserted in the drive. As a result, the setup file of programs or music on audio media may start. By default, autoplay is disabled on removable drives, such as the floppy disk drive (but not the CD-ROM drive) and on network drives. If this policy is enabled, autoplay can be disabled on all drives.","Configure the policy value for
+
+Computer Configuration >> Administrative Templates >> Windows Components >> AutoPlay Policies >> 'Turn off AutoPlay'
+
+to 'Enabled:All Drives'.","800-171|3.4.7,800-171r3|03.04.06,800-53|CM-7(2),800-53r5|CM-7(2),CCI|CCI-001764,CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-7(2),LEVEL|1A,NIAv2|SS15a,PCI-DSSv3.2.1|2.2.2,QCSC-v1|3.2,Rule-ID|SV-253388r958804_rule,STIG-ID|WN11-CC-000190,SWIFT-CSCv1|2.3,Vuln-ID|V-253388",https://workbench.cisecurity.org/benchmarks/27756,,,255,POLICY_DWORD,HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer,NoDriveTypeAutoRun,CAN_NOT_BE_NULL,,Medium,346,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.16,,,WN11-00-000070,AUDIT_POWERSHELL,custom_item,group_policy > if > then,1.16 WN11-00-000070,"Only accounts responsible for the administration of a system must have Administrator rights on the system.
+
+GROUP ID: V-253269
+RULE ID: SV-253269r958702
+
+An account that does not have Administrator duties must not have Administrator rights. Such rights would allow the account to bypass or modify required security restrictions on that machine and make it vulnerable to attack.
+
+System administrators must log on to systems only using accounts with the minimum level of authority necessary.
+
+For domain-joined workstations, the Domain Admins group must be replaced by a domain workstation administrator group (see V-36434 in the Active Directory Domain STIG). Restricting highly privileged accounts from the local Administrators group helps mitigate the risk of privilege escalation resulting from credential theft attacks.
+
+Standard user accounts must not be members of the local administrators group.
+
+NOTE: Nessus has provided the target output to assist in reviewing the benchmark to ensure target compliance.","Configure the system to include only administrator groups or accounts that are responsible for the system in the local Administrators group.
+
+For domain-joined workstations, the Domain Admins group must be replaced by a domain workstation administrator group.
+
+Remove any standard user accounts.","800-171|3.1.1,800-171r3|03.01.02,800-53|AC-3(4),800-53r5|AC-3(4),CCI|CCI-002165,CN-L3|8.1.4.2(f),CN-L3|8.1.4.11(b),CN-L3|8.1.10.2(c),CN-L3|8.5.3.1,CN-L3|8.5.4.1(a),CSF|PR.AC-4,CSF|PR.PT-3,CSF2.0|PR.AA-05,CSF2.0|PR.DS-10,CSF2.0|PR.IR-01,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(1),ISO-27001-2022|A.5.15,ISO-27001-2022|A.5.33,ISO-27001-2022|A.8.3,ISO-27001-2022|A.8.18,ISO-27001-2022|A.8.20,ISO/IEC-27001|A.9.4.1,ISO/IEC-27001|A.9.4.5,ITSG-33|AC-3(4),LEVEL|1M,NESA|T4.2.1,NESA|T5.4.4,NESA|T5.4.5,NESA|T5.5.4,NESA|T5.6.1,NESA|T7.5.2,NESA|T7.5.3,NIAv2|AM3,NIAv2|SS29,QCSC-v1|3.2,QCSC-v1|5.2.2,QCSC-v1|13.2,Rule-ID|SV-253269r958702_rule,STIG-ID|WN11-00-000070,TBA-FIISB|31.1,Vuln-ID|V-253269",https://workbench.cisecurity.org/benchmarks/27756,,,Pass: No standard user accounts are members of the local Administrators group.,POLICY_TEXT,,,,,Medium,369,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.168,,,WN11-CC-000315,REGISTRY_SETTING,custom_item,group_policy > if > then,1.168 WN11-CC-000315,"The Windows Installer feature 'Always install with elevated privileges' must be disabled.
+
+GROUP ID: V-253411
+RULE ID: SV-253411r1051054
+
+Standard user accounts must not be granted elevated privileges. Enabling Windows Installer to elevate privileges when installing applications can allow malicious persons and applications to gain full control of a system.","Configure the policy value for
+
+Computer Configuration >> Administrative Templates >> Windows Components >> Windows Installer >> 'Always install with elevated privileges'
+
+to 'Disabled'.","800-171|3.4.9,800-53|CM-11(2),800-53r5|CM-11(2),CCI|CCI-001812,CCI|CCI-003980,CSF|DE.CM-3,CSF2.0|DE.CM-03,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,CSF2.0|PR.PS-02,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.19,ISO/IEC-27001|A.12.6.2,LEVEL|1A,QCSC-v1|8.2.1,Rule-ID|SV-253411r1051054_rule,STIG-ID|WN11-CC-000315,SWIFT-CSCv1|5.1,Vuln-ID|V-253411",https://workbench.cisecurity.org/benchmarks/27756,,,0,POLICY_DWORD,HKLM\Software\Policies\Microsoft\Windows\Installer,AlwaysInstallElevated,CAN_NOT_BE_NULL,,Medium,399,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.173,,,WN11-CC-000330,REGISTRY_SETTING,custom_item,group_policy > if > then,1.173 WN11-CC-000330,"The Windows Remote Management (WinRM) client must not use Basic authentication.
+
+GROUP ID: V-253416
+RULE ID: SV-253416r958510
+
+Basic authentication uses plain text passwords that could be used to compromise a system.","Configure the policy value for
+
+Computer Configuration >> Administrative Templates >> Windows Components >> Windows Remote Management (WinRM) >> WinRM Client >> 'Allow Basic authentication'
+
+to 'Disabled'.","800-171|3.7.5,800-171r3|03.07.05b.,800-53|MA-4c.,800-53r5|MA-4c.,CCI|CCI-000877,CSF|PR.MA-2,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|MA-4c.,LEVEL|1A,NESA|T2.3.4,NESA|T5.4.4,QCSC-v1|5.2.2,Rule-ID|SV-253416r958510_rule,STIG-ID|WN11-CC-000330,TBA-FIISB|45.2.3,Vuln-ID|V-253416",https://workbench.cisecurity.org/benchmarks/27756,,,0,POLICY_DWORD,HKLM\Software\Policies\Microsoft\Windows\WinRM\Client,AllowBasic,CAN_NOT_BE_NULL,,Medium,422,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.175,,,WN11-CC-000345,REGISTRY_SETTING,custom_item,group_policy > if > then,1.175 WN11-CC-000345,"The Windows Remote Management (WinRM) service must not use Basic authentication.
+
+GROUP ID: V-253418
+RULE ID: SV-253418r958510
+
+Basic authentication uses plain text passwords that could be used to compromise a system.","Configure the policy value for
+
+Computer Configuration >> Administrative Templates >> Windows Components >> Windows Remote Management (WinRM) >> WinRM Service >> 'Allow Basic authentication'
+
+to 'Disabled'.
+
+Severity Override Guidance: The AO can allow the severity override if they have reviewed the overall protection. This would only be allowed temporarily for implementation as documented and approved.
+....
+Allowing Basic authentication to be used for the sole creation of Office 365 DoD tenants.
+....
+A documented mechanism and or script that can disable Basic authentication once administration completes.
+....
+Use of a Privileged Access Workstation (PAW) and adherence to the Clean Source principle for administration.","800-171|3.7.5,800-171r3|03.07.05b.,800-53|MA-4c.,800-53r5|MA-4c.,CCI|CCI-000877,CSF|PR.MA-2,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|MA-4c.,LEVEL|1A,NESA|T2.3.4,NESA|T5.4.4,QCSC-v1|5.2.2,Rule-ID|SV-253418r958510_rule,STIG-ID|WN11-CC-000345,TBA-FIISB|45.2.3,Vuln-ID|V-253418",https://workbench.cisecurity.org/benchmarks/27756,,,0,POLICY_DWORD,HKLM\Software\Policies\Microsoft\Windows\WinRM\Service,AllowBasic,CAN_NOT_BE_NULL,,Medium,445,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.209,,,WN11-SO-000140,ANONYMOUS_SID_SETTING,custom_item,group_policy > if > then,1.209 WN11-SO-000140,"Anonymous SID/Name translation must not be allowed.
+
+GROUP ID: V-253452
+RULE ID: SV-253452r991589
+
+Allowing anonymous SID/Name translation can provide sensitive information for accessing a system. Only authorized users must be able to perform such translations.","Configure the policy value for
+
+Computer Configuration >> Windows Settings >> Security Settings >> Local Policies >> Security Options >> 'Network access: Allow anonymous SID/Name translation'
+
+to 'Disabled'.","800-171|3.4.2,800-171r3|03.04.02a.,800-53|CM-6b.,800-53r5|CM-6b.,CCI|CCI-000366,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6b.,LEVEL|1A,NESA|T3.2.1,Rule-ID|SV-253452r991589_rule,STIG-ID|WN11-SO-000140,SWIFT-CSCv1|2.3,Vuln-ID|V-253452",https://workbench.cisecurity.org/benchmarks/27756,,,disabled,POLICY_SET,,,,,Medium,476,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.210,,,WN11-SO-000145,REGISTRY_SETTING,custom_item,group_policy > if > then,1.210 WN11-SO-000145,"Anonymous enumeration of SAM accounts must not be allowed.
+
+GROUP ID: V-253453
+RULE ID: SV-253453r991589
+
+Anonymous enumeration of SAM accounts allows anonymous log on users (null session connections) to list all accounts names, thus providing a list of potential points to attack the system.","Configure the policy value for
+
+Computer Configuration >> Windows Settings >> Security Settings >> Local Policies >> Security Options >> 'Network access: Do not allow anonymous enumeration of SAM accounts'
+
+to 'Enabled'.","800-171|3.4.2,800-171r3|03.04.02a.,800-53|CM-6b.,800-53r5|CM-6b.,CCI|CCI-000366,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6b.,LEVEL|1A,NESA|T3.2.1,Rule-ID|SV-253453r991589_rule,STIG-ID|WN11-SO-000145,SWIFT-CSCv1|2.3,Vuln-ID|V-253453",https://workbench.cisecurity.org/benchmarks/27756,,,1,POLICY_DWORD,HKLM\System\CurrentControlSet\Control\Lsa,RestrictAnonymousSAM,CAN_NOT_BE_NULL,,Medium,496,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.211,,,WN11-SO-000150,REGISTRY_SETTING,custom_item,group_policy > if > then,1.211 WN11-SO-000150,"Anonymous enumeration of shares must be restricted.
+
+GROUP ID: V-253454
+RULE ID: SV-253454r1137695
+
+Allowing anonymous logon users (null session connections) to list all account names and enumerate all shared resources can provide a map of potential points to attack the system.","Configure the policy value for
+
+Computer Configuration >> Windows Settings >> Security Settings >> Local Policies >> Security Options >> 'Network access: Do not allow anonymous enumeration of SAM accounts and shares'
+
+to 'Enabled'.","800-171|3.13.4,800-171r3|03.13.04,800-53|SC-4,800-53r5|SC-4,CCI|CCI-001090,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,CSF2.0|PR.IR-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SC-4,ITSG-33|SC-4a.,LEVEL|1A,Rule-ID|SV-253454r1137695_rule,STIG-ID|WN11-SO-000150,Vuln-ID|V-253454",https://workbench.cisecurity.org/benchmarks/27756,,,1,POLICY_DWORD,HKLM\System\CurrentControlSet\Control\Lsa,RestrictAnonymous,CAN_NOT_BE_NULL,,Medium,519,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.213,,,WN11-SO-000165,REGISTRY_SETTING,custom_item,group_policy > if > then,1.213 WN11-SO-000165,"Anonymous access to Named Pipes and Shares must be restricted.
+
+GROUP ID: V-253456
+RULE ID: SV-253456r1137695
+
+Allowing anonymous access to named pipes or shares provides the potential for unauthorized system access. This setting restricts access to those defined in 'Network access: Named Pipes that can be accessed anonymously' and 'Network access: Shares that can be accessed anonymously', both of which must be blank under other requirements.","Configure the policy value for
+
+Computer Configuration >> Windows Settings >> Security Settings >> Local Policies >> Security Options >> 'Network access: Restrict anonymous access to Named Pipes and Shares'
+
+to 'Enabled'.","800-171|3.13.4,800-171r3|03.13.04,800-53|SC-4,800-53r5|SC-4,CCI|CCI-001090,CSF2.0|PR.DS-01,CSF2.0|PR.DS-02,CSF2.0|PR.DS-10,CSF2.0|PR.IR-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SC-4,ITSG-33|SC-4a.,LEVEL|1A,Rule-ID|SV-253456r1137695_rule,STIG-ID|WN11-SO-000165,Vuln-ID|V-253456",https://workbench.cisecurity.org/benchmarks/27756,,,1,POLICY_DWORD,HKLM\System\CurrentControlSet\Services\LanManServer\Parameters,RestrictNullSessAccess,CAN_NOT_BE_NULL,,Medium,542,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.218,,,WN11-SO-000195,REGISTRY_SETTING,custom_item,group_policy > if > then,1.218 WN11-SO-000195,"The system must be configured to prevent the storage of the LAN Manager hash of passwords.
+
+GROUP ID: V-253461
+RULE ID: SV-253461r1051056
+
+The LAN Manager hash uses a weak encryption algorithm and there are several tools available that use this hash to retrieve account passwords. This setting controls whether or not a LAN Manager hash of the password is stored in the SAM the next time the password is changed.","Configure the policy value for
+
+Computer Configuration >> Windows Settings >> Security Settings >> Local Policies >> Security Options >> 'Network security: Do not store LAN Manager hash value on next password change'
+
+to 'Enabled'.","800-171|3.5.2,800-171r3|03.05.07,800-53|IA-5(1),800-53r5|IA-5(1),CCI|CCI-000196,CCI|CCI-004062,CSF|PR.AC-1,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),ISO-27001-2022|A.5.16,ISO-27001-2022|A.5.17,ITSG-33|IA-5(1),LEVEL|1A,NESA|T5.2.3,QCSC-v1|5.2.2,QCSC-v1|13.2,Rule-ID|SV-253461r1051056_rule,STIG-ID|WN11-SO-000195,SWIFT-CSCv1|4.1,Vuln-ID|V-253461",https://workbench.cisecurity.org/benchmarks/27756,,,1,POLICY_DWORD,HKLM\SYSTEM\CurrentControlSet\Control\LSA,NoLMHash,CAN_NOT_BE_NULL,,Medium,565,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.219,,,WN11-SO-000205,REGISTRY_SETTING,custom_item,group_policy > if > then,1.219 WN11-SO-000205,"The LanMan authentication level must be set to send NTLMv2 response only, and to refuse LM and NTLM.
+
+GROUP ID: V-253462
+RULE ID: SV-253462r991589
+
+The Kerberos v5 authentication protocol is the default for authentication of users who are logging on to domain accounts. NTLM, which is less secure, is retained in later Windows versions for compatibility with clients and servers that are running earlier versions of Windows or applications that still use it. It is also used to authenticate logons to stand-alone computers that are running later versions.","Configure the policy value for
+
+Computer Configuration >> Windows Settings >> Security Settings >> Local Policies >> Security Options >> 'Network security: LAN Manager authentication level'
+
+to 'Send NTLMv2 response only. Refuse LM & NTLM'.","800-171|3.4.2,800-171r3|03.04.02a.,800-53|CM-6b.,800-53r5|CM-6b.,CCI|CCI-000366,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6b.,LEVEL|1A,NESA|T3.2.1,Rule-ID|SV-253462r991589_rule,STIG-ID|WN11-SO-000205,SWIFT-CSCv1|2.3,Vuln-ID|V-253462",https://workbench.cisecurity.org/benchmarks/27756,,,5,POLICY_DWORD,HKLM\System\CurrentControlSet\Control\LSA,LMCompatibilityLevel,CAN_NOT_BE_NULL,,Medium,588,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+,,,IIS-WebServer,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,IIS-WebServer,,,,,,,^Manual Review Required$,POLICY_TEXT,,,,,Medium,613,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+,,,IIS-HostableWebCore,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,IIS-HostableWebCore,,,,,,,^Manual Review Required$,POLICY_TEXT,,,,,Medium,623,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.22,,,WN11-00-000100,PASSED,report,group_policy > if > then > if > then,1.22 WN11-00-000100,"Internet Information System (IIS) or its subcomponents must not be installed on a workstation.
+
+GROUP ID: V-253275
+RULE ID: SV-253275r958478
+
+IIS is not installed by default. Installation of Internet Information System (IIS) may allow unauthorized internet services to be hosted. Websites must only be hosted on servers that have been designed for that purpose and can be adequately secured.
+
+NOTE: Nessus has provided the target output to assist in reviewing the benchmark to ensure target compliance.",Uninstall 'Internet Information Services' or 'Internet Information Services Hostable Web Core' from the system.,"800-171|3.4.6,800-171|3.4.7,800-171r3|03.04.06,800-171r3|03.04.06a.,800-53|CM-7,800-53|CM-7a.,800-53r5|CM-7a.,CCI|CCI-000381,CN-L3|7.1.3.5(c),CN-L3|8.1.4.4(a),CSF|PR.IP-1,CSF|PR.PT-3,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-7,ITSG-33|CM-7a.,LEVEL|1M,NIAv2|SS15a,PCI-DSSv3.2.1|2.2.1,PCI-DSSv3.2.1|2.2.2,PCI-DSSv4.0|2.2.3,QCSC-v1|3.2,Rule-ID|SV-253275r958478_rule,STIG-ID|WN11-00-000100,SWIFT-CSCv1|2.3,Vuln-ID|V-253275",https://workbench.cisecurity.org/benchmarks/27756,,,,,,,,,Medium,635,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.238,,,WN11-UR-000015,USER_RIGHTS_POLICY,custom_item,group_policy > if > then,1.238 WN11-UR-000015,"The 'Act as part of the operating system' user right must not be assigned to any groups or accounts.
+
+GROUP ID: V-253481
+RULE ID: SV-253481r958726
+
+Inappropriate granting of user rights can provide system, administrative, and other high-level capabilities.
+
+Accounts with the 'Act as part of the operating system' user right can assume the identity of any user and gain access to resources that user is authorized to access. Any accounts with this right can take complete control of a system.","Configure the policy value for
+
+Computer Configuration >> Windows Settings >> Security Settings >> Local Policies >> User Rights Assignment >> 'Act as part of the operating system'
+
+to be defined but containing no entries (blank).","800-171|3.1.7,800-171r3|03.01.07a.,800-53|AC-6(10),800-53r5|AC-6(10),CCI|CCI-002235,CN-L3|7.1.3.2(b),CN-L3|7.1.3.2(g),CN-L3|8.1.4.2(d),CN-L3|8.1.10.6(a),CSF|PR.AC-4,CSF2.0|PR.AA-05,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(1),ISO-27001-2022|A.5.15,ISO-27001-2022|A.8.2,ISO-27001-2022|A.8.18,ITSG-33|AC-6,LEVEL|1A,NESA|T5.1.1,NESA|T5.2.2,NESA|T5.4.1,NESA|T5.4.4,NESA|T5.4.5,NESA|T5.5.4,NESA|T5.6.1,NESA|T7.5.3,NIAv2|AM1,NIAv2|AM23f,NIAv2|SS13c,NIAv2|SS15c,PCI-DSSv3.2.1|7.1.2,PCI-DSSv4.0|7.2.1,PCI-DSSv4.0|7.2.2,QCSC-v1|5.2.2,QCSC-v1|6.2,Rule-ID|SV-253481r958726_rule,STIG-ID|WN11-UR-000015,SWIFT-CSCv1|5.1,TBA-FIISB|31.4.2,TBA-FIISB|31.4.3,Vuln-ID|V-253481",https://workbench.cisecurity.org/benchmarks/27756,,,.+,USER_RIGHT,,,,,Medium,653,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.243,,,WN11-UR-000045,USER_RIGHTS_POLICY,custom_item,group_policy > if > then,1.243 WN11-UR-000045,"The 'Create a token object' user right must not be assigned to any groups or accounts.
+
+GROUP ID: V-253486
+RULE ID: SV-253486r958726
+
+Inappropriate granting of user rights can provide system, administrative, and other high-level capabilities.
+
+The 'Create a token object' user right allows a process to create an access token. This could be used to provide elevated rights and compromise a system.","Configure the policy value for
+
+Computer Configuration >> Windows Settings >> Security Settings >> Local Policies >> User Rights Assignment >> 'Create a token object'
+
+to be defined but containing no entries (blank).","800-171|3.1.7,800-171r3|03.01.07a.,800-53|AC-6(10),800-53r5|AC-6(10),CCI|CCI-002235,CN-L3|7.1.3.2(b),CN-L3|7.1.3.2(g),CN-L3|8.1.4.2(d),CN-L3|8.1.10.6(a),CSF|PR.AC-4,CSF2.0|PR.AA-05,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(1),ISO-27001-2022|A.5.15,ISO-27001-2022|A.8.2,ISO-27001-2022|A.8.18,ITSG-33|AC-6,LEVEL|1A,NESA|T5.1.1,NESA|T5.2.2,NESA|T5.4.1,NESA|T5.4.4,NESA|T5.4.5,NESA|T5.5.4,NESA|T5.6.1,NESA|T7.5.3,NIAv2|AM1,NIAv2|AM23f,NIAv2|SS13c,NIAv2|SS15c,PCI-DSSv3.2.1|7.1.2,PCI-DSSv4.0|7.2.1,PCI-DSSv4.0|7.2.2,QCSC-v1|5.2.2,QCSC-v1|6.2,Rule-ID|SV-253486r958726_rule,STIG-ID|WN11-UR-000045,SWIFT-CSCv1|5.1,TBA-FIISB|31.4.2,TBA-FIISB|31.4.3,Vuln-ID|V-253486",https://workbench.cisecurity.org/benchmarks/27756,,,.+,USER_RIGHT,,,,,Medium,677,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.247,,,WN11-UR-000065,USER_RIGHTS_POLICY,custom_item,group_policy > if > then,1.247 WN11-UR-000065,"The 'Debug programs' user right must only be assigned to the Administrators group.
+
+GROUP ID: V-253490
+RULE ID: SV-253490r958726
+
+Inappropriate granting of user rights can provide system, administrative, and other high-level capabilities.
+
+Accounts with the 'Debug Programs' user right can attach a debugger to any process or to the kernel, providing complete access to sensitive and critical operating system components. This right is given to Administrators in the default configuration.","Configure the policy value for
+
+Computer Configuration >> Windows Settings >> Security Settings >> Local Policies >> User Rights Assignment >> 'Debug programs'
+
+to only include the following groups or accounts:
+
+Administrators","800-171|3.1.7,800-171r3|03.01.07a.,800-53|AC-6(10),800-53r5|AC-6(10),CCI|CCI-002235,CN-L3|7.1.3.2(b),CN-L3|7.1.3.2(g),CN-L3|8.1.4.2(d),CN-L3|8.1.10.6(a),CSF|PR.AC-4,CSF2.0|PR.AA-05,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(1),ISO-27001-2022|A.5.15,ISO-27001-2022|A.8.2,ISO-27001-2022|A.8.18,ITSG-33|AC-6,LEVEL|1A,NESA|T5.1.1,NESA|T5.2.2,NESA|T5.4.1,NESA|T5.4.4,NESA|T5.4.5,NESA|T5.5.4,NESA|T5.6.1,NESA|T7.5.3,NIAv2|AM1,NIAv2|AM23f,NIAv2|SS13c,NIAv2|SS15c,PCI-DSSv3.2.1|7.1.2,PCI-DSSv4.0|7.2.1,PCI-DSSv4.0|7.2.2,QCSC-v1|5.2.2,QCSC-v1|6.2,Rule-ID|SV-253490r958726_rule,STIG-ID|WN11-UR-000065,SWIFT-CSCv1|5.1,TBA-FIISB|31.4.2,TBA-FIISB|31.4.3,Vuln-ID|V-253490",https://workbench.cisecurity.org/benchmarks/27756,,,Administrators,USER_RIGHT,,,,,Medium,701,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.32,,,WN11-00-000150,REGISTRY_SETTING,custom_item,group_policy > if > then,1.32 WN11-00-000150,"Structured Exception Handling Overwrite Protection (SEHOP) must be enabled.
+
+GROUP ID: V-253284
+RULE ID: SV-253284r958928
+
+Attackers are constantly looking for vulnerabilities in systems and applications. Structured Exception Handling Overwrite Protection (SEHOP) blocks exploits that use the Structured Exception Handling overwrite technique, a common buffer overflow attack.","Configure the policy value for
+
+Computer Configuration >> Administrative Templates >> MS Security Guide >> 'Enable Structured Exception Handling Overwrite Protection (SEHOP)'
+
+to 'Enabled'.
+
+This policy setting requires the installation of the SecGuide custom templates included with the STIG package. 'SecGuide.admx' and 'SecGuide.adml' must be copied to the \Windows\PolicyDefinitions and \Windows\PolicyDefinitions\en-US directories respectively.","800-53|SI-16,800-53r5|SI-16,CCI|CCI-002824,CSF2.0|PR.DS-10,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SI-16,LEVEL|1A,Rule-ID|SV-253284r958928_rule,STIG-ID|WN11-00-000150,Vuln-ID|V-253284",https://workbench.cisecurity.org/benchmarks/27756,,,0,POLICY_DWORD,HKLM\System\CurrentControlSet\Control\Session Manager\Kernel,DisableExceptionChainValidation,CAN_NOT_BE_NULL,,Medium,726,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.41,,,WN11-00-000240,WARNING,report,group_policy > if > then,1.41 WN11-00-000240,"Administrative accounts must not be used with applications that access the internet, such as web browsers, or with potential internet sources, such as email.
+
+GROUP ID: V-253294
+RULE ID: SV-253294r991589
+
+Using applications that access the internet or have potential internet sources using administrative privileges exposes a system to compromise. If a flaw in an application is exploited while running as a privileged user, the entire system could be compromised. Web browsers and email are common attack vectors for introducing malicious code and must not be run with an administrative account.
+
+Since administrative accounts may generally change or work around technical restrictions for running a web browser or other applications, it is essential that policy requires administrative accounts to not access the internet or use applications, such as email.
+
+The policy must define specific exceptions for local service administration. These exceptions may include HTTP(S)-based tools that are used for the administration of the local system, services, or attached devices.
+
+Technical means such as application allowlisting can be used to enforce the policy to ensure compliance.
+
+NOTE: Nessus has not performed this check. Please review the benchmark to ensure target compliance.","Establish and enforce a policy that prohibits administrative accounts from using applications that access the internet, such as web browsers, or with potential internet sources, such as email. Define specific exceptions for local service administration. These exceptions may include HTTP(S)-based tools that are used for the administration of the local system, services, or attached devices.
+
+Implement technical measures where feasible such as removal of applications or use of application allowlisting to restrict the use of applications that can access the internet.","800-171|3.4.2,800-171r3|03.04.02a.,800-53|CM-6b.,800-53r5|CM-6b.,CCI|CCI-000366,CN-L3|8.1.10.6(d),CSF|PR.IP-1,CSF2.0|DE.CM-09,CSF2.0|PR.PS-01,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO-27001-2022|A.8.9,ITSG-33|CM-6b.,LEVEL|1M,NESA|T3.2.1,Rule-ID|SV-253294r991589_rule,STIG-ID|WN11-00-000240,SWIFT-CSCv1|2.3,Vuln-ID|V-253294",https://workbench.cisecurity.org/benchmarks/27756,,,,,,,,,Medium,751,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.53,,,WN11-AC-000045,PASSWORD_POLICY,custom_item,group_policy > if > then,1.53 WN11-AC-000045,"Reversible password encryption must be disabled.
+
+GROUP ID: V-253305
+RULE ID: SV-253305r1051046
+
+Storing passwords using reversible encryption is essentially the same as storing clear-text versions of the passwords. For this reason, this policy must never be enabled.","Configure the policy value for
+
+Computer Configuration >> Windows Settings >> Security Settings >> Account Policies >> Password Policy >> 'Store passwords using reversible encryption'
+
+to 'Disabled'.","800-171|3.5.2,800-171r3|03.05.07,800-53|IA-5(1),800-53r5|IA-5(1),CCI|CCI-000196,CCI|CCI-004062,CSF|PR.AC-1,CSF2.0|PR.AA-01,CSF2.0|PR.AA-03,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(i),HIPAA|164.312(d),ISO-27001-2022|A.5.16,ISO-27001-2022|A.5.17,ITSG-33|IA-5(1),LEVEL|1A,NESA|T5.2.3,QCSC-v1|5.2.2,QCSC-v1|13.2,Rule-ID|SV-253305r1051046_rule,STIG-ID|WN11-AC-000045,SWIFT-CSCv1|4.1,Vuln-ID|V-253305",https://workbench.cisecurity.org/benchmarks/27756,,,Disabled,POLICY_SET,,,,,Medium,774,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.6,,,WN11-00-000030,AUDIT_POWERSHELL,custom_item,group_policy > if > then,1.6 WN11-00-000030,"Windows 11 information systems must use BitLocker to encrypt all disks to protect the confidentiality and integrity of all information at rest.
+
+GROUP ID: V-253259
+RULE ID: SV-253259r958870
+
+If data at rest is unencrypted, it is vulnerable to disclosure. Even if the operating system enforces permissions on data access, an adversary can remove non-volatile memory and read it directly, thereby circumventing operating system controls. Encrypting the data ensures that confidentiality is protected even when the operating system is not running.
+
+NOTE: Nessus has provided the target output to assist in reviewing the benchmark to ensure target compliance.","Enable full disk encryption on all information systems (including SIPRNet) using BitLocker.
+
+BitLocker, included in Windows, can be enabled in the Control Panel under 'BitLocker Drive Encryption' as well as other management tools.
+
+Note: An alternate encryption application may be used in lieu of BitLocker providing it is configured for full disk encryption and satisfies the pre-boot authentication requirements (WN11-00-000031 and WN11-00-000032).","800-171|3.13.16,800-171r3|03.13.08,800-53|SC-28(1),800-53r5|SC-28(1),CCI|CCI-002475,CN-L3|8.1.4.7(b),CN-L3|8.1.4.8(b),CSF|PR.DS-1,CSF2.0|PR.DS-01,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO-27001-2022|A.5.33,ITSG-33|SC-28(1),LEVEL|1M,PCI-DSSv3.2.1|3.4,PCI-DSSv4.0|3.3.2,PCI-DSSv4.0|3.5.1,QCSC-v1|5.2.2,QCSC-v1|6.2,Rule-ID|SV-253259r958870_rule,STIG-ID|WN11-00-000030,TBA-FIISB|28.1,Vuln-ID|V-253259",https://workbench.cisecurity.org/benchmarks/27756,,,All disks encrypted,POLICY_TEXT,,,,,Medium,795,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+,,,UseAdvancedStartup,REGISTRY_SETTING,custom_item,group_policy > if > then > if > condition,UseAdvancedStartup,,,,,,,1,POLICY_DWORD,HKLM\SOFTWARE\Policies\Microsoft\FVE,UseAdvancedStartup,CAN_NOT_BE_NULL,,Medium,822,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+,,,UseTPMPin,REGISTRY_SETTING,custom_item,group_policy > if > then > if > then > if > condition,UseTPMPin,,,,,,,"""1"" || ""2""",POLICY_DWORD,HKLM\SOFTWARE\Policies\Microsoft\FVE,UseTPMPin,,,Medium,836,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+,,,UseTPMKeyPin,REGISTRY_SETTING,custom_item,group_policy > if > then > if > then > if > condition,UseTPMKeyPin,,,,,,,"""1"" || ""2""",POLICY_DWORD,HKLM\SOFTWARE\Policies\Microsoft\FVE,UseTPMKeyPin,,,Medium,845,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.7,,,WN11-00-000031,PASSED,report,group_policy > if > then > if > then > if > then,1.7 WN11-00-000031,"Windows 11 systems must use a BitLocker PIN for pre-boot authentication.
+
+GROUP ID: V-253260
+RULE ID: SV-253260r958872
+
+If data at rest is unencrypted, it is vulnerable to disclosure. Even if the operating system enforces permissions on data access, an adversary can remove non-volatile memory and read it directly, thereby circumventing operating system controls. Encrypting the data ensures that confidentiality is protected even when the operating system is not running. Pre-boot authentication prevents unauthorized users from accessing encrypted drives.","Configure the policy value for
+
+Computer Configuration >> Administrative Templates >> Windows Components >> BitLocker Drive Encryption >> Operating System Drives 'Require additional authentication at startup'
+
+to 'Enabled' with 'Configure TPM Startup PIN:' set to 'Require startup PIN with TPM' or with 'Configure TPM startup key and PIN:' set to 'Require startup key and PIN with TPM'.","800-171|3.13.16,800-171r3|03.13.08,800-53|SC-28(1),800-53r5|SC-28(1),CCI|CCI-002476,CN-L3|8.1.4.7(b),CN-L3|8.1.4.8(b),CSF|PR.DS-1,CSF2.0|PR.DS-01,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO-27001-2022|A.5.33,ITSG-33|SC-28(1),LEVEL|1A,PCI-DSSv3.2.1|3.4,PCI-DSSv4.0|3.3.2,PCI-DSSv4.0|3.5.1,QCSC-v1|5.2.2,QCSC-v1|6.2,Rule-ID|SV-253260r958872_rule,STIG-ID|WN11-00-000031,TBA-FIISB|28.1,Vuln-ID|V-253260",https://workbench.cisecurity.org/benchmarks/27756,,,,,,,,,Medium,856,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+1.7,,,WN11-00-000031,FAILED,report,group_policy > if > then > if > else,1.7 WN11-00-000031,"Windows 11 systems must use a BitLocker PIN for pre-boot authentication.
+
+GROUP ID: V-253260
+RULE ID: SV-253260r958872
+
+If data at rest is unencrypted, it is vulnerable to disclosure. Even if the operating system enforces permissions on data access, an adversary can remove non-volatile memory and read it directly, thereby circumventing operating system controls. Encrypting the data ensures that confidentiality is protected even when the operating system is not running. Pre-boot authentication prevents unauthorized users from accessing encrypted drives.","Configure the policy value for
+
+Computer Configuration >> Administrative Templates >> Windows Components >> BitLocker Drive Encryption >> Operating System Drives 'Require additional authentication at startup'
+
+to 'Enabled' with 'Configure TPM Startup PIN:' set to 'Require startup PIN with TPM' or with 'Configure TPM startup key and PIN:' set to 'Require startup key and PIN with TPM'.","800-171|3.13.16,800-171r3|03.13.08,800-53|SC-28(1),800-53r5|SC-28(1),CCI|CCI-002476,CN-L3|8.1.4.7(b),CN-L3|8.1.4.8(b),CSF|PR.DS-1,CSF2.0|PR.DS-01,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO-27001-2022|A.5.33,ITSG-33|SC-28(1),LEVEL|1A,PCI-DSSv3.2.1|3.4,PCI-DSSv4.0|3.3.2,PCI-DSSv4.0|3.5.1,QCSC-v1|5.2.2,QCSC-v1|6.2,Rule-ID|SV-253260r958872_rule,STIG-ID|WN11-00-000031,TBA-FIISB|28.1,Vuln-ID|V-253260",https://workbench.cisecurity.org/benchmarks/27756,,,,,,,,,Medium,878,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit
+,,,CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit from CIS Microsoft Windows 11 STIG v1.2.0,WARNING,report,group_policy > if > else,CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit from CIS Microsoft Windows 11 STIG v1.2.0,NOTE: Nessus has not identified that the chosen audit applies to the target device.,,,https://workbench.cisecurity.org/benchmarks/27756,,,,,,,,,Medium,899,audits\portal_audits\Windows\CIS_Microsoft_Windows_11_STIG_v1.2.0_CAT_I.audit

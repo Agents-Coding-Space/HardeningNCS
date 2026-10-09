@@ -1,0 +1,92 @@
+﻿CID,Profile,Scored,Title,Type,Tag,Conditional Path,Description,Info / Rationale,Solution / Remediation,Reference,See Also,Cmd / Request,Expect,Value Data,Value Type,Reg Key,Reg Item,Reg Option,File,Severity,Line,Source File
+,,,Verify IIS is installed.,REGISTRY_SETTING,custom_item,group_policy > if > condition,Verify IIS is installed.,,,,,,,(internet|iis),POLICY_TEXT,HKLM\SYSTEM\CurrentControlSet\Services\W3SVC,ImagePath,,,Medium,54,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+,,,Verify IIS 10 installed.,REGISTRY_SETTING,custom_item,group_policy > if > condition,Verify IIS 10 installed.,,,,,,,^Version 10\.0[\s]*$,POLICY_TEXT,HKLM\Software\Microsoft\Inetstp,VersionString,,,Medium,64,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+,,,Windows Server 2016/2019/2022 and Windows 10,REGISTRY_SETTING,custom_item,group_policy > if > condition,Windows Server 2016/2019/2022 and Windows 10,,,,,,,^[a-zA-Z0-9\(\)\s]*(10|20[12][269])[a-zA-Z0-9\(\)\s]*$,POLICY_TEXT,HKLM\Software\Microsoft\Windows Nt\Currentversion,ProductName,,,Medium,74,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+,,,CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit from CIS Microsoft IIS 10.0 Site STIG v1.0.0,PASSED,report,group_policy > if > then,CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit from CIS Microsoft IIS 10.0 Site STIG v1.0.0,,,,https://workbench.cisecurity.org/benchmarks/23698,,,,,,,,,Medium,86,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+,,,Check if anonymous authentication is enabled for any IIS site.,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > condition,Check if anonymous authentication is enabled for any IIS site.,,,,,,,true,POLICY_TEXT,,,,,Medium,94,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+,,,Verify the anonymous authentication username is restricted (not a broad group account).,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > then > if > condition,Verify the anonymous authentication username is restricted (not a broad group account).,,,,,,,^Manual Review Required$,POLICY_TEXT,,,,,Medium,107,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+,,,Verify the anonymous access account is not a member of a privileged group.,AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > then > if > condition,Verify the anonymous access account is not a member of a privileged group.,,,,,,,^Manual Review Required$,POLICY_TEXT,,,,,Medium,117,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+1.14,,,IIST-SI-000221,PASSED,report,group_policy > if > then > if > then > if > then,1.14 IIST-SI-000221,"Anonymous IIS 10.0 website access accounts must be restricted.
+
+GROUP ID: V-218750
+RULE ID: SV-218750r961095
+
+Many of the security problems that occur are not the result of a user gaining access to files or data for which the user does not have permissions, but rather users are assigned incorrect permissions to unauthorized data. The files, directories, and data stored on the web server must be evaluated and a determination made concerning authorized access to information and programs on the server. Only authorized users and administrative accounts will be allowed on the host server in order to maintain the web server, applications, and review the server operations.
+
+NOTE: Nessus has provided the target output to assist in reviewing the benchmark to ensure target compliance.",Remove the Anonymous access account from all privileged accounts and all privileged groups.,"800-171|3.13.3,800-53|SC-2,800-53r5|SC-2,CAT|I,CCI|CCI-001082,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SC-2,ITSG-33|SC-2a.,LEVEL|1M,NESA|T3.4.1,NIAv2|SS15b,Rule-ID|SV-218750r961095_rule,STIG-ID|IIST-SI-000221,Vuln-ID|V-218750",https://workbench.cisecurity.org/benchmarks/23698,,,,,,,,,High,128,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+1.14,,,IIST-SI-000221,PASSED,report,group_policy > if > then > if > else,1.14 IIST-SI-000221,"Anonymous IIS 10.0 website access accounts must be restricted.
+
+GROUP ID: V-218750
+RULE ID: SV-218750r961095
+
+Many of the security problems that occur are not the result of a user gaining access to files or data for which the user does not have permissions, but rather users are assigned incorrect permissions to unauthorized data. The files, directories, and data stored on the web server must be evaluated and a determination made concerning authorized access to information and programs on the server. Only authorized users and administrative accounts will be allowed on the host server in order to maintain the web server, applications, and review the server operations.",Remove the Anonymous access account from all privileged accounts and all privileged groups.,"800-171|3.13.3,800-53|SC-2,800-53r5|SC-2,CAT|I,CCI|CCI-001082,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|SC-2,ITSG-33|SC-2a.,LEVEL|1M,NESA|T3.4.1,NIAv2|SS15b,Rule-ID|SV-218750r961095_rule,STIG-ID|IIST-SI-000221,Vuln-ID|V-218750",https://workbench.cisecurity.org/benchmarks/23698,,,,,,,,,High,148,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+,,,Verify WSUS server role is installed (registry).,REG_CHECK,custom_item,group_policy > if > then > if > condition,Verify WSUS server role is installed (registry).,,,,,,,HKLM\Software\Microsoft\Update Services\Server\Setup,POLICY_TEXT,,,MUST_EXIST,,Medium,165,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+,,,"Verify WSUS server role is installed (service present, any state).",AUDIT_POWERSHELL,custom_item,group_policy > if > then > if > condition,"Verify WSUS server role is installed (service present, any state).",,,,,,,.*WSUSInstalled.*,POLICY_TEXT,,,,,Medium,173,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+,,,Verify SharePoint is installed,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > condition,Verify SharePoint is installed,,,,,,,sharepoint,POLICY_TEXT,,,,,Medium,182,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+,,,Verify OCSP Responder service is installed.,REG_CHECK,custom_item,group_policy > if > then > if > condition,Verify OCSP Responder service is installed.,,,,,,,HKLM\System\CurrentControlSet\Services\OCSPSvc,POLICY_TEXT,,,MUST_EXIST,,Medium,191,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+,,,Verify NDES (Network Device Enrollment Service) is installed.,REG_CHECK,custom_item,group_policy > if > then > if > condition,Verify NDES (Network Device Enrollment Service) is installed.,,,,,,,HKLM\System\CurrentControlSet\Services\Mscep,POLICY_TEXT,,,MUST_EXIST,,Medium,199,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+,,,Verify CRL distribution service (CertSvc / AD CS) is installed.,REG_CHECK,custom_item,group_policy > if > then > if > condition,Verify CRL distribution service (CertSvc / AD CS) is installed.,,,,,,,HKLM\System\CurrentControlSet\Services\CertSvc,POLICY_TEXT,,,MUST_EXIST,,Medium,207,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+1.33,,,IIST-SI-000242,PASSED,report,group_policy > if > then > if > then,1.33 IIST-SI-000242,"The IIS 10.0 private website must employ cryptographic mechanisms (TLS) and require client certificates.
+
+GROUP ID: V-218768
+RULE ID: SV-218768r1111814
+
+TLS encryption is a required security setting for a private web server. Encryption of private information is essential to ensuring data confidentiality. If private information is not encrypted, it can be intercepted and easily read by an unauthorized party. A private web server must use a FIPS 140-2-approved TLS version, and all non-FIPS-approved SSL versions must be disabled.
+
+NIST SP 800-52 specifies the preferred configurations for government systems.","Follow the procedures below for each site hosted on the IIS 10.0 web server:
+
+Open the IIS 10.0 Manager.
+
+Double-click the 'SSL Settings' icon under the 'IIS' section.
+
+Select the 'Require SSL' setting.
+
+Select the 'Client Certificates Required' setting.
+
+Click 'Apply' in the 'Actions' pane.
+
+Click the site under review.
+
+Select 'Configuration Editor' under the 'Management' section.
+
+From the 'Section:' drop-down list at the top of the configuration editor, locate 'system.webServer/security/access'.
+
+Click on the drop-down list for 'sslFlags'.
+
+Select the 'Ssl128' check box.
+
+Click 'Apply' in the 'Actions' pane.","800-171|3.13.16,800-171r3|03.13.08,800-53|SC-28(1),800-53r5|SC-28(1),CAT|I,CCI|CCI-002476,CN-L3|8.1.4.7(b),CN-L3|8.1.4.8(b),CSF|PR.DS-1,CSF2.0|PR.DS-01,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO-27001-2022|A.5.33,ITSG-33|SC-28(1),LEVEL|1M,PCI-DSSv3.2.1|3.4,PCI-DSSv4.0|3.3.2,PCI-DSSv4.0|3.5.1,QCSC-v1|5.2.2,QCSC-v1|6.2,Rule-ID|SV-218768r1111814_rule,STIG-ID|IIST-SI-000242,TBA-FIISB|28.1,Vuln-ID|V-218768",https://workbench.cisecurity.org/benchmarks/23698,,,,,,,,,High,217,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+,,,Verify Require SSL is enabled for HTTPS-bound sites,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > else > if > condition,Verify Require SSL is enabled for HTTPS-bound sites,,,,,,,"(^| )Ssl(,|$)",POLICY_TEXT,,,,,Medium,259,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+,,,Verify client certificates are required for HTTPS-bound sites,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > else > if > condition,Verify client certificates are required for HTTPS-bound sites,,,,,,,"(^| )SslRequireCert(,|$)",POLICY_TEXT,,,,,Medium,271,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+,,,Verify 128-bit SSL encryption is enforced for HTTPS-bound sites,AUDIT_IIS_APPCMD,custom_item,group_policy > if > then > if > else > if > condition,Verify 128-bit SSL encryption is enforced for HTTPS-bound sites,,,,,,,"(^| )Ssl128(,|$)",POLICY_TEXT,,,,,Medium,283,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+1.33,,,IIST-SI-000242,PASSED,report,group_policy > if > then > if > else > if > then,1.33 IIST-SI-000242,"The IIS 10.0 private website must employ cryptographic mechanisms (TLS) and require client certificates.
+
+GROUP ID: V-218768
+RULE ID: SV-218768r1111814
+
+TLS encryption is a required security setting for a private web server. Encryption of private information is essential to ensuring data confidentiality. If private information is not encrypted, it can be intercepted and easily read by an unauthorized party. A private web server must use a FIPS 140-2-approved TLS version, and all non-FIPS-approved SSL versions must be disabled.
+
+NIST SP 800-52 specifies the preferred configurations for government systems.","Follow the procedures below for each site hosted on the IIS 10.0 web server:
+
+Open the IIS 10.0 Manager.
+
+Double-click the 'SSL Settings' icon under the 'IIS' section.
+
+Select the 'Require SSL' setting.
+
+Select the 'Client Certificates Required' setting.
+
+Click 'Apply' in the 'Actions' pane.
+
+Click the site under review.
+
+Select 'Configuration Editor' under the 'Management' section.
+
+From the 'Section:' drop-down list at the top of the configuration editor, locate 'system.webServer/security/access'.
+
+Click on the drop-down list for 'sslFlags'.
+
+Select the 'Ssl128' check box.
+
+Click 'Apply' in the 'Actions' pane.","800-171|3.13.16,800-171r3|03.13.08,800-53|SC-28(1),800-53r5|SC-28(1),CAT|I,CCI|CCI-002476,CN-L3|8.1.4.7(b),CN-L3|8.1.4.8(b),CSF|PR.DS-1,CSF2.0|PR.DS-01,GDPR|32.1.a,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(2)(iv),HIPAA|164.312(e)(2)(ii),ISO-27001-2022|A.5.33,ITSG-33|SC-28(1),LEVEL|1M,PCI-DSSv3.2.1|3.4,PCI-DSSv4.0|3.3.2,PCI-DSSv4.0|3.5.1,QCSC-v1|5.2.2,QCSC-v1|6.2,Rule-ID|SV-218768r1111814_rule,STIG-ID|IIST-SI-000242,TBA-FIISB|28.1,Vuln-ID|V-218768",https://workbench.cisecurity.org/benchmarks/23698,,,,,,,,,High,297,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit
+,,,CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit from CIS Microsoft IIS 10.0 Site STIG v1.0.0,WARNING,report,group_policy > if > else,CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit from CIS Microsoft IIS 10.0 Site STIG v1.0.0,NOTE: Nessus has not identified that the chosen audit applies to the target device.,,,https://workbench.cisecurity.org/benchmarks/23698,,,,,,,,,Medium,341,audits\portal_audits\Windows\CIS_Microsoft_IIS_10.0_Site_STIG_v1.0.0_CAT_I.audit

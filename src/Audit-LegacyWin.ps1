@@ -79,7 +79,6 @@ Write-Host @"
    .XXX+     XXXx+   :XXXXXXXXXX;  +XXXXXXXXXXX+
     +++:      +++;     :;+++++++:  ;++++++++;:  
 
-    VIETNAM NATIONAL CYBER SECURITY TECHNOLOGY JSC
         HardeningNCS | PowerShell 2.0+ Edition
 "@ -ForegroundColor Cyan
 Write-Host "=================================================================" -ForegroundColor DarkCyan
@@ -243,26 +242,88 @@ $skippedCount = 0
 foreach ($item in $findings) {
     $totalCount++
 
-    # Safe extraction of properties (including UTF-8 BOM handling for ID)
-    $itemId = ""
-    if ($null -ne $item.ID) {
-        $itemId = "$($item.ID)".Trim()
-    }
-    if ([string]::IsNullOrEmpty($itemId) -and $null -ne $item."`ufeffID") {
-        $itemId = "$($item."`ufeffID")".Trim()
-    }
+    # Detect audit2excel / Tenable CSV format vs HardeningKitty format
+    $isAudit2Excel = ($null -ne $item.Type -and ($null -ne $item."Reg Key" -or $null -ne $item."Value Data" -or $null -ne $item.Expect))
 
-    $category = if ($null -ne $item.Category) { "$($item.Category)".Trim() } else { "" }
-    $name = if ($null -ne $item.Name) { "$($item.Name)".Trim() } else { "" }
-    $method = if ($null -ne $item.Method) { "$($item.Method)".Trim() } else { "" }
-    $methodArg = if ($null -ne $item.MethodArgument) { "$($item.MethodArgument)".Trim() } else { "" }
-    $regPath = if ($null -ne $item.RegistryPath) { "$($item.RegistryPath)".Trim() } else { "" }
-    $regItem = if ($null -ne $item.RegistryItem) { "$($item.RegistryItem)".Trim() } else { "" }
-    $defVal = if ($null -ne $item.DefaultValue) { "$($item.DefaultValue)".Trim() } else { "" }
-    $recVal = if ($null -ne $item.RecommendedValue) { "$($item.RecommendedValue)".Trim() } else { "" }
-    $operator = if ($null -ne $item.Operator) { "$($item.Operator)".Trim() } else { "=" }
-    if ([string]::IsNullOrEmpty($operator)) { $operator = "=" }
-    $severity = if ($null -ne $item.Severity) { "$($item.Severity)".Trim() } else { "" }
+    if ($isAudit2Excel) {
+        $itemId = if ($null -ne $item.CID) { "$($item.CID)".Trim() } elseif ($null -ne $item."`ufeffCID") { "$($item."`ufeffCID")".Trim() } else { "" }
+        $category = if ($null -ne $item.Profile -and -not [string]::IsNullOrEmpty("$($item.Profile)".Trim())) { "$($item.Profile)".Trim() } else { "$($item.Type)".Trim() }
+        $name = if ($null -ne $item.Title) { "$($item.Title)".Trim() } else { "" }
+        $severity = if ($null -ne $item.Severity -and -not [string]::IsNullOrEmpty("$($item.Severity)".Trim())) { "$($item.Severity)".Trim() } else { "Medium" }
+        $defVal = ""
+        $operator = "="
+
+        $cType = "$($item.Type)".Trim()
+        $methodArg = ""
+        $regPath = ""
+        $regItem = ""
+
+        if ($cType -eq "REGISTRY_SETTING" -or $cType -eq "REG_CHECK") {
+            $method = "Registry"
+            $regPath = if ($null -ne $item."Reg Key") { "$($item."Reg Key")".Trim() } else { "" }
+            $regItem = if ($null -ne $item."Reg Item") { "$($item."Reg Item")".Trim() } else { "" }
+            $recVal = if ($null -ne $item."Value Data") { "$($item."Value Data")".Trim() } else { "" }
+            if ($recVal.StartsWith("^") -and $recVal.EndsWith("$") -and $recVal.Length -gt 2) {
+                $recVal = $recVal.Substring(1, $recVal.Length - 2)
+            }
+        } elseif ($cType -eq "AUDIT_POLICY_SUBCATEGORY") {
+            $method = "auditpol"
+            if ($name -match "Ensure 'Audit ([^']+)'") {
+                $methodArg = $matches[1]
+            } elseif ($name -match "Ensure '([^']+)'") {
+                $methodArg = $matches[1]
+            }
+            $recVal = if ($null -ne $item."Value Data") { "$($item."Value Data")".Trim() } else { "" }
+        } elseif ($cType -eq "USER_RIGHTS_POLICY") {
+            $method = "accesschk"
+            $recVal = if ($null -ne $item."Value Data") { "$($item."Value Data")".Trim() } else { "" }
+        } elseif ($cType -eq "PASSWORD_POLICY" -or $cType -eq "LOCKOUT_POLICY") {
+            $method = "accountpolicy"
+            if ($name -match "password history") { $methodArg = "ENFORCE_PASSWORD_HISTORY" }
+            elseif ($name -match "Maximum password age") { $methodArg = "MAXIMUM_PASSWORD_AGE" }
+            elseif ($name -match "Minimum password age") { $methodArg = "MINIMUM_PASSWORD_AGE" }
+            elseif ($name -match "Minimum password length") { $methodArg = "MINIMUM_PASSWORD_LENGTH" }
+            elseif ($name -match "complexity") { $methodArg = "COMPLEXITY_REQUIREMENTS" }
+            elseif ($name -match "reversible") { $methodArg = "REVERSIBLE_ENCRYPTION" }
+            elseif ($name -match "Account lockout duration") { $methodArg = "LOCKOUT_DURATION" }
+            elseif ($name -match "Account lockout threshold") { $methodArg = "LOCKOUT_THRESHOLD" }
+            elseif ($name -match "Reset account lockout") { $methodArg = "LOCKOUT_RESET" }
+            elseif ($name -match "logon hours") { $methodArg = "FORCE_LOGOFF" }
+            $recVal = if ($null -ne $item."Value Data") { "$($item."Value Data")".Trim() } else { "" }
+        } elseif ($cType -eq "CHECK_ACCOUNT") {
+            $method = "localaccount"
+            $methodArg = if ($name -match "Administrator") { "500" } elseif ($name -match "Guest") { "501" } else { "" }
+            $recVal = if ($null -ne $item."Value Data") { "$($item."Value Data")".Trim() } else { "" }
+        } elseif ($cType -eq "ANONYMOUS_SID_SETTING") {
+            $method = "secedit"
+            $methodArg = "System Access\LSAAnonymousNameLookup"
+            $recVal = "0"
+        } else {
+            $method = $cType
+            $recVal = ""
+        }
+    } else {
+        # Safe extraction of properties (including UTF-8 BOM handling for ID)
+        $itemId = ""
+        if ($null -ne $item.ID) {
+            $itemId = "$($item.ID)".Trim()
+        }
+        if ([string]::IsNullOrEmpty($itemId) -and $null -ne $item."`ufeffID") {
+            $itemId = "$($item."`ufeffID")".Trim()
+        }
+
+        $category = if ($null -ne $item.Category) { "$($item.Category)".Trim() } else { "" }
+        $name = if ($null -ne $item.Name) { "$($item.Name)".Trim() } else { "" }
+        $method = if ($null -ne $item.Method) { "$($item.Method)".Trim() } else { "" }
+        $methodArg = if ($null -ne $item.MethodArgument) { "$($item.MethodArgument)".Trim() } else { "" }
+        $regPath = if ($null -ne $item.RegistryPath) { "$($item.RegistryPath)".Trim() } else { "" }
+        $regItem = if ($null -ne $item.RegistryItem) { "$($item.RegistryItem)".Trim() } else { "" }
+        $defVal = if ($null -ne $item.DefaultValue) { "$($item.DefaultValue)".Trim() } else { "" }
+        $recVal = if ($null -ne $item.RecommendedValue) { "$($item.RecommendedValue)".Trim() } else { "" }
+        $operator = if ($null -ne $item.Operator) { "$($item.Operator)".Trim() } else { "=" }
+        if ([string]::IsNullOrEmpty($operator)) { $operator = "=" }
+        $severity = if ($null -ne $item.Severity) { "$($item.Severity)".Trim() } else { "" }
+    }
 
     # Check Skip conditions
     $isSkipped = $false
