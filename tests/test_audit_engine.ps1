@@ -220,6 +220,16 @@ MinimumPasswordAge = 1
         if (Test-Path $mockUnavailableInf) { Remove-Item $mockUnavailableInf -Force -ErrorAction SilentlyContinue }
         if (Test-Path $outputUnavail) { Remove-Item $outputUnavail -Force -ErrorAction SilentlyContinue }
     }
+    # Deterministic Test: Specifying non-existent SecEditFile halts execution instead of falling back to live export
+    $nonExistentInf = "C:\Windows\Temp\non_existent_inf_" + [System.Guid]::NewGuid().ToString("N") + ".inf"
+    $outputNonExist = [System.IO.Path]::GetTempFileName() + ".csv"
+    try {
+        & $auditEnginePath -FindingList $adapterFindingList -OutputDir $outputNonExist -SecEditFile $nonExistentInf 2>$null
+        Assert-True "Specifying non-existent SecEditFile does not create report (aborts cleanly)" (-not (Test-Path $outputNonExist))
+    }
+    finally {
+        if (Test-Path $outputNonExist) { Remove-Item $outputNonExist -Force -ErrorAction SilentlyContinue }
+    }
 }
 finally {
     if (Test-Path $adapterFindingList) { Remove-Item $adapterFindingList -Force -ErrorAction SilentlyContinue }

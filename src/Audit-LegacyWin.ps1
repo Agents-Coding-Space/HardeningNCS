@@ -89,8 +89,13 @@ $secEditPrivilegeDataAvailable = $false
 $skipSecEdit = ($SkipMethods -contains "secedit" -and $SkipMethods -contains "accountpolicy" -and $SkipMethods -contains "accesschk")
 if (-not $skipSecEdit) {
     try {
-        if (-not [string]::IsNullOrEmpty($SecEditFile) -and (Test-Path -Path $SecEditFile)) {
-            $secEditData = Get-SecEditPolicy -Path $SecEditFile
+        if (-not [string]::IsNullOrEmpty($SecEditFile)) {
+            if (Test-Path -Path $SecEditFile) {
+                $secEditData = Get-SecEditPolicy -Path $SecEditFile
+            } else {
+                Write-Error ("Specified SecEditFile not found: " + $SecEditFile)
+                return
+            }
         } else {
             $secEditData = Get-SecEditPolicy
         }
