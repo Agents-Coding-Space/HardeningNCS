@@ -13,7 +13,10 @@ param(
     [string]$OutputDir = "",
 
     [Parameter(Mandatory = $false)]
-    [string[]]$SkipMethods = @()
+    [string[]]$SkipMethods = @(),
+
+    [Parameter(Mandatory = $false)]
+    [string]$SecEditFile = ""
 )
 
 # Resolve ScriptDir using PS 2.0 compatible invocation logic
@@ -80,13 +83,17 @@ if (Test-Path -Path $auditPolHelper) {
     return
 }
 
-# Secedit export (1 time export using temp file)
+# Secedit export (1 time export using temp file or pre-supplied SecEditFile)
 $secEditData = @{}
 $secEditPrivilegeDataAvailable = $false
 $skipSecEdit = ($SkipMethods -contains "secedit" -and $SkipMethods -contains "accountpolicy" -and $SkipMethods -contains "accesschk")
 if (-not $skipSecEdit) {
     try {
-        $secEditData = Get-SecEditPolicy
+        if (-not [string]::IsNullOrEmpty($SecEditFile) -and (Test-Path -Path $SecEditFile)) {
+            $secEditData = Get-SecEditPolicy -Path $SecEditFile
+        } else {
+            $secEditData = Get-SecEditPolicy
+        }
         if ($null -ne $secEditData -and $secEditData.Count -gt 0) {
             foreach ($secKey in $secEditData.Keys) {
                 if ($secKey.StartsWith("Privilege Rights\", [System.StringComparison]::OrdinalIgnoreCase) -or $secKey.StartsWith("Se", [System.StringComparison]::OrdinalIgnoreCase)) {

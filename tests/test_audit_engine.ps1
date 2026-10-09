@@ -145,14 +145,6 @@ try {
         $adapterRows = Import-Csv -Path $adapterOutput
         Assert-Equal "Adapter test finding count" $adapterRows.Count 8
 
-        # TEST-ACC-1: If privilege data available, empty current vs empty recommended -> Passed; if privilege data unavailable -> Skipped (preventing False Pass)
-        $rAcc1 = $adapterRows | Where-Object { $_.ID -eq "TEST-ACC-1" }
-        Assert-True "TEST-ACC-1 status is Passed (if elevated) or Skipped (if un-elevated)" ($rAcc1.Status -eq "Passed" -or $rAcc1.Status -eq "Skipped")
-
-        # TEST-ACC-2: non-existent privilege -> current is "" vs recommended BUILTIN\Administrators -> Failed (or Skipped if un-elevated)
-        $rAcc2 = $adapterRows | Where-Object { $_.ID -eq "TEST-ACC-2" }
-        Assert-True "TEST-ACC-2 status is Failed (if elevated) or Skipped (if un-elevated)" ($rAcc2.Status -eq "Failed" -or $rAcc2.Status -eq "Skipped")
-
         # TEST-POL-1: MAXIMUM_PASSWORD_AGE via net accounts fallback -> 42 <=!0 365 -> Passed
         $rPol1 = $adapterRows | Where-Object { $_.ID -eq "TEST-POL-1" }
         Assert-Equal "TEST-POL-1 status is Passed" $rPol1.Status "Passed"
@@ -169,6 +161,64 @@ try {
         # TEST-UNK-1: Unknown method MUST be Skipped, NEVER Passed!
         $rUnk1 = $adapterRows | Where-Object { $_.ID -eq "TEST-UNK-1" }
         Assert-Equal "TEST-UNK-1 status is Skipped" $rUnk1.Status "Skipped"
+    }
+
+    # Deterministic State A: Simulated AVAILABLE Privilege Rights Data
+    $mockAvailableInf = [System.IO.Path]::GetTempFileName() + ".inf"
+    $mockAvailContent = @"
+[Unicode]
+Unicode=yes
+[Privilege Rights]
+SeNetworkLogonRight = *S-1-5-32-544
+SeTrustedCredManAccessPrivilege = 
+"@
+    [System.IO.File]::WriteAllText($mockAvailableInf, $mockAvailContent)
+    $outputAvail = [System.IO.Path]::GetTempFileName() + ".csv"
+
+    try {
+        & $auditEnginePath -FindingList $adapterFindingList -OutputDir $outputAvail -SecEditFile $mockAvailableInf
+        Assert-True "Available state audit report produced" (Test-Path $outputAvail)
+        if (Test-Path $outputAvail) {
+            $rowsAvail = Import-Csv -Path $outputAvail
+            $rAcc1Avail = $rowsAvail | Where-Object { $_.ID -eq "TEST-ACC-1" }
+            $rAcc2Avail = $rowsAvail | Where-Object { $_.ID -eq "TEST-ACC-2" }
+
+            Assert-Equal "Deterministic State A: TEST-ACC-1 is Passed when privilege data available" $rAcc1Avail.Status "Passed"
+            Assert-Equal "Deterministic State A: TEST-ACC-2 is Failed when privilege data available" $rAcc2Avail.Status "Failed"
+        }
+    }
+    finally {
+        if (Test-Path $mockAvailableInf) { Remove-Item $mockAvailableInf -Force -ErrorAction SilentlyContinue }
+        if (Test-Path $outputAvail) { Remove-Item $outputAvail -Force -ErrorAction SilentlyContinue }
+    }
+
+    # Deterministic State B: Simulated UNAVAILABLE Privilege Rights Data (missing Privilege Rights section)
+    $mockUnavailableInf = [System.IO.Path]::GetTempFileName() + ".inf"
+    $mockUnavailContent = @"
+[Unicode]
+Unicode=yes
+[System Access]
+MinimumPasswordAge = 1
+"@
+    [System.IO.File]::WriteAllText($mockUnavailableInf, $mockUnavailContent)
+    $outputUnavail = [System.IO.Path]::GetTempFileName() + ".csv"
+
+    try {
+        & $auditEnginePath -FindingList $adapterFindingList -OutputDir $outputUnavail -SecEditFile $mockUnavailableInf
+        Assert-True "Unavailable state audit report produced" (Test-Path $outputUnavail)
+        if (Test-Path $outputUnavail) {
+            $rowsUnavail = Import-Csv -Path $outputUnavail
+            $rAcc1Unavail = $rowsUnavail | Where-Object { $_.ID -eq "TEST-ACC-1" }
+            $rAcc2Unavail = $rowsUnavail | Where-Object { $_.ID -eq "TEST-ACC-2" }
+
+            Assert-Equal "Deterministic State B: TEST-ACC-1 is Skipped when privilege data unavailable" $rAcc1Unavail.Status "Skipped"
+            Assert-True "Deterministic State B: TEST-ACC-1 CurrentValue explains unavailable data" ($rAcc1Unavail.CurrentValue -like "SKIPPED: Privilege Rights policy data unavailable*")
+            Assert-Equal "Deterministic State B: TEST-ACC-2 is Skipped when privilege data unavailable" $rAcc2Unavail.Status "Skipped"
+        }
+    }
+    finally {
+        if (Test-Path $mockUnavailableInf) { Remove-Item $mockUnavailableInf -Force -ErrorAction SilentlyContinue }
+        if (Test-Path $outputUnavail) { Remove-Item $outputUnavail -Force -ErrorAction SilentlyContinue }
     }
 }
 finally {
