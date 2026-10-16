@@ -214,7 +214,10 @@ function Get-SuggestedChecklist {
         [object[]]$Checklists,
 
         [Parameter(Mandatory = $false)]
-        [object]$SystemInfo = $null
+        [object]$SystemInfo = $null,
+
+        [Parameter(Mandatory = $false)]
+        [string]$BenchmarkLevel = "L1"
     )
 
     if ($null -eq $Checklists -or $Checklists.Count -eq 0) {
@@ -415,11 +418,28 @@ function Get-SuggestedChecklist {
             $score += 100
         }
 
-        # Level 1 preference
-        if ($fn -match "(?i)(Level_1|Level1|_L1\b|_L1_)") {
-            $score += 150
-        } elseif ($fn -match "(?i)(Level_2|Level2|_L2\b|_L2_)") {
-            $score += 30
+        # Benchmark level scoring
+        if ($BenchmarkLevel -ieq "L2") {
+            if ($fn -match "(?i)(Level_2|Level2|_L2\b|_L2_)") {
+                $score += 800
+            } elseif ($fn -match "(?i)(Level_1|Level1|_L1\b|_L1_)") {
+                $score -= 300
+            } else {
+                $score -= 200
+            }
+        } elseif ($BenchmarkLevel -ieq "L1+L2") {
+            if ($fn -match "(?i)(Level_1|Level1|_L1\b|_L1_)") {
+                $score += 200
+            } elseif ($fn -match "(?i)(Level_2|Level2|_L2\b|_L2_)") {
+                $score += 150
+            }
+        } else {
+            # Default L1 preference
+            if ($fn -match "(?i)(Level_1|Level1|_L1\b|_L1_)") {
+                $score += 150
+            } elseif ($fn -match "(?i)(Level_2|Level2|_L2\b|_L2_)") {
+                $score += 30
+            }
         }
 
         # Penalize modifiers like Bitlocker, NextGen unless base
@@ -438,7 +458,22 @@ function Get-SuggestedChecklist {
         }
     }
 
-    if ($bestScore -gt 0) {
+    if ($bestScore -gt 0 -and $null -ne $bestItem) {
+        if ($BenchmarkLevel -ieq "L1+L2") {
+            $bestL2 = Get-SuggestedChecklist -Checklists $Checklists -SystemInfo $SystemInfo -BenchmarkLevel "L2"
+            if ($null -ne $bestL2 -and $bestL2.FullPath -ne $bestItem.FullPath) {
+                $comb = New-Object PSObject
+                $comb | Add-Member -MemberType NoteProperty -Name "RelativePath" -Value ("lists/combined/" + $bestItem.FileName)
+                $comb | Add-Member -MemberType NoteProperty -Name "FullPath" -Value $bestItem.FullPath
+                $comb | Add-Member -MemberType NoteProperty -Name "FileName" -Value ("Combined_L1_L2_" + $bestItem.FileName)
+                $comb | Add-Member -MemberType NoteProperty -Name "Directory" -Value "[L1+L2]"
+                $comb | Add-Member -MemberType NoteProperty -Name "Size" -Value ($bestItem.Size + $bestL2.Size)
+                $comb | Add-Member -MemberType NoteProperty -Name "IsCombined" -Value $true
+                $comb | Add-Member -MemberType NoteProperty -Name "L1Item" -Value $bestItem
+                $comb | Add-Member -MemberType NoteProperty -Name "L2Item" -Value $bestL2
+                return $comb
+            }
+        }
         return $bestItem
     }
     return $null

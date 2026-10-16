@@ -651,11 +651,12 @@ Dim inFile, outStream
 Dim line, fields
 Dim id, cat, name, method, methodArg, regPath, regItem, defVal, recVal, op, sev
 Dim currentVal, isFound, status, isCompliant
-Dim totalCount, passedCount, failedCount, skippedCount
+Dim totalCount, passedCount, failedCount, manualCount, skippedCount
 
 totalCount = 0
 passedCount = 0
 failedCount = 0
+manualCount = 0
 skippedCount = 0
 
 WScript.Echo ""
@@ -679,14 +680,19 @@ For hIdx = 0 To UBound(headerFields)
     End If
 Next
 
-Dim idxID, idxCategory, idxName, idxMethod, idxMethodArg, idxRegPath, idxRegItem, idxDefVal, idxRecVal, idxOp, idxSev
+Dim idxID, idxCategory, idxName, idxMethod, idxMethodArg, idxRegPath, idxRegItem, idxDefVal, idxRecVal, idxOp, idxSev, idxType, idxTitle, idxCID
 idxID = -1: idxCategory = -1: idxName = -1: idxMethod = -1: idxMethodArg = -1
 idxRegPath = -1: idxRegItem = -1: idxDefVal = -1: idxRecVal = -1: idxOp = -1: idxSev = -1
+idxType = -1: idxTitle = -1: idxCID = -1
 
 If colMap.Exists("id") Then idxID = colMap("id")
+If colMap.Exists("cid") Then idxCID = colMap("cid")
 If colMap.Exists("category") Then idxCategory = colMap("category")
+If colMap.Exists("profile") Then idxCategory = colMap("profile")
 If colMap.Exists("name") Then idxName = colMap("name")
+If colMap.Exists("title") Then idxTitle = colMap("title")
 If colMap.Exists("method") Then idxMethod = colMap("method")
+If colMap.Exists("type") Then idxType = colMap("type")
 If colMap.Exists("methodargument") Then idxMethodArg = colMap("methodargument")
 If colMap.Exists("registrypath") Then idxRegPath = colMap("registrypath")
 If colMap.Exists("registryitem") Then idxRegItem = colMap("registryitem")
@@ -705,9 +711,15 @@ Do Until inFile.AtEndOfStream
             totalCount = totalCount + 1
 
             id = GetFieldValue(fields, idxID)
+            If id = "" And idxCID >= 0 Then id = GetFieldValue(fields, idxCID)
             cat = GetFieldValue(fields, idxCategory)
             name = GetFieldValue(fields, idxName)
+            If name = "" And idxTitle >= 0 Then name = GetFieldValue(fields, idxTitle)
             method = GetFieldValue(fields, idxMethod)
+            Dim cType
+            cType = ""
+            If idxType >= 0 Then cType = Trim(GetFieldValue(fields, idxType))
+            If method = "" And cType <> "" Then method = cType
             methodArg = GetFieldValue(fields, idxMethodArg)
             regPath = GetFieldValue(fields, idxRegPath)
             regItem = GetFieldValue(fields, idxRegItem)
@@ -720,10 +732,21 @@ Do Until inFile.AtEndOfStream
             currentVal = ""
             isFound = False
             status = ""
-            Dim isUnknownMethod
+            Dim isUnknownMethod, isManual
             isUnknownMethod = False
+            isManual = False
 
-            If LCase(method) = "mppreferenceasr" Then
+            If LCase(method) = "manual" Or LCase(method) = "manual review" Or _
+               LCase(cType) = "passed" Or LCase(cType) = "warning" Or LCase(cType) = "banner_check" Or _
+               InStr(1, name, "(Manual)", vbTextCompare) > 0 Then
+                isManual = True
+            End If
+
+            If isManual Then
+                status = "Manual Review"
+                currentVal = "MANUAL REVIEW REQUIRED"
+                manualCount = manualCount + 1
+            ElseIf LCase(method) = "mppreferenceasr" Then
                 status = "Skipped"
                 currentVal = "SKIPPED"
                 skippedCount = skippedCount + 1
@@ -925,6 +948,7 @@ WScript.Echo "================ AUDIT SUMMARY (VBScript) ================"
 WScript.Echo "Total Findings : " & totalCount
 WScript.Echo "Passed         : " & passedCount
 WScript.Echo "Failed         : " & failedCount
+WScript.Echo "Manual Review  : " & manualCount
 WScript.Echo "Skipped        : " & skippedCount
 WScript.Echo "=========================================================="
 WScript.Echo "Report Output  : " & outputFile

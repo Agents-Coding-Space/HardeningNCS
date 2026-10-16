@@ -357,6 +357,36 @@ $sugUnknown = Get-SuggestedChecklist -Checklists $catalog -SystemInfo $mockUnkno
 Assert-HKTest "Unknown OS returns null" ($null -eq $sugUnknown)
 
 # ------------------------------------------------------------------------------
+# Test Section 6: Benchmark Level Selection (L1, L2, L1+L2) & Checklist Merging
+# ------------------------------------------------------------------------------
+Write-Host "`n--- Testing Benchmark Level Selection & Merge-HKChecklists ---" -ForegroundColor Yellow
+
+# 18. Suggestion under BenchmarkLevel L2
+$sug2008R2_L2 = Get-SuggestedChecklist -Checklists $catalog -SystemInfo $mock2008R2_MS -BenchmarkLevel "L2"
+Assert-HKTest "Suggest Server 2008 R2 MS L2 is not null" ($null -ne $sug2008R2_L2)
+Assert-HKEqual "Suggest Server 2008 R2 MS L2 file" $sug2008R2_L2.FileName "CIS_MS_Windows_Server_2008_R2_MS_Level_2_v3.3.1.csv"
+
+# 19. Suggestion under BenchmarkLevel L1+L2 (Combined)
+$sug2008R2_L12 = Get-SuggestedChecklist -Checklists $catalog -SystemInfo $mock2008R2_MS -BenchmarkLevel "L1+L2"
+Assert-HKTest "Suggest Server 2008 R2 MS L1+L2 is not null" ($null -ne $sug2008R2_L12)
+Assert-HKTest "Suggest Server 2008 R2 MS L1+L2 is marked IsCombined" ($sug2008R2_L12.IsCombined -eq $true)
+Assert-HKTest "Suggest Server 2008 R2 MS L1+L2 has L1Item" ($null -ne $sug2008R2_L12.L1Item)
+Assert-HKTest "Suggest Server 2008 R2 MS L1+L2 has L2Item" ($null -ne $sug2008R2_L12.L2Item)
+
+# 20. Merge-HKChecklists functionality
+$testMergeOut = Join-Path ([System.IO.Path]::GetTempPath()) ("hk_test_merge_" + [System.Guid]::NewGuid().ToString("N") + ".csv")
+$mergedResult = Merge-HKChecklists -Checklist1 $sug2008R2_L12.L1Item.FullPath -Checklist2 $sug2008R2_L12.L2Item.FullPath -OutputFile $testMergeOut
+Assert-HKTest "Merge-HKChecklists produces output file" (Test-Path -Path $testMergeOut)
+
+$mergedRows = @(Import-Csv -Path $testMergeOut)
+$l1Rows = @(Import-Csv -Path $sug2008R2_L12.L1Item.FullPath)
+$l2Rows = @(Import-Csv -Path $sug2008R2_L12.L2Item.FullPath)
+
+Assert-HKTest "Merged checklist row count > L1 row count" ($mergedRows.Length -gt $l1Rows.Length)
+Assert-HKTest "Merged checklist row count <= L1 + L2 combined count" ($mergedRows.Length -le ($l1Rows.Length + $l2Rows.Length))
+if (Test-Path -Path $testMergeOut) { [void](Remove-Item -Path $testMergeOut -Force) }
+
+# ------------------------------------------------------------------------------
 # Final Test Summary
 # ------------------------------------------------------------------------------
 Write-Host "`n=== TEST SUMMARY ===" -ForegroundColor Cyan

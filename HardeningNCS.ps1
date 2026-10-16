@@ -23,6 +23,10 @@ param(
     [string]$OutputDir = "",
 
     [Parameter(Mandatory = $false)]
+    [ValidateSet("L1", "L2", "L1+L2", "ALL")]
+    [string]$BenchmarkLevel = "L1",
+
+    [Parameter(Mandatory = $false)]
     [switch]$ConfirmRemediation,
 
     [Parameter(Mandatory = $false)]
@@ -76,7 +80,11 @@ if (Test-Path -Path $tuiHelper) {
 # Auto-detect system information and checklist catalog
 $sysInfo = Get-HKSystemInfo
 $allChecklists = Get-HKChecklistCatalog -BaseDir $ScriptDir
-$suggested = Get-SuggestedChecklist -Checklists $allChecklists -SystemInfo $sysInfo
+$currentLevel = if ([string]::IsNullOrEmpty($BenchmarkLevel)) { "L1" } else { $BenchmarkLevel.ToUpper() }
+if ($currentLevel -ne "L1" -and $currentLevel -ne "L2" -and $currentLevel -ne "L1+L2") {
+    $currentLevel = "L1"
+}
+$suggested = Get-SuggestedChecklist -Checklists $allChecklists -SystemInfo $sysInfo -BenchmarkLevel $currentLevel
 
 # ------------------------------------------------------------------------------
 # 2. TUI Display & Utility Functions
@@ -304,6 +312,7 @@ function Show-HKReportSummary {
     $total = 0
     $passed = 0
     $failed = 0
+    $manual = 0
     $skipped = 0
     $failedItems = New-Object System.Collections.ArrayList
 
@@ -319,6 +328,8 @@ function Show-HKReportSummary {
             } elseif ($st -ieq "Failed") {
                 $failed++
                 [void]$failedItems.Add($r)
+            } elseif ($st -ieq "Manual Review" -or $st -ieq "Manual") {
+                $manual++
             } elseif ($st -ieq "Skipped") {
                 $skipped++
             }
@@ -340,6 +351,7 @@ function Show-HKReportSummary {
     Write-Host ("Tong so muc    : " + $total) -ForegroundColor White
     Write-Host ("Passed         : " + $passed) -ForegroundColor Green
     Write-Host ("Failed         : " + $failed) -ForegroundColor $(if ($failed -gt 0) { "Red" } else { "Green" })
+    Write-Host ("Manual Review  : " + $manual) -ForegroundColor $(if ($manual -gt 0) { "Yellow" } else { "DarkGray" })
     Write-Host ("Skipped        : " + $skipped) -ForegroundColor $(if ($skipped -gt 0) { "Yellow" } else { "Green" })
     Write-Host $botLine -ForegroundColor Cyan
 
@@ -379,7 +391,17 @@ if ($isBatchMode) {
     # Resolve target checklist for batch execution
     $resolvedChecklist = $ChecklistPath
     if ([string]::IsNullOrEmpty($resolvedChecklist)) {
-        if ($null -ne $suggested -and -not [string]::IsNullOrEmpty($suggested.FullPath)) {
+        if ($null -ne $suggested -and $null -ne $suggested.IsCombined -and $suggested.IsCombined) {
+            $combName = "combined_L1_L2_" + $suggested.L1Item.FileName
+            $combPath = Join-Path $OutputDir $combName
+            Write-Host "Dang tong hop checklist ket hop L1 + L2..." -ForegroundColor Cyan
+            $mergedPath = Merge-HKChecklists -Checklist1 $suggested.L1Item.FullPath -Checklist2 $suggested.L2Item.FullPath -OutputFile $combPath
+            if ($null -ne $mergedPath -and (Test-Path -Path $mergedPath)) {
+                $resolvedChecklist = $mergedPath
+            } else {
+                $resolvedChecklist = $suggested.FullPath
+            }
+        } elseif ($null -ne $suggested -and -not [string]::IsNullOrEmpty($suggested.FullPath)) {
             $resolvedChecklist = $suggested.FullPath
         } else {
             $resolvedChecklist = Join-Path $ScriptDir "lists\finding_list_cis_win7_sp1_machine.csv"
@@ -392,6 +414,7 @@ if ($isBatchMode) {
 
     Write-Host ("HardeningNCS Batch Mode: Action=" + $Action) -ForegroundColor Cyan
     Write-Host ("Checklist: " + $resolvedChecklist) -ForegroundColor Cyan
+    Write-Host ("Benchmark Level: " + $currentLevel) -ForegroundColor Cyan
 
     switch ($Action) {
         "Audit" {
@@ -424,6 +447,10 @@ if ($isBatchMode) {
                 Write-Error "Non-interactive remediation requires explicit -ConfirmRemediation switch to prevent accidental changes."
                 $global:LASTEXITCODE = 1
                 exit 1
+            }
+
+            if ($resolvedChecklist -match "(?i)(Level_2|Level2|_L2\b|_L2_|Combined_L1_L2)" -or $currentLevel -ieq "L2" -or $currentLevel -ieq "L1+L2") {
+                Write-Host "WARNING: Applying Level 2 / L1+L2 Remediation under explicit confirmation." -ForegroundColor Yellow
             }
 
             $latestReport = Get-HKLatestAuditReport -ReportDir $OutputDir
@@ -502,6 +529,15 @@ while ($true) {
 
         Show-HKSystemSummaryCard -SystemInfo $sysInfo -TerminalWidth $tw
 
+        $levelColor = if ($currentLevel -eq "L1") { "Green" } elseif ($currentLevel -eq "L2") { "Yellow" } else { "Magenta" }
+        $levelDesc = switch ($currentLevel) {
+            "L1"    { "Level 1 (An toan / Khuyen nghi)" }
+            "L2"    { "Level 2 (Nghiem ngat / High Security)" }
+            "L1+L2" { "Level 1 + Level 2 (Ket hop toan dien)" }
+        }
+        Write-Host ""
+        Write-Host ("  [CHE DO BENCHMARK] : " + $levelDesc + " | Bam [L] de doi profile") -ForegroundColor $levelColor
+
         Write-Host ""
         if ($null -ne $suggested) {
             Write-Host ("[GOI Y] Khuyen nghi cho he thong: " + $suggested.FileName) -ForegroundColor Green
@@ -533,11 +569,39 @@ while ($true) {
 
         Write-Host ""
         Write-Host "Phim dieu khien:" -ForegroundColor Cyan
-        Write-Host "  [1-10] Chon | [G/Enter] Goi y | [N] Sau | [P] Truoc | [/kw] Loc | [Q] Thoat" -ForegroundColor White
+        Write-Host "  [1-10] Chon | [G/Enter] Goi y | [L] Level | [N] Sau | [P] Truoc | [/kw] Loc | [Q] Thoat" -ForegroundColor White
 
         $promptStr = if ($null -ne $suggested) { "Nhap lua chon (Mac dinh: [G] Chon goi y): " } else { "Nhap lua chon: " }
         $userInput = Read-Host $promptStr
         $userInput = if ($null -eq $userInput) { "" } else { $userInput.Trim() }
+
+        # Level switch hotkey [L]
+        if ($userInput -ieq "L") {
+            if ($currentLevel -eq "L1") {
+                $currentLevel = "L2"
+            } elseif ($currentLevel -eq "L2") {
+                $currentLevel = "L1+L2"
+            } else {
+                $currentLevel = "L1"
+            }
+            $suggested = Get-SuggestedChecklist -Checklists $allChecklists -SystemInfo $sysInfo -BenchmarkLevel $currentLevel
+            continue
+        }
+        if ($userInput -ieq "L1") {
+            $currentLevel = "L1"
+            $suggested = Get-SuggestedChecklist -Checklists $allChecklists -SystemInfo $sysInfo -BenchmarkLevel $currentLevel
+            continue
+        }
+        if ($userInput -ieq "L2") {
+            $currentLevel = "L2"
+            $suggested = Get-SuggestedChecklist -Checklists $allChecklists -SystemInfo $sysInfo -BenchmarkLevel $currentLevel
+            continue
+        }
+        if ($userInput -ieq "L12" -or $userInput -ieq "L1+L2" -or $userInput -ieq "L1L2") {
+            $currentLevel = "L1+L2"
+            $suggested = Get-SuggestedChecklist -Checklists $allChecklists -SystemInfo $sysInfo -BenchmarkLevel $currentLevel
+            continue
+        }
 
         # 1. Default ENTER or 'G' or 'S' selects suggested checklist
         if ($userInput -eq "" -or $userInput -ieq "G" -or $userInput -ieq "S") {
@@ -635,6 +699,28 @@ while ($true) {
     # MAN HINH 2: CHE DO THUC THI (CHO CHECKLIST DA CHON)
     # ==========================================================================
     while ($null -ne $selectedChecklist) {
+        # Check if combined L1+L2 synthesis is needed
+        if ($null -ne $selectedChecklist.IsCombined -and $selectedChecklist.IsCombined) {
+            $combinedCsvName = "combined_L1_L2_" + $selectedChecklist.L1Item.FileName
+            $combinedCsvPath = Join-Path $OutputDir $combinedCsvName
+            if (-not (Test-Path -Path $combinedCsvPath)) {
+                Write-Host ""
+                Write-Host "Dang tong hop checklist ket hop L1 + L2 vao outputs..." -ForegroundColor Cyan
+                $mergedPath = Merge-HKChecklists -Checklist1 $selectedChecklist.L1Item.FullPath -Checklist2 $selectedChecklist.L2Item.FullPath -OutputFile $combinedCsvPath
+                if ($null -ne $mergedPath -and (Test-Path -Path $mergedPath)) {
+                    $selectedChecklist.FullPath = $mergedPath
+                    $selectedChecklist.FileName = $combinedCsvName
+                    $selectedChecklist.RelativePath = "outputs\" + $combinedCsvName
+                    $selectedChecklist.Size = (Get-Item -Path $mergedPath).Length
+                }
+            } else {
+                $selectedChecklist.FullPath = $combinedCsvPath
+                $selectedChecklist.FileName = $combinedCsvName
+                $selectedChecklist.RelativePath = "outputs\" + $combinedCsvName
+                $selectedChecklist.Size = (Get-Item -Path $combinedCsvPath).Length
+            }
+        }
+
         $tw = Get-HKTerminalWidth
         Clear-HKScreen
         Show-HKBanner -TerminalWidth $tw
@@ -717,26 +803,65 @@ while ($true) {
 
         # Option 3: Remediation
         if ($actChoice -ieq "3") {
-            Write-Host ""
-            Write-Host "========================== CANH BAO QUAN TRONG ==========================" -ForegroundColor Yellow
-            Write-Host "Che do Remediation se truc tiep ap dung cac thiet lap hardening vao he thong." -ForegroundColor Yellow
-            Write-Host "He thong se tu dong thuc hien sao luu 4 lop truoc khi ap dung thay doi." -ForegroundColor Yellow
-            Write-Host "==========================================================================" -ForegroundColor Yellow
-            $confirmRem = Read-Host "Ban co chac chan muon thuc hien Remediation? (Y/N)"
-            if ($confirmRem -ieq "Y") {
-                $latestReport = Get-HKLatestAuditReport -ReportDir $OutputDir
-                if ([string]::IsNullOrEmpty($latestReport) -or -not (Test-Path -Path $latestReport)) {
-                    Write-Host "Chua co bao cao audit. Vui long chay Audit (1) truoc de xac dinh cac muc Failed." -ForegroundColor Red
+            $isL2OrCombined = ($currentLevel -eq "L2" -or $currentLevel -eq "L1+L2" -or $selName -match "(?i)(Level_2|Level2|_L2\b|_L2_|Combined_L1_L2)")
+
+            if ($isL2OrCombined) {
+                Write-Host ""
+                Write-Host "========================== CANH BAO RUI RO: LEVEL 2 / L1+L2 ==========================" -ForegroundColor Red
+                Write-Host "Ban dang chuan bi khac phuc he thong theo Benchmark Level 2 hoac L1+L2." -ForegroundColor Yellow
+                Write-Host "Chinh sach Level 2 chua cac quy tac bao mat rat nghiem ngat:" -ForegroundColor White
+                Write-Host "  - Co the chan xac thuc NTLM, vo hieu hoa SMBv1/Lanman, bat buoc ky goi (SMB signing)." -ForegroundColor White
+                Write-Host "  - Nguy co lam gian doan ket noi RDP/SMB hoac vo ung dung tren he thong legacy." -ForegroundColor White
+                Write-Host "========================================================================================" -ForegroundColor Red
+                Write-Host ""
+                Write-Host "Khuyen nghi an toan: Chay [What-If Simulation] truoc de ra soat danh sach thay doi." -ForegroundColor Cyan
+                $runWhatIfFirst = Read-Host "Ban co muon chay Mo phong What-If truoc khi thuc thi khong? (Y/N - Mac dinh: Y)"
+                $runWhatIfFirst = if ([string]::IsNullOrEmpty($runWhatIfFirst)) { "Y" } else { $runWhatIfFirst.Trim() }
+
+                if ($runWhatIfFirst -ieq "Y") {
+                    Write-Host ""
+                    Write-Host "Khoi chay What-If Simulation truoc..." -ForegroundColor Cyan
+                    $remScript = Join-Path (Join-Path $ScriptDir "src") "Remediate-LegacyWin.ps1"
+                    & $remScript -FindingList $selPath -OutputDir $OutputDir -WhatIf
+                    Write-Host ""
+                    $proceedReal = Read-Host "Sau khi ra soat What-If, ban co chac chan muon thuc thi Remediation that? (Y/N)"
+                    if ($proceedReal -ine "Y") {
+                        Write-Host "Da huy thao tac Remediation an toan." -ForegroundColor Gray
+                        Wait-HKKeyPress
+                        continue
+                    }
+                } else {
+                    $confirmL2 = Read-Host "Nhap 'XAC NHAN' de bo qua What-If va thuc thi Remediation Level 2"
+                    if ($confirmL2 -ine "XAC NHAN") {
+                        Write-Host "Huy bo thao tac: Khong co xac nhan hop le cho Level 2." -ForegroundColor Gray
+                        Wait-HKKeyPress
+                        continue
+                    }
+                }
+            } else {
+                Write-Host ""
+                Write-Host "========================== CANH BAO QUAN TRONG ==========================" -ForegroundColor Yellow
+                Write-Host "Che do Remediation se truc tiep ap dung cac thiet lap hardening vao he thong." -ForegroundColor Yellow
+                Write-Host "He thong se tu dong thuc hien sao luu 4 lop truoc khi ap dung thay doi." -ForegroundColor Yellow
+                Write-Host "==========================================================================" -ForegroundColor Yellow
+                $confirmRem = Read-Host "Ban co chac chan muon thuc hien Remediation? (Y/N)"
+                if ($confirmRem -ine "Y") {
+                    Write-Host "Da huy thao tac Remediation." -ForegroundColor Gray
                     Wait-HKKeyPress
                     continue
                 }
-
-                Write-Host "Dang thuc hien Remediation voi bao ve sao luu 4 lop..." -ForegroundColor Cyan
-                $remScript = Join-Path (Join-Path $ScriptDir "src") "Remediate-LegacyWin.ps1"
-                & $remScript -FindingList $selPath -AuditReport $latestReport -BackupDir $OutputDir
-            } else {
-                Write-Host "Da huy thao tac Remediation." -ForegroundColor Gray
             }
+
+            $latestReport = Get-HKLatestAuditReport -ReportDir $OutputDir
+            if ([string]::IsNullOrEmpty($latestReport) -or -not (Test-Path -Path $latestReport)) {
+                Write-Host "Chua co bao cao audit. Vui long chay Audit (1) truoc de xac dinh cac muc Failed." -ForegroundColor Red
+                Wait-HKKeyPress
+                continue
+            }
+
+            Write-Host "Dang thuc hien Remediation voi bao ve sao luu 4 lop..." -ForegroundColor Cyan
+            $remScript = Join-Path (Join-Path $ScriptDir "src") "Remediate-LegacyWin.ps1"
+            & $remScript -FindingList $selPath -AuditReport $latestReport -BackupDir $OutputDir
             Wait-HKKeyPress "Bam Enter de tiep tuc..."
             continue
         }

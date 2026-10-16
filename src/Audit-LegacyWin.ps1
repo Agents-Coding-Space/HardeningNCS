@@ -250,13 +250,14 @@ $results = New-Object System.Collections.ArrayList
 $totalCount = 0
 $passedCount = 0
 $failedCount = 0
+$manualCount = 0
 $skippedCount = 0
 
 foreach ($item in $findings) {
     $totalCount++
 
     # Detect audit2excel / Tenable CSV format vs HardeningKitty format
-    $isAudit2Excel = ($null -ne $item.Type -and ($null -ne $item."Reg Key" -or $null -ne $item."Value Data" -or $null -ne $item.Expect))
+    $isAudit2Excel = ($null -ne $item.Type -or $null -ne $item.CID -or $null -ne $item.$bomCidKey)
 
     if ($isAudit2Excel) {
         $itemId = if ($null -ne $item.CID) { "$($item.CID)".Trim() } elseif ($null -ne $item.$bomCidKey) { "$($item.$bomCidKey)".Trim() } else { "" }
@@ -311,6 +312,9 @@ foreach ($item in $findings) {
             $method = "secedit"
             $methodArg = "System Access\LSAAnonymousNameLookup"
             $recVal = "0"
+        } elseif ($cType -eq "PASSED" -or $cType -eq "WARNING" -or $cType -eq "BANNER_CHECK") {
+            $method = "manual"
+            $recVal = if ($null -ne $item."Value Data") { "$($item."Value Data")".Trim() } else { "" }
         } else {
             $method = $cType
             $recVal = ""
@@ -346,12 +350,22 @@ foreach ($item in $findings) {
         $isSkipped = $true
     }
 
+    # Check Manual Review conditions
+    $isManual = $false
+    if ($method -ieq "manual" -or $method -ieq "Manual Review" -or $cType -eq "PASSED" -or $cType -eq "WARNING" -or $cType -eq "BANNER_CHECK" -or $name -match "(?i)\(Manual\)") {
+        $isManual = $true
+    }
+
     $currentVal = $null
     $displayVal = ""
     $status = ""
     $isUnknownMethod = $false
 
-    if ($isSkipped) {
+    if ($isManual) {
+        $status = "Manual Review"
+        $manualCount++
+        $displayVal = "MANUAL REVIEW REQUIRED"
+    } elseif ($isSkipped) {
         $status = "Skipped"
         $skippedCount++
         $displayVal = "SKIPPED"
@@ -616,6 +630,7 @@ Write-Host "================ AUDIT SUMMARY ================" -ForegroundColor Cy
 Write-Host ("Total Findings : " + $totalCount)
 Write-Host ("Passed         : " + $passedCount) -ForegroundColor Green
 Write-Host ("Failed         : " + $failedCount) -ForegroundColor $(if ($failedCount -gt 0) { "Red" } else { "Green" })
+Write-Host ("Manual Review  : " + $manualCount) -ForegroundColor $(if ($manualCount -gt 0) { "Yellow" } else { "Green" })
 Write-Host ("Skipped        : " + $skippedCount) -ForegroundColor $(if ($skippedCount -gt 0) { "Yellow" } else { "Green" })
 Write-Host "===============================================" -ForegroundColor Cyan
 Write-Host ("Report Output  : " + $OutputFile) -ForegroundColor Cyan

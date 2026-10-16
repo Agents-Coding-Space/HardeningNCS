@@ -515,3 +515,110 @@ function Show-HKSystemSummaryCard {
         return @($border, $line1, $line2, $border)
     }
 }
+
+function Merge-HKChecklists {
+    <#
+    .SYNOPSIS
+        Merges two checklist CSV files (e.g. Level 1 base + Level 2 delta) into a single combined CSV.
+    .DESCRIPTION
+        Imports both CSV files, deduplicates rules based on CID, ID, Title, or Name,
+        and exports a consolidated checklist CSV. Fully PowerShell 2.0 compatible.
+    .PARAMETER Checklist1
+        Path to the first checklist (typically Level 1).
+    .PARAMETER Checklist2
+        Path to the second checklist (typically Level 2 delta).
+    .PARAMETER OutputFile
+        Destination path for the merged CSV.
+    .OUTPUTS
+        Path to the generated merged CSV file.
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Checklist1,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Checklist2,
+
+        [Parameter(Mandatory = $true)]
+        [string]$OutputFile
+    )
+
+    if (-not (Test-Path -Path $Checklist1)) {
+        Write-Error ("Checklist1 not found: " + $Checklist1)
+        return $null
+    }
+    if (-not (Test-Path -Path $Checklist2)) {
+        Write-Error ("Checklist2 not found: " + $Checklist2)
+        return $null
+    }
+
+    $c1Rows = Import-Csv -Path $Checklist1
+    $c2Rows = Import-Csv -Path $Checklist2
+
+    $mergedList = New-Object System.Collections.ArrayList
+    $seenKeys = New-Object System.Collections.Hashtable
+
+    # First add Checklist1 rows
+    if ($null -ne $c1Rows) {
+        foreach ($r in $c1Rows) {
+            $key = ""
+            if ($null -ne $r.CID -and -not [string]::IsNullOrEmpty("$($r.CID)".Trim())) {
+                $key = "CID_" + "$($r.CID)".Trim().ToLower()
+            } elseif ($null -ne $r.ID -and -not [string]::IsNullOrEmpty("$($r.ID)".Trim())) {
+                $key = "ID_" + "$($r.ID)".Trim().ToLower()
+            } elseif ($null -ne $r.Title -and -not [string]::IsNullOrEmpty("$($r.Title)".Trim())) {
+                $key = "TITLE_" + "$($r.Title)".Trim().ToLower()
+            } elseif ($null -ne $r.Name -and -not [string]::IsNullOrEmpty("$($r.Name)".Trim())) {
+                $key = "NAME_" + "$($r.Name)".Trim().ToLower()
+            }
+
+            if ([string]::IsNullOrEmpty($key)) {
+                [void]$mergedList.Add($r)
+            } else {
+                if (-not $seenKeys.ContainsKey($key)) {
+                    $seenKeys[$key] = $mergedList.Count
+                    [void]$mergedList.Add($r)
+                }
+            }
+        }
+    }
+
+    # Now add or override with Checklist2 (Level 2) rows
+    if ($null -ne $c2Rows) {
+        foreach ($r in $c2Rows) {
+            $key = ""
+            if ($null -ne $r.CID -and -not [string]::IsNullOrEmpty("$($r.CID)".Trim())) {
+                $key = "CID_" + "$($r.CID)".Trim().ToLower()
+            } elseif ($null -ne $r.ID -and -not [string]::IsNullOrEmpty("$($r.ID)".Trim())) {
+                $key = "ID_" + "$($r.ID)".Trim().ToLower()
+            } elseif ($null -ne $r.Title -and -not [string]::IsNullOrEmpty("$($r.Title)".Trim())) {
+                $key = "TITLE_" + "$($r.Title)".Trim().ToLower()
+            } elseif ($null -ne $r.Name -and -not [string]::IsNullOrEmpty("$($r.Name)".Trim())) {
+                $key = "NAME_" + "$($r.Name)".Trim().ToLower()
+            }
+
+            if ([string]::IsNullOrEmpty($key)) {
+                [void]$mergedList.Add($r)
+            } else {
+                if ($seenKeys.ContainsKey($key)) {
+                    # L2 overrides L1 setting
+                    $idx = [int]$seenKeys[$key]
+                    $mergedList[$idx] = $r
+                } else {
+                    $seenKeys[$key] = $mergedList.Count
+                    [void]$mergedList.Add($r)
+                }
+            }
+        }
+    }
+
+    $outDir = Split-Path $OutputFile -Parent
+    if (-not [string]::IsNullOrEmpty($outDir) -and -not (Test-Path -Path $outDir)) {
+        [void](New-Item -ItemType Directory -Path $outDir -Force)
+    }
+
+    $mergedList.ToArray() | Export-Csv -Path $OutputFile -NoTypeInformation
+    return $OutputFile
+}
+
