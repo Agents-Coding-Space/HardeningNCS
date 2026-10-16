@@ -717,8 +717,7 @@ function Parse-HKMenuAction {
 function Read-HKMenuAction {
     <#
     .SYNOPSIS
-        Reads user input for Screen 1. Uses instant single-key execution when interactive
-        console is available, falling back safely to Read-Host on redirected streams.
+        Reads user input line for Screen 1 using standard Read-Host, followed by Enter.
     .PARAMETER Prompt
         Prompt string displayed to user.
     .PARAMETER CurrentPageCount
@@ -735,58 +734,6 @@ function Read-HKMenuAction {
         [int]$CurrentPageCount = 10
     )
 
-    $isConsole = $false
-    try {
-        $null = [System.Console]::KeyAvailable
-        $isConsole = $true
-    } catch {
-        $isConsole = $false
-    }
-
-    if ($isConsole) {
-        Write-Host -NoNewline $Prompt
-        try {
-            $keyInfo = [System.Console]::ReadKey($true)
-            $vKey = $keyInfo.Key
-            $ch = $keyInfo.KeyChar.ToString()
-
-            # Handle special keys
-            if ($vKey -eq [System.ConsoleKey]::Enter) {
-                Write-Host ""
-                return @{ Action = "Suggested"; Value = "" }
-            }
-            if ($vKey -eq [System.ConsoleKey]::Escape) {
-                Write-Host "Q"
-                return @{ Action = "Quit"; Value = "" }
-            }
-            if ($vKey -eq [System.ConsoleKey]::RightArrow -or $vKey -eq [System.ConsoleKey]::PageDown) {
-                Write-Host "N"
-                return @{ Action = "Next"; Value = "" }
-            }
-            if ($vKey -eq [System.ConsoleKey]::LeftArrow -or $vKey -eq [System.ConsoleKey]::PageUp) {
-                Write-Host "P"
-                return @{ Action = "Prev"; Value = "" }
-            }
-
-            # If user pressed '/', switch to line input for search keyword
-            if ($ch -eq "/") {
-                Write-Host "/" -NoNewline
-                $kw = Read-Host
-                $kw = if ($null -eq $kw) { "" } else { $kw.Trim() }
-                return @{ Action = "Search"; Value = $kw }
-            }
-
-            # Echo the single character
-            Write-Host $ch
-
-            # Parse through unified action parser
-            return (Parse-HKMenuAction -InputText $ch -CurrentPageCount $CurrentPageCount)
-        } catch {
-            # Console ReadKey failed, fall through to Read-Host
-        }
-    }
-
-    # Fallback for redirected input / test automation / non-interactive shells
     $line = if ([string]::IsNullOrEmpty($Prompt)) { Read-Host } else { Read-Host $Prompt }
     $line = if ($null -eq $line) { "" } else { $line.Trim() }
     return (Parse-HKMenuAction -InputText $line -CurrentPageCount $CurrentPageCount)
