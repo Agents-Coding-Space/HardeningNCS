@@ -622,3 +622,216 @@ function Merge-HKChecklists {
     return $OutputFile
 }
 
+function Parse-HKMenuAction {
+    <#
+    .SYNOPSIS
+        Parses a keyboard character or input string into a structured menu action for Screen 1.
+    .PARAMETER InputText
+        Character or line string entered by user.
+    .PARAMETER CurrentPageCount
+        Number of items on the current page (1..10).
+    .OUTPUTS
+        Hashtable with Action and Value properties.
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $false)]
+        [string]$InputText = "",
+
+        [Parameter(Mandatory = $false)]
+        [int]$CurrentPageCount = 10
+    )
+
+    $t = if ($null -eq $InputText) { "" } else { $InputText.Trim() }
+
+    # Empty string or G/S = choose suggested checklist
+    if ($t -eq "" -or $t -ieq "G" -or $t -ieq "S") {
+        return @{ Action = "Suggested"; Value = "" }
+    }
+
+    # Quit
+    if ($t -ieq "Q") {
+        return @{ Action = "Quit"; Value = "" }
+    }
+
+    # Paging: Next / Prev
+    if ($t -ieq "N") {
+        return @{ Action = "Next"; Value = "" }
+    }
+    if ($t -ieq "P") {
+        return @{ Action = "Prev"; Value = "" }
+    }
+
+    # Level switching
+    if ($t -ieq "L") {
+        return @{ Action = "CycleLevel"; Value = "" }
+    }
+    if ($t -ieq "L1") {
+        return @{ Action = "SetLevel"; Value = "L1" }
+    }
+    if ($t -ieq "L2") {
+        return @{ Action = "SetLevel"; Value = "L2" }
+    }
+    if ($t -ieq "L12" -or $t -ieq "L1+L2" -or $t -ieq "L1L2") {
+        return @{ Action = "SetLevel"; Value = "L1+L2" }
+    }
+
+    # Clear filter
+    if ($t -ieq "C") {
+        return @{ Action = "ClearFilter"; Value = "" }
+    }
+
+    # Search keyword
+    if ($t.StartsWith("/")) {
+        $kw = $t.Substring(1).Trim()
+        if ($kw -eq "") {
+            return @{ Action = "SearchPrompt"; Value = "" }
+        } else {
+            return @{ Action = "Search"; Value = $kw }
+        }
+    }
+
+    # Single-key 0 = item 10 (0-indexed 9)
+    if ($t -eq "0") {
+        if ($CurrentPageCount -ge 10) {
+            return @{ Action = "SelectItem"; Value = 9 }
+        } else {
+            return @{ Action = "Invalid"; Value = "0" }
+        }
+    }
+
+    # Number 1..9 or numeric string up to CurrentPageCount
+    $num = 0
+    if ([int]::TryParse($t, [ref]$num)) {
+        if ($num -ge 1 -and $num -le $CurrentPageCount) {
+            return @{ Action = "SelectItem"; Value = ($num - 1) }
+        } else {
+            return @{ Action = "Invalid"; Value = $t }
+        }
+    }
+
+    # Free-form search filter
+    return @{ Action = "FilterText"; Value = $t }
+}
+
+function Read-HKMenuAction {
+    <#
+    .SYNOPSIS
+        Reads user input for Screen 1. Uses instant single-key execution when interactive
+        console is available, falling back safely to Read-Host on redirected streams.
+    .PARAMETER Prompt
+        Prompt string displayed to user.
+    .PARAMETER CurrentPageCount
+        Number of items on the current page (1..10).
+    .OUTPUTS
+        Hashtable with Action and Value properties.
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $false)]
+        [string]$Prompt = "Nhap lua chon: ",
+
+        [Parameter(Mandatory = $false)]
+        [int]$CurrentPageCount = 10
+    )
+
+    $isConsole = $false
+    try {
+        $null = [System.Console]::KeyAvailable
+        $isConsole = $true
+    } catch {
+        $isConsole = $false
+    }
+
+    if ($isConsole) {
+        Write-Host -NoNewline $Prompt
+        try {
+            $keyInfo = [System.Console]::ReadKey($true)
+            $vKey = $keyInfo.Key
+            $ch = $keyInfo.KeyChar.ToString()
+
+            # Handle special keys
+            if ($vKey -eq [System.ConsoleKey]::Enter) {
+                Write-Host ""
+                return @{ Action = "Suggested"; Value = "" }
+            }
+            if ($vKey -eq [System.ConsoleKey]::Escape) {
+                Write-Host "Q"
+                return @{ Action = "Quit"; Value = "" }
+            }
+            if ($vKey -eq [System.ConsoleKey]::RightArrow -or $vKey -eq [System.ConsoleKey]::PageDown) {
+                Write-Host "N"
+                return @{ Action = "Next"; Value = "" }
+            }
+            if ($vKey -eq [System.ConsoleKey]::LeftArrow -or $vKey -eq [System.ConsoleKey]::PageUp) {
+                Write-Host "P"
+                return @{ Action = "Prev"; Value = "" }
+            }
+
+            # If user pressed '/', switch to line input for search keyword
+            if ($ch -eq "/") {
+                Write-Host "/" -NoNewline
+                $kw = Read-Host
+                $kw = if ($null -eq $kw) { "" } else { $kw.Trim() }
+                return @{ Action = "Search"; Value = $kw }
+            }
+
+            # Echo the single character
+            Write-Host $ch
+
+            # Parse through unified action parser
+            return (Parse-HKMenuAction -InputText $ch -CurrentPageCount $CurrentPageCount)
+        } catch {
+            # Console ReadKey failed, fall through to Read-Host
+        }
+    }
+
+    # Fallback for redirected input / test automation / non-interactive shells
+    $line = if ([string]::IsNullOrEmpty($Prompt)) { Read-Host } else { Read-Host $Prompt }
+    $line = if ($null -eq $line) { "" } else { $line.Trim() }
+    return (Parse-HKMenuAction -InputText $line -CurrentPageCount $CurrentPageCount)
+}
+
+function Clear-HKTableArea {
+    <#
+    .SYNOPSIS
+        Overwrites lines in the table area with blanks to prevent residual text on partial redraws.
+    .PARAMETER StartTop
+        0-based console cursor top line where table begins.
+    .PARAMETER LineCount
+        Number of lines to blank out.
+    .PARAMETER Width
+        Width of each blank line (default 80, clamped 40..118).
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [int]$StartTop,
+
+        [Parameter(Mandatory = $true)]
+        [int]$LineCount,
+
+        [Parameter(Mandatory = $false)]
+        [int]$Width = 80
+    )
+
+    if ($StartTop -lt 0 -or $LineCount -le 0) {
+        return
+    }
+
+    try {
+        [System.Console]::SetCursorPosition(0, $StartTop)
+        # Strictly ensure blank width is less than console width to prevent line wrap on boundary
+        $safeWidth = if ($Width -gt 1) { $Width - 1 } else { $Width }
+        $w = [Math]::Max(38, [Math]::Min($safeWidth, 117))
+        $blank = " " * $w
+        for ($i = 0; $i -lt $LineCount; $i++) {
+            Write-Host $blank
+        }
+        [System.Console]::SetCursorPosition(0, $StartTop)
+    } catch {
+        # Host does not support cursor positioning
+    }
+}
+
+

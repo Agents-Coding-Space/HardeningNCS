@@ -517,6 +517,9 @@ $selectedChecklist = $null
 $currentPage = 0
 $pageSize = 10
 $filterKeyword = ""
+$redrawMode = "Full"
+$tableStartTop = -1
+$lastRenderedLines = 0
 
 while ($true) {
     # ==========================================================================
@@ -524,29 +527,8 @@ while ($true) {
     # ==========================================================================
     while ($null -eq $selectedChecklist) {
         $tw = Get-HKTerminalWidth
-        Clear-HKScreen
-        Show-HKBanner -TerminalWidth $tw
 
-        Show-HKSystemSummaryCard -SystemInfo $sysInfo -TerminalWidth $tw
-
-        $levelColor = if ($currentLevel -eq "L1") { "Green" } elseif ($currentLevel -eq "L2") { "Yellow" } else { "Magenta" }
-        $levelDesc = switch ($currentLevel) {
-            "L1"    { "Level 1 (An toan / Khuyen nghi)" }
-            "L2"    { "Level 2 (Nghiem ngat / High Security)" }
-            "L1+L2" { "Level 1 + Level 2 (Ket hop toan dien)" }
-        }
-        Write-Host ""
-        Write-Host ("  [CHE DO BENCHMARK] : " + $levelDesc + " | Bam [L] de doi profile") -ForegroundColor $levelColor
-
-        Write-Host ""
-        if ($null -ne $suggested) {
-            Write-Host ("[GOI Y] Khuyen nghi cho he thong: " + $suggested.FileName) -ForegroundColor Green
-            Write-Host "       (Nhap 'G', 'S' hoac bam ENTER de chon ngay checklist nay)" -ForegroundColor DarkGreen
-        } else {
-            Write-Host "[GOI Y] Khong xac dinh duoc checklist phu hop tu dong." -ForegroundColor Yellow
-        }
-
-        # Apply keyword filter
+        # Apply keyword filter & page clamping before drawing
         $filteredChecklists = Filter-HKChecklists -Checklists $allChecklists -Keyword $filterKeyword
         $totalItems = @($filteredChecklists).Length
         $totalPages = [int][Math]::Ceiling($totalItems / [double]$pageSize)
@@ -559,24 +541,117 @@ while ($true) {
             $currentPage = 0
         }
 
-        if (-not [string]::IsNullOrEmpty($filterKeyword)) {
-            Write-Host ""
-            Write-Host ("[BO LOC DANG DUNG]: '" + $filterKeyword + "' (" + $totalItems + " ket qua) - Nhap 'C' de xoa bo loc") -ForegroundColor Magenta
+        $startIndex = $currentPage * $pageSize
+        $endIndex = [Math]::Min($startIndex + $pageSize, $totalItems)
+        $curPageCount = [Math]::Max(0, $endIndex - $startIndex)
+
+        $canReposition = $false
+        if ($redrawMode -eq "PartialTable" -and $tableStartTop -ge 0) {
+            try {
+                $tableWidth = [Math]::Max(40, [Math]::Min($tw, 118))
+                if ($tableWidth -eq $tw -and $tw -gt 40) { $tableWidth = $tw - 1 }
+                Clear-HKTableArea -StartTop $tableStartTop -LineCount $lastRenderedLines -Width $tableWidth
+                $canReposition = $true
+            } catch {
+                $canReposition = $false
+                $redrawMode = "Full"
+            }
         }
 
-        Write-Host ""
+        if ($redrawMode -eq "Full" -or -not $canReposition) {
+            Clear-HKScreen
+            Show-HKBanner -TerminalWidth $tw
+
+            Show-HKSystemSummaryCard -SystemInfo $sysInfo -TerminalWidth $tw
+
+            $levelColor = if ($currentLevel -eq "L1") { "Green" } elseif ($currentLevel -eq "L2") { "Yellow" } else { "Magenta" }
+            $levelDesc = switch ($currentLevel) {
+                "L1"    { "Level 1 (An toan / Khuyen nghi)" }
+                "L2"    { "Level 2 (Nghiem ngat / High Security)" }
+                "L1+L2" { "Level 1 + Level 2 (Ket hop toan dien)" }
+            }
+            Write-Host ""
+            Write-Host ("  [CHE DO BENCHMARK] : " + $levelDesc + " | Bam [L] de doi profile") -ForegroundColor $levelColor
+
+            Write-Host ""
+            if ($null -ne $suggested) {
+                Write-Host ("[GOI Y] Khuyen nghi cho he thong: " + $suggested.FileName) -ForegroundColor Green
+                Write-Host "       (Nhap 'G', 'S' hoac bam ENTER de chon ngay checklist nay)" -ForegroundColor DarkGreen
+            } else {
+                Write-Host "[GOI Y] Khong xac dinh duoc checklist phu hop tu dong." -ForegroundColor Yellow
+            }
+
+            if (-not [string]::IsNullOrEmpty($filterKeyword)) {
+                Write-Host ""
+                Write-Host ("[BO LOC DANG DUNG]: '" + $filterKeyword + "' (" + $totalItems + " ket qua) - Nhap 'C' de xoa bo loc") -ForegroundColor Magenta
+            }
+
+            Write-Host ""
+
+            # Save anchor right before the table begins
+            try {
+                $tableStartTop = [System.Console]::CursorTop
+            } catch {
+                $tableStartTop = -1
+            }
+        }
+
+        # Render the checklist table
         Render-HKPage -Items $filteredChecklists -PageIndex $currentPage -PageSize $pageSize -TerminalWidth $tw -SuggestedItem $suggested
 
         Write-Host ""
         Write-Host "Phim dieu khien:" -ForegroundColor Cyan
-        Write-Host "  [1-10] Chon | [G/Enter] Goi y | [L] Level | [N] Sau | [P] Truoc | [/kw] Loc | [Q] Thoat" -ForegroundColor White
+        Write-Host "  [1-9,0] Chon | [G/Enter] Goi y | [L] Level | [N] Sau | [P] Truoc | [/kw] Loc | [Q] Thoat" -ForegroundColor White
+
+        # Approximate lines rendered for table area
+        $lastRenderedLines = 11 + [Math]::Max(1, $curPageCount)
 
         $promptStr = if ($null -ne $suggested) { "Nhap lua chon (Mac dinh: [G] Chon goi y): " } else { "Nhap lua chon: " }
-        $userInput = Read-Host $promptStr
-        $userInput = if ($null -eq $userInput) { "" } else { $userInput.Trim() }
+        $actionObj = Read-HKMenuAction -Prompt $promptStr -CurrentPageCount $curPageCount
 
-        # Level switch hotkey [L]
-        if ($userInput -ieq "L") {
+        $action = $actionObj.Action
+        $val = $actionObj.Value
+
+        # 1. Paging: Next
+        if ($action -eq "Next") {
+            if ($currentPage -lt ($totalPages - 1)) {
+                $currentPage++
+                $redrawMode = if ($tableStartTop -ge 0) { "PartialTable" } else { "Full" }
+            }
+            continue
+        }
+
+        # 2. Paging: Prev
+        if ($action -eq "Prev") {
+            if ($currentPage -gt 0) {
+                $currentPage--
+                $redrawMode = if ($tableStartTop -ge 0) { "PartialTable" } else { "Full" }
+            }
+            continue
+        }
+
+        # 3. Choose suggested checklist
+        if ($action -eq "Suggested") {
+            if ($null -ne $suggested) {
+                $selectedChecklist = $suggested
+                $redrawMode = "Full"
+                break
+            } else {
+                Write-Host "Khong co checklist goi y phu hop." -ForegroundColor Yellow
+                Wait-HKKeyPress
+                $redrawMode = "Full"
+                continue
+            }
+        }
+
+        # 4. Quit
+        if ($action -eq "Quit") {
+            Write-Host "Tam biet!" -ForegroundColor Cyan
+            exit 0
+        }
+
+        # 5. Cycle Benchmark Level
+        if ($action -eq "CycleLevel") {
             if ($currentLevel -eq "L1") {
                 $currentLevel = "L2"
             } elseif ($currentLevel -eq "L2") {
@@ -585,114 +660,73 @@ while ($true) {
                 $currentLevel = "L1"
             }
             $suggested = Get-SuggestedChecklist -Checklists $allChecklists -SystemInfo $sysInfo -BenchmarkLevel $currentLevel
+            $redrawMode = "Full"
             continue
         }
-        if ($userInput -ieq "L1") {
-            $currentLevel = "L1"
+
+        # 6. Set specific Benchmark Level
+        if ($action -eq "SetLevel") {
+            $currentLevel = $val
             $suggested = Get-SuggestedChecklist -Checklists $allChecklists -SystemInfo $sysInfo -BenchmarkLevel $currentLevel
-            continue
-        }
-        if ($userInput -ieq "L2") {
-            $currentLevel = "L2"
-            $suggested = Get-SuggestedChecklist -Checklists $allChecklists -SystemInfo $sysInfo -BenchmarkLevel $currentLevel
-            continue
-        }
-        if ($userInput -ieq "L12" -or $userInput -ieq "L1+L2" -or $userInput -ieq "L1L2") {
-            $currentLevel = "L1+L2"
-            $suggested = Get-SuggestedChecklist -Checklists $allChecklists -SystemInfo $sysInfo -BenchmarkLevel $currentLevel
+            $redrawMode = "Full"
             continue
         }
 
-        # 1. Default ENTER or 'G' or 'S' selects suggested checklist
-        if ($userInput -eq "" -or $userInput -ieq "G" -or $userInput -ieq "S") {
-            if ($null -ne $suggested) {
-                $selectedChecklist = $suggested
-                break
-            } else {
-                Write-Host "Khong co checklist goi y phu hop." -ForegroundColor Yellow
-                Wait-HKKeyPress
-                continue
-            }
-        }
-
-        # 2. Quit
-        if ($userInput -ieq "Q") {
-            Write-Host "Tam biet!" -ForegroundColor Cyan
-            exit 0
-        }
-
-        # 3. Next page
-        if ($userInput -ieq "N") {
-            if ($currentPage -lt ($totalPages - 1)) {
-                $currentPage++
-            }
-            continue
-        }
-
-        # 4. Previous page
-        if ($userInput -ieq "P") {
-            if ($currentPage -gt 0) {
-                $currentPage--
-            }
-            continue
-        }
-
-        # 5. Clear filter
-        if ($userInput -ieq "C") {
+        # 7. Clear filter
+        if ($action -eq "ClearFilter") {
             $filterKeyword = ""
             $currentPage = 0
+            $redrawMode = "Full"
             continue
         }
 
-        # 6. Slash search command
-        if ($userInput.StartsWith("/")) {
-            $kw = $userInput.Substring(1).Trim()
-            if ([string]::IsNullOrEmpty($kw)) {
-                $kw = Read-Host "Nhap tu khoa tim kiem"
-                $kw = if ($null -eq $kw) { "" } else { $kw.Trim() }
-            }
-            $filterKeyword = $kw
+        # 8. Search keyword
+        if ($action -eq "Search") {
+            $filterKeyword = $val
             $currentPage = 0
+            $redrawMode = "Full"
             continue
         }
-
-        # 7. Explicit keyword search prefix (e.g. "find server" or "s 2008")
-        if ($userInput -imatch "^(find|search)\s+(.+)$") {
-            $filterKeyword = $matches[2].Trim()
+        if ($action -eq "SearchPrompt") {
+            $kw = Read-Host "Nhap tu khoa tim kiem"
+            $filterKeyword = if ($null -eq $kw) { "" } else { $kw.Trim() }
             $currentPage = 0
+            $redrawMode = "Full"
             continue
         }
 
-        # 8. Numeric selection (item 1-10 on current page OR global STT)
-        $numVal = 0
-        if ([int]::TryParse($userInput, [ref]$numVal)) {
-            $chosenItem = $null
-
-            # Local page item 1..pageSize
-            if ($numVal -ge 1 -and $numVal -le $pageSize) {
-                $localIdx = ($currentPage * $pageSize) + ($numVal - 1)
-                if ($localIdx -ge 0 -and $localIdx -lt $totalItems) {
-                    $chosenItem = $filteredChecklists[$localIdx]
-                }
-            }
-            # Global index fallback (e.g. user typed global STT 15)
-            elseif ($numVal -gt $pageSize -and $numVal -le $totalItems) {
-                $chosenItem = $filteredChecklists[$numVal - 1]
-            }
-
-            if ($null -ne $chosenItem) {
-                $selectedChecklist = $chosenItem
+        # 9. Item selection (local index on page)
+        if ($action -eq "SelectItem") {
+            $chosenIdx = $startIndex + [int]$val
+            if ($chosenIdx -ge 0 -and $chosenIdx -lt $totalItems) {
+                $selectedChecklist = $filteredChecklists[$chosenIdx]
+                $redrawMode = "Full"
                 break
             } else {
-                Write-Host ("Chi so khong hop le: " + $numVal) -ForegroundColor Red
+                Write-Host ("Chi so khong hop le: " + ($val + 1)) -ForegroundColor Red
                 Wait-HKKeyPress
+                $redrawMode = "Full"
                 continue
             }
         }
 
-        # 9. Free-form text treated directly as search filter
-        $filterKeyword = $userInput
-        $currentPage = 0
+        # 10. Free-form text filter
+        if ($action -eq "FilterText" -or $action -eq "Raw") {
+            # Check if global numeric index was entered (e.g. STT 25)
+            $numVal = 0
+            if ([int]::TryParse($val, [ref]$numVal) -and $numVal -gt $pageSize -and $numVal -le $totalItems) {
+                $selectedChecklist = $filteredChecklists[$numVal - 1]
+                $redrawMode = "Full"
+                break
+            }
+
+            $filterKeyword = $val
+            $currentPage = 0
+            $redrawMode = "Full"
+            continue
+        }
+
+        $redrawMode = "Full"
     }
 
     # ==========================================================================

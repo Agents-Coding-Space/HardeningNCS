@@ -387,6 +387,84 @@ Assert-HKTest "Merged checklist row count <= L1 + L2 combined count" ($mergedRow
 if (Test-Path -Path $testMergeOut) { [void](Remove-Item -Path $testMergeOut -Force) }
 
 # ------------------------------------------------------------------------------
+# Test Section 7: Instant Key Action Parser & In-Place Redraw Helpers
+# ------------------------------------------------------------------------------
+Write-Host "`n--- Testing Parse-HKMenuAction & In-Place Redraw Helpers ---" -ForegroundColor Yellow
+
+# 21. Action parsing for navigation
+$actN = Parse-HKMenuAction -InputText "N" -CurrentPageCount 10
+Assert-HKEqual "Parse-HKMenuAction 'N' -> Next" $actN.Action "Next"
+
+$actP = Parse-HKMenuAction -InputText "p" -CurrentPageCount 10
+Assert-HKEqual "Parse-HKMenuAction 'p' -> Prev" $actP.Action "Prev"
+
+$actG = Parse-HKMenuAction -InputText "G" -CurrentPageCount 10
+Assert-HKEqual "Parse-HKMenuAction 'G' -> Suggested" $actG.Action "Suggested"
+
+$actEmpty = Parse-HKMenuAction -InputText "" -CurrentPageCount 10
+Assert-HKEqual "Parse-HKMenuAction '' -> Suggested" $actEmpty.Action "Suggested"
+
+$actQ = Parse-HKMenuAction -InputText "q" -CurrentPageCount 10
+Assert-HKEqual "Parse-HKMenuAction 'q' -> Quit" $actQ.Action "Quit"
+
+$actC = Parse-HKMenuAction -InputText "C" -CurrentPageCount 10
+Assert-HKEqual "Parse-HKMenuAction 'C' -> ClearFilter" $actC.Action "ClearFilter"
+
+# 22. Action parsing for level switching
+$actL = Parse-HKMenuAction -InputText "L" -CurrentPageCount 10
+Assert-HKEqual "Parse-HKMenuAction 'L' -> CycleLevel" $actL.Action "CycleLevel"
+
+$actL2 = Parse-HKMenuAction -InputText "L2" -CurrentPageCount 10
+Assert-HKEqual "Parse-HKMenuAction 'L2' -> SetLevel" $actL2.Action "SetLevel"
+Assert-HKEqual "Parse-HKMenuAction 'L2' Value" $actL2.Value "L2"
+
+$actL12 = Parse-HKMenuAction -InputText "L1+L2" -CurrentPageCount 10
+Assert-HKEqual "Parse-HKMenuAction 'L1+L2' -> SetLevel" $actL12.Action "SetLevel"
+Assert-HKEqual "Parse-HKMenuAction 'L1+L2' Value" $actL12.Value "L1+L2"
+
+# 23. Action parsing for search keyword
+$actSlashPrompt = Parse-HKMenuAction -InputText "/" -CurrentPageCount 10
+Assert-HKEqual "Parse-HKMenuAction '/' -> SearchPrompt" $actSlashPrompt.Action "SearchPrompt"
+
+$actSlashKw = Parse-HKMenuAction -InputText "/win2008" -CurrentPageCount 10
+Assert-HKEqual "Parse-HKMenuAction '/win2008' -> Search" $actSlashKw.Action "Search"
+Assert-HKEqual "Parse-HKMenuAction '/win2008' Value" $actSlashKw.Value "win2008"
+
+# 24. Action parsing for item selection
+$act1 = Parse-HKMenuAction -InputText "1" -CurrentPageCount 10
+Assert-HKEqual "Parse-HKMenuAction '1' -> SelectItem" $act1.Action "SelectItem"
+Assert-HKEqual "Parse-HKMenuAction '1' Value (0-based)" $act1.Value 0
+
+$act9 = Parse-HKMenuAction -InputText "9" -CurrentPageCount 10
+Assert-HKEqual "Parse-HKMenuAction '9' -> SelectItem" $act9.Action "SelectItem"
+Assert-HKEqual "Parse-HKMenuAction '9' Value (0-based)" $act9.Value 8
+
+$act0 = Parse-HKMenuAction -InputText "0" -CurrentPageCount 10
+Assert-HKEqual "Parse-HKMenuAction '0' -> SelectItem (item 10)" $act0.Action "SelectItem"
+Assert-HKEqual "Parse-HKMenuAction '0' Value (0-based)" $act0.Value 9
+
+# 25. Boundary condition: '0' when page has fewer than 10 items
+$act0Short = Parse-HKMenuAction -InputText "0" -CurrentPageCount 5
+Assert-HKEqual "Parse-HKMenuAction '0' on 5-item page -> Invalid" $act0Short.Action "Invalid"
+
+# 26. Free-form text filter
+$actFilter = Parse-HKMenuAction -InputText "server" -CurrentPageCount 10
+Assert-HKEqual "Parse-HKMenuAction 'server' -> FilterText" $actFilter.Action "FilterText"
+Assert-HKEqual "Parse-HKMenuAction 'server' Value" $actFilter.Value "server"
+
+# 27. Clear-HKTableArea safe execution
+$clearedOk = $false
+try {
+    Clear-HKTableArea -StartTop -1 -LineCount 5 -Width 80
+    Clear-HKTableArea -StartTop 0 -LineCount 0 -Width 80
+    Clear-HKTableArea -StartTop 5 -LineCount 3 -Width 80
+    $clearedOk = $true
+} catch {
+    $clearedOk = $false
+}
+Assert-HKTest "Clear-HKTableArea executes without unhandled exceptions" $clearedOk
+
+# ------------------------------------------------------------------------------
 # Final Test Summary
 # ------------------------------------------------------------------------------
 Write-Host "`n=== TEST SUMMARY ===" -ForegroundColor Cyan
